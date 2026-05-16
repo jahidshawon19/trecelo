@@ -34,7 +34,12 @@ class Product(models.Model):
         verbose_name="Maker Name",
     )
 
-    # Documents
+    # Three fixed image slots
+    front_part_image = models.ImageField(upload_to='products/front/', blank=True, null=True, verbose_name="Front Part Image")
+    back_part_image = models.ImageField(upload_to='products/back/', blank=True, null=True, verbose_name="Back Part Image")
+    challenge_part_image = models.ImageField(upload_to='products/challenge/', blank=True, null=True, verbose_name="Challenge Part Image")
+
+    # Document
     documents = models.FileField(upload_to='products/documents/', blank=True, null=True)
 
     # Technical Specifications
@@ -52,16 +57,3 @@ class Product(models.Model):
 
     def __str__(self):
         return self.product_name
-
-
-class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='products/images/')
-    caption = models.CharField(max_length=120, blank=True)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['uploaded_at']
-
-    def __str__(self):
-        return f"Image for {self.product.product_name}"

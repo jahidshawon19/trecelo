@@ -1,12 +1,10 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ title }}{% endblock %}
-
 {% block page_title %}{{ title }}{% endblock %}
 
 {% block content %}
 
-<!-- Breadcrumb -->
 <nav aria-label="breadcrumb" class="mb-4">
   <ol class="breadcrumb mb-0">
     <li class="breadcrumb-item">
@@ -14,63 +12,128 @@
         <i class="fa fa-arrow-left me-1"></i>Back
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+    <li class="breadcrumb-item active">{{ title }}</li>
   </ol>
 </nav>
 
 <div class="row justify-content-center">
-  <div class="col-lg-8 col-xl-7">
-    <div class="card">
-      <div class="card-header bg-white" style="border-bottom:1px solid #f1f5f9;">
-        <h5 class="mb-0" style="font-weight:600;color:#1e293b;">
-          <i class="fa fa-pen-to-square me-2 text-primary"></i>{{ title }}
-        </h5>
-      </div>
+  <div class="col-lg-9 col-xl-8">
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
 
-      <div class="card-body p-4">
-        <form method="post" enctype="multipart/form-data" novalidate>
-          {% csrf_token %}
+      <!-- ── Image upload section (product form only) ──────────── -->
+      {% if form.front_part_image %}
+      <div class="card mb-4">
+        <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
+          <i class="fa fa-images me-2 text-primary"></i>Product Images
+        </div>
+        <div class="card-body">
+          <div class="row g-4">
+
+            <!-- Front Part -->
+            <div class="col-md-4">
+              <div class="image-slot" data-field="id_front_part_image">
+                <div class="slot-label">
+                  <span class="badge bg-primary me-2">1</span>Front Part
+                </div>
+                <div class="slot-preview" id="preview_front_part_image">
+                  {% if form.instance.front_part_image %}
+                    <img src="{{ form.instance.front_part_image.url }}" alt="Front Part">
+                    <div class="slot-current">Current image</div>
+                  {% else %}
+                    <div class="slot-placeholder">
+                      <i class="fa fa-image fa-2x text-muted d-block mb-2"></i>
+                      <span class="text-muted small">No image</span>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="mt-2">{{ form.front_part_image }}</div>
+                {% for error in form.front_part_image.errors %}
+                  <div class="text-danger mt-1" style="font-size:.82rem;"><i class="fa fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Back Part -->
+            <div class="col-md-4">
+              <div class="image-slot" data-field="id_back_part_image">
+                <div class="slot-label">
+                  <span class="badge bg-primary me-2">2</span>Back Part
+                </div>
+                <div class="slot-preview" id="preview_back_part_image">
+                  {% if form.instance.back_part_image %}
+                    <img src="{{ form.instance.back_part_image.url }}" alt="Back Part">
+                    <div class="slot-current">Current image</div>
+                  {% else %}
+                    <div class="slot-placeholder">
+                      <i class="fa fa-image fa-2x text-muted d-block mb-2"></i>
+                      <span class="text-muted small">No image</span>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="mt-2">{{ form.back_part_image }}</div>
+                {% for error in form.back_part_image.errors %}
+                  <div class="text-danger mt-1" style="font-size:.82rem;"><i class="fa fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Challenge Part -->
+            <div class="col-md-4">
+              <div class="image-slot" data-field="id_challenge_part_image">
+                <div class="slot-label">
+                  <span class="badge bg-warning text-dark me-2">3</span>Challenge Part
+                </div>
+                <div class="slot-preview" id="preview_challenge_part_image">
+                  {% if form.instance.challenge_part_image %}
+                    <img src="{{ form.instance.challenge_part_image.url }}" alt="Challenge Part">
+                    <div class="slot-current">Current image</div>
+                  {% else %}
+                    <div class="slot-placeholder">
+                      <i class="fa fa-image fa-2x text-muted d-block mb-2"></i>
+                      <span class="text-muted small">No image</span>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="mt-2">{{ form.challenge_part_image }}</div>
+                {% for error in form.challenge_part_image.errors %}
+                  <div class="text-danger mt-1" style="font-size:.82rem;"><i class="fa fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- ── All other fields ───────────────────────────────────── -->
+      <div class="card">
+        <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
+          <i class="fa fa-pen-to-square me-2 text-primary"></i>{{ title }}
+        </div>
+        <div class="card-body p-4">
 
           {% for field in form %}
-          <div class="mb-4">
-            <label for="{{ field.id_for_label }}" class="form-label" style="font-size:.875rem;font-weight:600;color:#374151;">
-              {{ field.label }}
-              {% if field.field.required %}
-                <span class="text-danger ms-1">*</span>
-              {% endif %}
-            </label>
-
-            {% if field.field.widget.input_type == 'file' or field.field.widget.input_type == 'image' %}
-              {# File / image field #}
-              <div>
-                {{ field }}
-                {% if field.value %}
-                  <div class="mt-1" style="font-size:.8rem;color:#64748b;">
-                    <i class="fa fa-paperclip me-1"></i>Current file: <span class="text-primary">{{ field.value }}</span>
-                    &mdash; upload a new file to replace it.
-                  </div>
-                {% else %}
-                  <div class="mt-1" style="font-size:.78rem;color:#94a3b8;">
-                    <i class="fa fa-circle-info me-1"></i>Accepted formats: images (JPEG, PNG) or documents (PDF, DOCX).
-                  </div>
-                {% endif %}
-              </div>
-            {% elif field.field.widget.input_type == 'textarea' %}
-              {{ field }}
+            {% if field.name == 'front_part_image' or field.name == 'back_part_image' or field.name == 'challenge_part_image' %}
+              {# Already rendered in the image section above #}
             {% else %}
+            <div class="mb-4">
+              <label for="{{ field.id_for_label }}" class="form-label" style="font-size:.875rem;font-weight:600;color:#374151;">
+                {{ field.label }}
+                {% if field.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+              </label>
               {{ field }}
+              {% if field.help_text %}
+                <div class="form-text text-muted" style="font-size:.8rem;">{{ field.help_text }}</div>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="text-danger mt-1" style="font-size:.82rem;">
+                  <i class="fa fa-circle-exclamation me-1"></i>{{ error }}
+                </div>
+              {% endfor %}
+            </div>
             {% endif %}
-
-            {% if field.help_text %}
-              <div class="form-text text-muted" style="font-size:.8rem;">{{ field.help_text }}</div>
-            {% endif %}
-
-            {% for error in field.errors %}
-              <div class="text-danger mt-1" style="font-size:.82rem;">
-                <i class="fa fa-circle-exclamation me-1"></i>{{ error }}
-              </div>
-            {% endfor %}
-          </div>
           {% endfor %}
 
           {% if form.non_field_errors %}
@@ -90,34 +153,85 @@
             </a>
           </div>
 
-        </form>
+        </div>
       </div>
-    </div>
+
+    </form>
   </div>
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
+<style>
+  .slot-label {
+    font-size: .875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+  }
+  .slot-preview {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 2px dashed #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+  }
+  .slot-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .slot-current {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,.45);
+    color: #fff;
+    font-size: .72rem;
+    text-align: center;
+    padding: 4px;
+  }
+  .slot-placeholder {
+    text-align: center;
+  }
+</style>
 <script>
-  // Add Bootstrap form-control class to all inputs rendered by Django
-  document.querySelectorAll('input:not([type=submit]):not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea').forEach(function(el) {
+  // Add Bootstrap classes to Django-rendered inputs
+  document.querySelectorAll(
+    'input:not([type=submit]):not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea'
+  ).forEach(function (el) {
     if (!el.classList.contains('form-control') && !el.classList.contains('form-select')) {
-      if (el.tagName === 'SELECT') {
-        el.classList.add('form-select');
-      } else if (el.tagName === 'TEXTAREA') {
-        el.classList.add('form-control');
-        if (!el.rows) el.rows = 3;
-      } else {
-        el.classList.add('form-control');
-      }
+      el.classList.add(el.tagName === 'SELECT' ? 'form-select' : 'form-control');
     }
   });
-  document.querySelectorAll('input[type=file]').forEach(function(el) {
+  document.querySelectorAll('input[type=file]').forEach(function (el) {
     el.classList.add('form-control');
   });
-  document.querySelectorAll('input[type=checkbox]').forEach(function(el) {
-    el.classList.add('form-check-input');
+
+  // Live preview for each image slot
+  ['front_part_image', 'back_part_image', 'challenge_part_image'].forEach(function (name) {
+    var input = document.getElementById('id_' + name);
+    var preview = document.getElementById('preview_' + name);
+    if (!input || !preview) return;
+    input.addEventListener('change', function () {
+      var file = this.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        preview.innerHTML =
+          '<img src="' + e.target.result + '" alt="' + name + '" style="width:100%;height:100%;object-fit:cover;">' +
+          '<div class="slot-current">New image selected</div>';
+      };
+      reader.readAsDataURL(file);
+    });
   });
 </script>
 {% endblock %}

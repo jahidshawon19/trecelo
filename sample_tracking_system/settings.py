@@ -9,7 +9,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-h5m&_@5-1u#)_5=0(vcmx
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['sample-tracking-qzpe.onrender.com']
+ALLOWED_HOSTS = ['sample-tracking-qzpe.onrender.com', '*']
 
 
 

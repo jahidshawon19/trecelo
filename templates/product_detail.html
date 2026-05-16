@@ -14,7 +14,7 @@
           <i class="fa fa-boxes-stacked me-1"></i>Products
         </a>
       </li>
-      <li class="breadcrumb-item active" aria-current="page">{{ product.product_name }}</li>
+      <li class="breadcrumb-item active">{{ product.product_name }}</li>
     </ol>
   </nav>
   {% if user.is_staff or user.is_superuser %}
@@ -30,80 +30,94 @@
   </a>
 </div>
 
-<!-- ── Image Gallery ─────────────────────────────────────────── -->
+<!-- ── Three Image Slots ──────────────────────────────────────────── -->
 <div class="card mb-4">
-  <div class="card-header bg-white d-flex align-items-center justify-content-between" style="border-bottom:1px solid #f1f5f9;">
-    <span class="fw-semibold">
-      <i class="fa fa-images me-2 text-primary"></i>
-      Product Images
-      {% with count=product.images.count %}
-        <span class="badge bg-primary ms-1" style="font-size:.75rem;">{{ count }}</span>
-      {% endwith %}
-    </span>
-    {% if user.is_staff or user.is_superuser %}
-    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal">
-      <i class="fa fa-upload me-1"></i>Add Images
-    </button>
-    {% endif %}
+  <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
+    <i class="fa fa-images me-2 text-primary"></i>Product Images
   </div>
   <div class="card-body">
+    <div class="row g-4">
 
-    {% with images=product.images.all %}
-    {% if images %}
-    <!-- Gallery grid -->
-    <div class="row g-3" id="imageGallery">
-      {% for img in images %}
-      <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-        <div class="position-relative gallery-thumb" style="border-radius:8px;overflow:hidden;background:#f8fafc;border:1px solid #e2e8f0;">
-          <!-- Clickable image -->
-          <a href="{{ img.image.url }}" data-bs-toggle="modal" data-bs-target="#lightboxModal"
-             data-img="{{ img.image.url }}" data-caption="{{ img.caption }}"
-             style="display:block;aspect-ratio:1;overflow:hidden;">
-            <img src="{{ img.image.url }}" alt="{{ img.caption|default:product.product_name }}"
-                 style="width:100%;height:100%;object-fit:cover;transition:transform .2s;"
-                 class="gallery-img">
-          </a>
-          {% if img.caption %}
-          <div style="font-size:.72rem;color:#64748b;padding:4px 6px;background:#f8fafc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-            {{ img.caption }}
+      <!-- Front Part -->
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="mb-2 d-flex align-items-center justify-content-center gap-2">
+            <span class="badge bg-primary" style="font-size:.8rem;">1</span>
+            <span style="font-weight:600;font-size:.9rem;color:#374151;">Front Part</span>
           </div>
-          {% endif %}
-          <!-- Delete button (staff only) -->
-          {% if user.is_staff or user.is_superuser %}
-          <form method="post" action="{% url 'product_image_delete' img.id %}"
-                style="position:absolute;top:4px;right:4px;"
-                onsubmit="return confirm('Remove this image?');">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger btn-sm p-0"
-                    style="width:26px;height:26px;line-height:1;border-radius:50%;font-size:.75rem;"
-                    title="Remove image">
-              <i class="fa fa-xmark"></i>
-            </button>
-          </form>
+          {% if product.front_part_image %}
+            <a href="{{ product.front_part_image.url }}"
+               data-bs-toggle="modal" data-bs-target="#lightboxModal"
+               data-img="{{ product.front_part_image.url }}" data-caption="Front Part">
+              <div class="img-slot filled">
+                <img src="{{ product.front_part_image.url }}" alt="Front Part">
+                <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
+              </div>
+            </a>
+          {% else %}
+            <div class="img-slot empty">
+              <i class="fa fa-image fa-2x text-muted mb-2 d-block"></i>
+              <span class="text-muted small">Not uploaded</span>
+            </div>
           {% endif %}
         </div>
       </div>
-      {% endfor %}
-    </div>
 
-    {% else %}
-    <!-- Empty state -->
-    <div class="text-center py-5" style="color:#94a3b8;">
-      <i class="fa fa-image fa-3x mb-3 d-block"></i>
-      <div style="font-size:1rem;font-weight:500;">No images uploaded yet.</div>
-      {% if user.is_staff or user.is_superuser %}
-      <button class="btn btn-primary btn-sm mt-3" data-bs-toggle="modal" data-bs-target="#uploadModal">
-        <i class="fa fa-upload me-1"></i>Upload Images
-      </button>
-      {% endif %}
-    </div>
-    {% endif %}
-    {% endwith %}
+      <!-- Back Part -->
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="mb-2 d-flex align-items-center justify-content-center gap-2">
+            <span class="badge bg-primary" style="font-size:.8rem;">2</span>
+            <span style="font-weight:600;font-size:.9rem;color:#374151;">Back Part</span>
+          </div>
+          {% if product.back_part_image %}
+            <a href="{{ product.back_part_image.url }}"
+               data-bs-toggle="modal" data-bs-target="#lightboxModal"
+               data-img="{{ product.back_part_image.url }}" data-caption="Back Part">
+              <div class="img-slot filled">
+                <img src="{{ product.back_part_image.url }}" alt="Back Part">
+                <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
+              </div>
+            </a>
+          {% else %}
+            <div class="img-slot empty">
+              <i class="fa fa-image fa-2x text-muted mb-2 d-block"></i>
+              <span class="text-muted small">Not uploaded</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
 
+      <!-- Challenge Part -->
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="mb-2 d-flex align-items-center justify-content-center gap-2">
+            <span class="badge bg-warning text-dark" style="font-size:.8rem;">3</span>
+            <span style="font-weight:600;font-size:.9rem;color:#374151;">Challenge Part</span>
+          </div>
+          {% if product.challenge_part_image %}
+            <a href="{{ product.challenge_part_image.url }}"
+               data-bs-toggle="modal" data-bs-target="#lightboxModal"
+               data-img="{{ product.challenge_part_image.url }}" data-caption="Challenge Part">
+              <div class="img-slot filled">
+                <img src="{{ product.challenge_part_image.url }}" alt="Challenge Part">
+                <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
+              </div>
+            </a>
+          {% else %}
+            <div class="img-slot empty">
+              <i class="fa fa-image fa-2x text-muted mb-2 d-block"></i>
+              <span class="text-muted small">Not uploaded</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
-<!-- ── Info cards ─────────────────────────────────────────────── -->
+<!-- ── Info Cards ─────────────────────────────────────────────────── -->
 <div class="row g-4 mb-4">
 
   <!-- Basic Info -->
@@ -209,7 +223,7 @@
 </div>
 {% endif %}
 
-<!-- Document download -->
+<!-- Document -->
 {% if product.documents %}
 <div class="card">
   <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
@@ -224,64 +238,15 @@
 {% endif %}
 
 
-<!-- ── Upload Modal ───────────────────────────────────────────── -->
-{% if user.is_staff or user.is_superuser %}
-<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="uploadModalLabel">
-          <i class="fa fa-upload me-2 text-primary"></i>Upload Images
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form method="post" action="{% url 'product_update' product.id %}" enctype="multipart/form-data" id="uploadForm">
-        {% csrf_token %}
-        <!-- Hidden fields to keep existing product data unchanged -->
-        <input type="hidden" name="product_name" value="{{ product.product_name }}">
-        <input type="hidden" name="buyer" value="{{ product.buyer_id|default:'' }}">
-        <input type="hidden" name="maker" value="{{ product.maker_id|default:'' }}">
-        <input type="hidden" name="gg" value="{{ product.gg }}">
-        <input type="hidden" name="end_ply" value="{{ product.end_ply }}">
-        <input type="hidden" name="weight" value="{{ product.weight }}">
-        <input type="hidden" name="yarn_composition" value="{{ product.yarn_composition }}">
-        <input type="hidden" name="description" value="{{ product.description }}">
-        <input type="hidden" name="challenge_in" value="{{ product.challenge_in }}">
-        <input type="hidden" name="submission_date" value="{{ product.submission_date|default:'' }}">
-        <input type="hidden" name="knitting_smv" value="{{ product.knitting_smv }}">
-        <input type="hidden" name="linking_smv" value="{{ product.linking_smv }}">
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Select Images
-              <span class="text-muted fw-normal">(you can select multiple)</span>
-            </label>
-            <input type="file" name="images" class="form-control" multiple accept="image/*" id="imageFileInput">
-          </div>
-          <!-- Preview thumbnails -->
-          <div id="previewArea" class="row g-2 mt-1" style="display:none!important;"></div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">
-            <i class="fa fa-floppy-disk me-1"></i>Upload &amp; Save
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-{% endif %}
-
-
-<!-- ── Lightbox Modal ─────────────────────────────────────────── -->
+<!-- ── Lightbox Modal ─────────────────────────────────────────────── -->
 <div class="modal fade" id="lightboxModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content bg-dark border-0">
       <div class="modal-header border-0 pb-0">
-        <span id="lightboxCaption" class="text-white-50 small"></span>
+        <span id="lightboxCaption" class="text-white-50 small fw-semibold"></span>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body text-center p-2">
+      <div class="modal-body text-center p-2 pb-4">
         <img id="lightboxImg" src="" alt="" class="img-fluid rounded" style="max-height:80vh;object-fit:contain;">
       </div>
     </div>
@@ -292,8 +257,55 @@
 
 
 {% block extra_js %}
+<style>
+  .img-slot {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    cursor: pointer;
+  }
+  .img-slot.filled {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    transition: transform .2s;
+  }
+  .img-slot.filled:hover {
+    transform: scale(1.02);
+  }
+  .img-slot.filled img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .img-slot-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    opacity: 0;
+    transition: opacity .2s, background .2s;
+  }
+  .img-slot.filled:hover .img-slot-overlay {
+    opacity: 1;
+    background: rgba(0,0,0,.35);
+  }
+  .img-slot.empty {
+    background: #f8fafc;
+    border: 2px dashed #e2e8f0;
+    cursor: default;
+  }
+</style>
 <script>
-  // ── Lightbox ─────────────────────────────────────────────────
   document.querySelectorAll('[data-bs-target="#lightboxModal"]').forEach(function (el) {
     el.addEventListener('click', function (e) {
       e.preventDefault();
@@ -301,37 +313,5 @@
       document.getElementById('lightboxCaption').textContent = this.dataset.caption || '';
     });
   });
-
-  // ── Gallery hover zoom ────────────────────────────────────────
-  document.querySelectorAll('.gallery-img').forEach(function (img) {
-    img.parentElement.addEventListener('mouseenter', function () { img.style.transform = 'scale(1.07)'; });
-    img.parentElement.addEventListener('mouseleave', function () { img.style.transform = ''; });
-  });
-
-  // ── Upload preview ────────────────────────────────────────────
-  const fileInput   = document.getElementById('imageFileInput');
-  const previewArea = document.getElementById('previewArea');
-
-  if (fileInput && previewArea) {
-    fileInput.addEventListener('change', function () {
-      previewArea.innerHTML = '';
-      if (!this.files.length) {
-        previewArea.style.setProperty('display', 'none', 'important');
-        return;
-      }
-      previewArea.style.removeProperty('display');
-      Array.from(this.files).forEach(function (file) {
-        if (!file.type.startsWith('image/')) return;
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const col = document.createElement('div');
-          col.className = 'col-4 col-sm-3';
-          col.innerHTML = '<img src="' + e.target.result + '" class="img-fluid rounded" style="aspect-ratio:1;object-fit:cover;border:1px solid #e2e8f0;">';
-          previewArea.appendChild(col);
-        };
-        reader.readAsDataURL(file);
-      });
-    });
-  }
 </script>
 {% endblock %}

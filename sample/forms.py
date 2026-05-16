@@ -13,7 +13,6 @@ class BuyerForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        # Username and password are only required when creating a new buyer
         if not self.instance.pk:
             if not cleaned_data.get('username'):
                 self.add_error('username', 'Username is required.')
@@ -70,40 +69,21 @@ class StaffForm(forms.ModelForm):
             staff.user = user
         else:
             staff = super().save(commit=False)
-
         if commit:
             staff.save()
         return staff
 
 
-class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-
-class MultipleImageField(forms.ImageField):
-    widget = MultipleFileInput
-
-    def clean(self, data, initial=None):
-        if not data:
-            return []
-        if not isinstance(data, (list, tuple)):
-            data = [data]
-        return [super(MultipleImageField, self).clean(f, initial) for f in data]
-
-
 class ProductForm(forms.ModelForm):
-    images = MultipleImageField(
-        required=False,
-        label='Product Images',
-        widget=MultipleFileInput(attrs={'accept': 'image/*'}),
-    )
-
     class Meta:
         model = Product
         fields = [
             'product_name',
             'buyer',
             'maker',
+            'front_part_image',
+            'back_part_image',
+            'challenge_part_image',
             'documents',
             'gg',
             'end_ply',
@@ -117,4 +97,7 @@ class ProductForm(forms.ModelForm):
         ]
         widgets = {
             'submission_date': forms.DateInput(attrs={'type': 'date'}),
+            'front_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'back_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'challenge_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
         }
