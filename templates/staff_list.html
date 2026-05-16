@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff Management{% endblock %}
+
+{% block page_title %}Staff Management{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-body">
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+      <h5 class="mb-0 me-auto" style="font-weight:600;color:#1e293b;">
+        <i class="fa fa-users me-2 text-primary"></i>Staff Members
+      </h5>
+      {% if user.is_superuser %}
+      <a href="{% url 'staff_create' %}" class="btn btn-primary btn-sm">
+        <i class="fa fa-plus me-1"></i>Add Staff
+      </a>
+      {% endif %}
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-bordered align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Emp ID</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Designation</th>
+            <th>Phone</th>
+            {% if user.is_superuser %}
+            <th class="text-center">Actions</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in staffs %}
+          <tr>
+            <td class="text-muted" style="font-size:.85rem;">{{ forloop.counter }}</td>
+            <td>
+              <span class="badge bg-secondary" style="font-size:.8rem;font-weight:600;">{{ s.emp_id }}</span>
+            </td>
+            <td class="fw-semibold">{{ s.user.username }}</td>
+            <td>
+              <span class="badge bg-primary" style="font-size:.78rem;">{{ s.role }}</span>
+            </td>
+            <td>{{ s.designation }}</td>
+            <td>
+              <i class="fa fa-phone me-1 text-muted" style="font-size:.8rem;"></i>{{ s.phone_number }}
+            </td>
+            {% if user.is_superuser %}
+            <td class="text-center">
+              <div class="d-flex gap-1 justify-content-center">
+                <a href="{% url 'staff_update' s.id %}" class="btn btn-sm btn-warning" style="border-radius:6px;" title="Edit">
+                  <i class="fa fa-pen"></i>
+                </a>
+                <a href="{% url 'staff_delete' s.id %}" class="btn btn-sm btn-danger" style="border-radius:6px;" title="Delete">
+                  <i class="fa fa-trash"></i>
+                </a>
+              </div>
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <div style="color:#94a3b8;">
+                <i class="fa fa-users fa-2x mb-3 d-block"></i>
+                <div style="font-size:1rem;font-weight:500;">No staff members found.</div>
+                {% if user.is_superuser %}
+                <a href="{% url 'staff_create' %}" class="btn btn-primary btn-sm mt-3">
+                  <i class="fa fa-plus me-1"></i>Add first staff member
+                </a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

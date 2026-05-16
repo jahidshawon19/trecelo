@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.product_name }}{% endblock %}
+{% block page_title %}{{ product.product_name }}{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb + actions -->
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+  <nav aria-label="breadcrumb" class="me-auto">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item">
+        <a href="{% url 'product_list' %}" class="text-decoration-none text-primary">
+          <i class="fa fa-boxes-stacked me-1"></i>Products
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">{{ product.product_name }}</li>
+    </ol>
+  </nav>
+  {% if user.is_staff or user.is_superuser %}
+  <a href="{% url 'product_update' product.id %}" class="btn btn-warning btn-sm">
+    <i class="fa fa-pen me-1"></i>Edit
+  </a>
+  <a href="{% url 'product_delete' product.id %}" class="btn btn-danger btn-sm">
+    <i class="fa fa-trash me-1"></i>Delete
+  </a>
+  {% endif %}
+  <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-sm">
+    <i class="fa fa-arrow-left me-1"></i>Back
+  </a>
+</div>
+
+<!-- ── Image Gallery ─────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-header bg-white d-flex align-items-center justify-content-between" style="border-bottom:1px solid #f1f5f9;">
+    <span class="fw-semibold">
+      <i class="fa fa-images me-2 text-primary"></i>
+      Product Images
+      {% with count=product.images.count %}
+        <span class="badge bg-primary ms-1" style="font-size:.75rem;">{{ count }}</span>
+      {% endwith %}
+    </span>
+    {% if user.is_staff or user.is_superuser %}
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal">
+      <i class="fa fa-upload me-1"></i>Add Images
+    </button>
+    {% endif %}
+  </div>
+  <div class="card-body">
+
+    {% with images=product.images.all %}
+    {% if images %}
+    <!-- Gallery grid -->
+    <div class="row g-3" id="imageGallery">
+      {% for img in images %}
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+        <div class="position-relative gallery-thumb" style="border-radius:8px;overflow:hidden;background:#f8fafc;border:1px solid #e2e8f0;">
+          <!-- Clickable image -->
+          <a href="{{ img.image.url }}" data-bs-toggle="modal" data-bs-target="#lightboxModal"
+             data-img="{{ img.image.url }}" data-caption="{{ img.caption }}"
+             style="display:block;aspect-ratio:1;overflow:hidden;">
+            <img src="{{ img.image.url }}" alt="{{ img.caption|default:product.product_name }}"
+                 style="width:100%;height:100%;object-fit:cover;transition:transform .2s;"
+                 class="gallery-img">
+          </a>
+          {% if img.caption %}
+          <div style="font-size:.72rem;color:#64748b;padding:4px 6px;background:#f8fafc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            {{ img.caption }}
+          </div>
+          {% endif %}
+          <!-- Delete button (staff only) -->
+          {% if user.is_staff or user.is_superuser %}
+          <form method="post" action="{% url 'product_image_delete' img.id %}"
+                style="position:absolute;top:4px;right:4px;"
+                onsubmit="return confirm('Remove this image?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm p-0"
+                    style="width:26px;height:26px;line-height:1;border-radius:50%;font-size:.75rem;"
+                    title="Remove image">
+              <i class="fa fa-xmark"></i>
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- Empty state -->
+    <div class="text-center py-5" style="color:#94a3b8;">
+      <i class="fa fa-image fa-3x mb-3 d-block"></i>
+      <div style="font-size:1rem;font-weight:500;">No images uploaded yet.</div>
+      {% if user.is_staff or user.is_superuser %}
+      <button class="btn btn-primary btn-sm mt-3" data-bs-toggle="modal" data-bs-target="#uploadModal">
+        <i class="fa fa-upload me-1"></i>Upload Images
+      </button>
+      {% endif %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+  </div>
+</div>
+
+<!-- ── Info cards ─────────────────────────────────────────────── -->
+<div class="row g-4 mb-4">
+
+  <!-- Basic Info -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
+        <i class="fa fa-circle-info me-2 text-primary"></i>Basic Information
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-bordered mb-0">
+          <tbody>
+            <tr>
+              <th class="bg-light" style="width:42%;font-size:.85rem;">Product Name</th>
+              <td class="fw-semibold">{{ product.product_name }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">Buyer</th>
+              <td>{{ product.buyer.buyer_name|default:"—" }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">Maker</th>
+              <td>{{ product.maker.user.username|default:"—" }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">Submission Date</th>
+              <td>
+                {% if product.submission_date %}
+                  <span class="badge bg-primary" style="font-size:.82rem;">{{ product.submission_date }}</span>
+                {% else %}<span class="text-muted">—</span>{% endif %}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Technical Specs -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
+        <i class="fa fa-sliders me-2 text-primary"></i>Technical Specifications
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-bordered mb-0">
+          <tbody>
+            <tr>
+              <th class="bg-light" style="width:42%;font-size:.85rem;">GG</th>
+              <td>{{ product.gg|default:"—" }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">End / Ply</th>
+              <td>{{ product.end_ply }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">Weight</th>
+              <td>{{ product.weight }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">Yarn Composition</th>
+              <td>{{ product.yarn_composition|default:"—" }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">Knitting SMV</th>
+              <td>{{ product.knitting_smv }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">Linking SMV</th>
+              <td>{{ product.linking_smv }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Description & Notes -->
+{% if product.description or product.challenge_in %}
+<div class="card mb-4">
+  <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
+    <i class="fa fa-file-lines me-2 text-primary"></i>Description &amp; Notes
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-bordered mb-0">
+      <tbody>
+        {% if product.description %}
+        <tr>
+          <th class="bg-light" style="width:20%;font-size:.85rem;vertical-align:top;">Description</th>
+          <td style="white-space:pre-line;">{{ product.description }}</td>
+        </tr>
+        {% endif %}
+        {% if product.challenge_in %}
+        <tr>
+          <th class="bg-light" style="font-size:.85rem;vertical-align:top;">Challenge In</th>
+          <td style="white-space:pre-line;">{{ product.challenge_in }}</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Document download -->
+{% if product.documents %}
+<div class="card">
+  <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
+    <i class="fa fa-paperclip me-2 text-primary"></i>Attached Document
+  </div>
+  <div class="card-body">
+    <a href="{{ product.documents.url }}" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
+      <i class="fa fa-file-arrow-down me-2"></i>Download Document
+    </a>
+  </div>
+</div>
+{% endif %}
+
+
+<!-- ── Upload Modal ───────────────────────────────────────────── -->
+{% if user.is_staff or user.is_superuser %}
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="uploadModalLabel">
+          <i class="fa fa-upload me-2 text-primary"></i>Upload Images
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" action="{% url 'product_update' product.id %}" enctype="multipart/form-data" id="uploadForm">
+        {% csrf_token %}
+        <!-- Hidden fields to keep existing product data unchanged -->
+        <input type="hidden" name="product_name" value="{{ product.product_name }}">
+        <input type="hidden" name="buyer" value="{{ product.buyer_id|default:'' }}">
+        <input type="hidden" name="maker" value="{{ product.maker_id|default:'' }}">
+        <input type="hidden" name="gg" value="{{ product.gg }}">
+        <input type="hidden" name="end_ply" value="{{ product.end_ply }}">
+        <input type="hidden" name="weight" value="{{ product.weight }}">
+        <input type="hidden" name="yarn_composition" value="{{ product.yarn_composition }}">
+        <input type="hidden" name="description" value="{{ product.description }}">
+        <input type="hidden" name="challenge_in" value="{{ product.challenge_in }}">
+        <input type="hidden" name="submission_date" value="{{ product.submission_date|default:'' }}">
+        <input type="hidden" name="knitting_smv" value="{{ product.knitting_smv }}">
+        <input type="hidden" name="linking_smv" value="{{ product.linking_smv }}">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Select Images
+              <span class="text-muted fw-normal">(you can select multiple)</span>
+            </label>
+            <input type="file" name="images" class="form-control" multiple accept="image/*" id="imageFileInput">
+          </div>
+          <!-- Preview thumbnails -->
+          <div id="previewArea" class="row g-2 mt-1" style="display:none!important;"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-floppy-disk me-1"></i>Upload &amp; Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+<!-- ── Lightbox Modal ─────────────────────────────────────────── -->
+<div class="modal fade" id="lightboxModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content bg-dark border-0">
+      <div class="modal-header border-0 pb-0">
+        <span id="lightboxCaption" class="text-white-50 small"></span>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center p-2">
+        <img id="lightboxImg" src="" alt="" class="img-fluid rounded" style="max-height:80vh;object-fit:contain;">
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  // ── Lightbox ─────────────────────────────────────────────────
+  document.querySelectorAll('[data-bs-target="#lightboxModal"]').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.getElementById('lightboxImg').src = this.dataset.img;
+      document.getElementById('lightboxCaption').textContent = this.dataset.caption || '';
+    });
+  });
+
+  // ── Gallery hover zoom ────────────────────────────────────────
+  document.querySelectorAll('.gallery-img').forEach(function (img) {
+    img.parentElement.addEventListener('mouseenter', function () { img.style.transform = 'scale(1.07)'; });
+    img.parentElement.addEventListener('mouseleave', function () { img.style.transform = ''; });
+  });
+
+  // ── Upload preview ────────────────────────────────────────────
+  const fileInput   = document.getElementById('imageFileInput');
+  const previewArea = document.getElementById('previewArea');
+
+  if (fileInput && previewArea) {
+    fileInput.addEventListener('change', function () {
+      previewArea.innerHTML = '';
+      if (!this.files.length) {
+        previewArea.style.setProperty('display', 'none', 'important');
+        return;
+      }
+      previewArea.style.removeProperty('display');
+      Array.from(this.files).forEach(function (file) {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const col = document.createElement('div');
+          col.className = 'col-4 col-sm-3';
+          col.innerHTML = '<img src="' + e.target.result + '" class="img-fluid rounded" style="aspect-ratio:1;object-fit:cover;border:1px solid #e2e8f0;">';
+          previewArea.appendChild(col);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  }
+</script>
+{% endblock %}

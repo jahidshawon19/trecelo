@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}Products{% endblock %}
+
+{% block page_title %}Products{% endblock %}
+
+{% block content %}
+
+<!-- Stats row -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card p-3 d-flex flex-row align-items-center gap-3">
+      <div style="width:44px;height:44px;background:#eff6ff;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#3b82f6;font-size:1.2rem;flex-shrink:0;">
+        <i class="fa fa-boxes-stacked"></i>
+      </div>
+      <div>
+        <div style="font-size:1.5rem;font-weight:700;color:#1e293b;line-height:1.1;">{{ products|length }}</div>
+        <div style="font-size:0.8rem;color:#64748b;font-weight:500;">Total Products</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toolbar -->
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+      <h5 class="mb-0 me-auto" style="font-weight:600;color:#1e293b;">
+        <i class="fa fa-list me-2 text-primary"></i>Product List
+      </h5>
+
+      <!-- Search -->
+      <div style="position:relative;min-width:220px;">
+        <i class="fa fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:0.85rem;"></i>
+        <input
+          type="text"
+          id="productSearch"
+          class="form-control form-control-sm"
+          placeholder="Search products…"
+          style="padding-left:34px;border-radius:8px;"
+        >
+      </div>
+
+      {% if user.is_staff or user.is_superuser %}
+      <a href="{% url 'product_create' %}" class="btn btn-primary btn-sm">
+        <i class="fa fa-plus me-1"></i>Add Product
+      </a>
+      {% endif %}
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-bordered align-middle mb-0" id="productTable">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Product Name</th>
+            <th>Buyer</th>
+            <th>Maker</th>
+            <th>Submission Date</th>
+            <th class="text-center">Details</th>
+            {% if user.is_staff or user.is_superuser %}
+            <th class="text-center">Actions</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody id="productTableBody">
+          {% for p in products %}
+          <tr>
+            <td class="text-muted" style="font-size:0.85rem;">{{ forloop.counter }}</td>
+            <td>
+              <span class="fw-semibold">{{ p.product_name }}</span>
+            </td>
+            <td>{{ p.buyer.buyer_name|default:"—" }}</td>
+            <td>{{ p.maker.user.username|default:"—" }}</td>
+            <td>
+              {% if p.submission_date %}
+                <span class="badge bg-light text-dark border" style="font-size:0.8rem;font-weight:500;">
+                  <i class="fa fa-calendar me-1 text-primary"></i>{{ p.submission_date }}
+                </span>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <a href="{% url 'product_detail' p.id %}" class="btn btn-sm btn-info text-white" style="border-radius:6px;">
+                <i class="fa fa-eye me-1"></i>View
+              </a>
+            </td>
+            {% if user.is_staff or user.is_superuser %}
+            <td class="text-center">
+              <div class="d-flex gap-1 justify-content-center">
+                <a href="{% url 'product_update' p.id %}" class="btn btn-sm btn-warning" style="border-radius:6px;" title="Edit">
+                  <i class="fa fa-pen"></i>
+                </a>
+                <a href="{% url 'product_delete' p.id %}" class="btn btn-sm btn-danger" style="border-radius:6px;" title="Delete">
+                  <i class="fa fa-trash"></i>
+                </a>
+              </div>
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr id="emptyRow">
+            <td colspan="7" class="text-center py-5">
+              <div style="color:#94a3b8;">
+                <i class="fa fa-box-open fa-2x mb-3 d-block"></i>
+                <div style="font-size:1rem;font-weight:500;">No products found.</div>
+                {% if user.is_staff or user.is_superuser %}
+                <a href="{% url 'product_create' %}" class="btn btn-primary btn-sm mt-3">
+                  <i class="fa fa-plus me-1"></i>Add your first product
+                </a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- No results (client-side search fallback) -->
+    <div id="noSearchResult" class="text-center py-5" style="display:none!important;">
+      <i class="fa fa-magnifying-glass fa-2x text-muted mb-3 d-block"></i>
+      <div class="text-muted">No products match your search.</div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Client-side search filter
+  const searchInput = document.getElementById('productSearch');
+  const tableBody   = document.getElementById('productTableBody');
+  const noResult    = document.getElementById('noSearchResult');
+
+  if (searchInput && tableBody) {
+    searchInput.addEventListener('input', function () {
+      const q = this.value.toLowerCase().trim();
+      let visible = 0;
+      tableBody.querySelectorAll('tr').forEach(function (row) {
+        if (row.id === 'emptyRow') return;
+        const name = row.cells[1] ? row.cells[1].textContent.toLowerCase() : '';
+        const show = !q || name.includes(q);
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      if (noResult) noResult.style.setProperty('display', visible === 0 && q ? 'block' : 'none', 'important');
+    });
+  }
+</script>
+{% endblock %}
