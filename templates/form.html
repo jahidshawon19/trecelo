@@ -17,7 +17,7 @@
 </nav>
 
 <div class="row justify-content-center">
-  <div class="col-lg-9 col-xl-8">
+  <div class="col-xl-11 col-xxl-10">
     <form method="post" enctype="multipart/form-data" novalidate>
       {% csrf_token %}
 
@@ -114,11 +114,12 @@
         </div>
         <div class="card-body p-4">
 
+          <div class="row g-3" id="formFieldsGrid">
           {% for field in form %}
             {% if field.name == 'front_part_image' or field.name == 'back_part_image' or field.name == 'challenge_part_image' %}
               {# Already rendered in the image section above #}
             {% else %}
-            <div class="mb-4">
+            <div class="col-md-6 field-col">
               <label for="{{ field.id_for_label }}" class="form-label" style="font-size:.875rem;font-weight:600;color:#374151;">
                 {{ field.label }}
                 {% if field.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
@@ -135,16 +136,21 @@
             </div>
             {% endif %}
           {% endfor %}
+          </div>
 
           {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-              {% for error in form.non_field_errors %}
-                <div><i class="fa fa-triangle-exclamation me-1"></i>{{ error }}</div>
-              {% endfor %}
+            <div class="row mt-2">
+              <div class="col-12">
+                <div class="alert alert-danger mb-0">
+                  {% for error in form.non_field_errors %}
+                    <div><i class="fa fa-triangle-exclamation me-1"></i>{{ error }}</div>
+                  {% endfor %}
+                </div>
+              </div>
             </div>
           {% endif %}
 
-          <div class="d-flex gap-2 pt-2 border-top mt-2">
+          <div class="d-flex gap-2 pt-3 border-top mt-3">
             <button type="submit" class="btn btn-primary">
               <i class="fa fa-floppy-disk me-1"></i>Save
             </button>
@@ -214,6 +220,17 @@
   });
   document.querySelectorAll('input[type=file]').forEach(function (el) {
     el.classList.add('form-control');
+  });
+
+  // Textareas and file inputs → full width (col-12)
+  document.querySelectorAll('#formFieldsGrid .field-col').forEach(function (col) {
+    var hasTextarea = col.querySelector('textarea');
+    var hasFile     = col.querySelector('input[type=file]');
+    if (hasTextarea || hasFile) {
+      col.classList.remove('col-md-6');
+      col.classList.add('col-12');
+      if (hasTextarea && !hasTextarea.rows) hasTextarea.rows = 3;
+    }
   });
 
   // Live preview for each image slot
