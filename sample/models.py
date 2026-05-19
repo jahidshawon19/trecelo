@@ -23,8 +23,8 @@ class StaffProfile(models.Model):
         return self.user.username
 
 
-class Product(models.Model):
-    product_name = models.CharField(max_length=100)
+class Sample(models.Model):
+    product_name = models.CharField(max_length=100, verbose_name="Sample Name")
     buyer = models.ForeignKey(Buyer, on_delete=models.CASCADE, null=True, blank=True)
     maker = models.ForeignKey(
         StaffProfile,
@@ -35,12 +35,12 @@ class Product(models.Model):
     )
 
     # Three fixed image slots
-    front_part_image = models.ImageField(upload_to='products/front/', blank=True, null=True, verbose_name="Front Part Image")
-    back_part_image = models.ImageField(upload_to='products/back/', blank=True, null=True, verbose_name="Back Part Image")
-    challenge_part_image = models.ImageField(upload_to='products/challenge/', blank=True, null=True, verbose_name="Challenge Part Image")
+    front_part_image = models.ImageField(upload_to='samples/front/', blank=True, null=True, verbose_name="Front Part Image")
+    back_part_image = models.ImageField(upload_to='samples/back/', blank=True, null=True, verbose_name="Back Part Image")
+    challenge_part_image = models.ImageField(upload_to='samples/challenge/', blank=True, null=True, verbose_name="Challenge Part Image")
 
     # Document
-    documents = models.FileField(upload_to='products/documents/', blank=True, null=True)
+    documents = models.FileField(upload_to='samples/documents/', blank=True, null=True)
 
     # Technical Specifications
     gg = models.TextField(verbose_name="GG", blank=True)

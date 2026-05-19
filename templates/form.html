@@ -21,11 +21,11 @@
     <form method="post" enctype="multipart/form-data" novalidate>
       {% csrf_token %}
 
-      <!-- ── Image upload section (product form only) ──────────── -->
+      <!-- ── Image upload section (sample form only) ──────────── -->
       {% if form.front_part_image %}
       <div class="card mb-4">
         <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
-          <i class="fa fa-images me-2 text-primary"></i>Product Images
+          <i class="fa fa-images me-2 text-primary"></i>Sample Images
         </div>
         <div class="card-body">
           <div class="row g-4">

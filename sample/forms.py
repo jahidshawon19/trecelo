@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Buyer, Product, StaffProfile
+from .models import Buyer, Sample, StaffProfile
 
 
 class BuyerForm(forms.ModelForm):
@@ -74,9 +74,9 @@ class StaffForm(forms.ModelForm):
         return staff
 
 
-class ProductForm(forms.ModelForm):
+class SampleForm(forms.ModelForm):
     class Meta:
-        model = Product
+        model = Sample
         fields = [
             'product_name',
             'buyer',

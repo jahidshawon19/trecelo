@@ -15,9 +15,9 @@ urlpatterns = [
     path('buyers/update/<int:pk>/', views.buyer_update, name='buyer_update'),
     path('buyers/delete/<int:pk>/', views.buyer_delete, name='buyer_delete'),
 
-    path('products/', views.product_list, name='product_list'),
-    path('products/<int:pk>/', views.product_detail, name='product_detail'),
-    path('products/create/', views.product_create, name='product_create'),
-    path('products/update/<int:pk>/', views.product_update, name='product_update'),
-    path('products/delete/<int:pk>/', views.product_delete, name='product_delete'),
+    path('samples/', views.sample_list, name='sample_list'),
+    path('samples/<int:pk>/', views.sample_detail, name='sample_detail'),
+    path('samples/create/', views.sample_create, name='sample_create'),
+    path('samples/update/<int:pk>/', views.sample_update, name='sample_update'),
+    path('samples/delete/<int:pk>/', views.sample_delete, name='sample_delete'),
 ]

@@ -253,7 +253,7 @@
 
 <!-- ── Sidebar ─────────────────────────────────────────────────── -->
 <div id="sidebar">
-  <a href="{% url 'product_list' %}" class="sidebar-brand">
+  <a href="{% url 'sample_list' %}" class="sidebar-brand">
     <div class="brand-icon"><i class="fa fa-layer-group"></i></div>
     <span class="brand-text">SampleTrack</span>
   </a>
@@ -261,10 +261,10 @@
   <span class="sidebar-section-label">Main</span>
   <ul class="sidebar-nav">
     <li>
-      <a href="{% url 'product_list' %}"
-         class="{% if request.resolver_match.url_name == 'product_list' or request.resolver_match.url_name == 'product_detail' %}active{% endif %}">
+      <a href="{% url 'sample_list' %}"
+         class="{% if 'sample' in request.resolver_match.url_name %}active{% endif %}">
         <span class="nav-icon"><i class="fa fa-boxes-stacked"></i></span>
-        Products
+        Samples
       </a>
     </li>
   </ul>

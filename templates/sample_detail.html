@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ product.product_name }}{% endblock %}
-{% block page_title %}{{ product.product_name }}{% endblock %}
+{% block title %}{{ sample.product_name }}{% endblock %}
+{% block page_title %}{{ sample.product_name }}{% endblock %}
 
 {% block content %}
 
@@ -10,22 +10,22 @@
   <nav aria-label="breadcrumb" class="me-auto">
     <ol class="breadcrumb mb-0">
       <li class="breadcrumb-item">
-        <a href="{% url 'product_list' %}" class="text-decoration-none text-primary">
-          <i class="fa fa-boxes-stacked me-1"></i>Products
+        <a href="{% url 'sample_list' %}" class="text-decoration-none text-primary">
+          <i class="fa fa-boxes-stacked me-1"></i>Samples
         </a>
       </li>
-      <li class="breadcrumb-item active">{{ product.product_name }}</li>
+      <li class="breadcrumb-item active">{{ sample.product_name }}</li>
     </ol>
   </nav>
   {% if user.is_staff or user.is_superuser %}
-  <a href="{% url 'product_update' product.id %}" class="btn btn-warning btn-sm">
+  <a href="{% url 'sample_update' sample.id %}" class="btn btn-warning btn-sm">
     <i class="fa fa-pen me-1"></i>Edit
   </a>
-  <a href="{% url 'product_delete' product.id %}" class="btn btn-danger btn-sm">
+  <a href="{% url 'sample_delete' sample.id %}" class="btn btn-danger btn-sm">
     <i class="fa fa-trash me-1"></i>Delete
   </a>
   {% endif %}
-  <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-sm">
+  <a href="{% url 'sample_list' %}" class="btn btn-outline-secondary btn-sm">
     <i class="fa fa-arrow-left me-1"></i>Back
   </a>
 </div>
@@ -33,7 +33,7 @@
 <!-- ── Three Image Slots ──────────────────────────────────────────── -->
 <div class="card mb-4">
   <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
-    <i class="fa fa-images me-2 text-primary"></i>Product Images
+    <i class="fa fa-images me-2 text-primary"></i>Sample Images
   </div>
   <div class="card-body">
     <div class="row g-4">
@@ -45,12 +45,12 @@
             <span class="badge bg-primary" style="font-size:.8rem;">1</span>
             <span style="font-weight:600;font-size:.9rem;color:#374151;">Front Part</span>
           </div>
-          {% if product.front_part_image %}
-            <a href="{{ product.front_part_image.url }}"
+          {% if sample.front_part_image %}
+            <a href="{{ sample.front_part_image.url }}"
                data-bs-toggle="modal" data-bs-target="#lightboxModal"
-               data-img="{{ product.front_part_image.url }}" data-caption="Front Part">
+               data-img="{{ sample.front_part_image.url }}" data-caption="Front Part">
               <div class="img-slot filled">
-                <img src="{{ product.front_part_image.url }}" alt="Front Part">
+                <img src="{{ sample.front_part_image.url }}" alt="Front Part">
                 <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
               </div>
             </a>
@@ -70,12 +70,12 @@
             <span class="badge bg-primary" style="font-size:.8rem;">2</span>
             <span style="font-weight:600;font-size:.9rem;color:#374151;">Back Part</span>
           </div>
-          {% if product.back_part_image %}
-            <a href="{{ product.back_part_image.url }}"
+          {% if sample.back_part_image %}
+            <a href="{{ sample.back_part_image.url }}"
                data-bs-toggle="modal" data-bs-target="#lightboxModal"
-               data-img="{{ product.back_part_image.url }}" data-caption="Back Part">
+               data-img="{{ sample.back_part_image.url }}" data-caption="Back Part">
               <div class="img-slot filled">
-                <img src="{{ product.back_part_image.url }}" alt="Back Part">
+                <img src="{{ sample.back_part_image.url }}" alt="Back Part">
                 <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
               </div>
             </a>
@@ -95,12 +95,12 @@
             <span class="badge bg-warning text-dark" style="font-size:.8rem;">3</span>
             <span style="font-weight:600;font-size:.9rem;color:#374151;">Challenge Part</span>
           </div>
-          {% if product.challenge_part_image %}
-            <a href="{{ product.challenge_part_image.url }}"
+          {% if sample.challenge_part_image %}
+            <a href="{{ sample.challenge_part_image.url }}"
                data-bs-toggle="modal" data-bs-target="#lightboxModal"
-               data-img="{{ product.challenge_part_image.url }}" data-caption="Challenge Part">
+               data-img="{{ sample.challenge_part_image.url }}" data-caption="Challenge Part">
               <div class="img-slot filled">
-                <img src="{{ product.challenge_part_image.url }}" alt="Challenge Part">
+                <img src="{{ sample.challenge_part_image.url }}" alt="Challenge Part">
                 <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
               </div>
             </a>
@@ -130,22 +130,22 @@
         <table class="table table-bordered mb-0">
           <tbody>
             <tr>
-              <th class="bg-light" style="width:42%;font-size:.85rem;">Product Name</th>
-              <td class="fw-semibold">{{ product.product_name }}</td>
+              <th class="bg-light" style="width:42%;font-size:.85rem;">Sample Name</th>
+              <td class="fw-semibold">{{ sample.product_name }}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Buyer</th>
-              <td>{{ product.buyer.buyer_name|default:"—" }}</td>
+              <td>{{ sample.buyer.buyer_name|default:"—" }}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Maker</th>
-              <td>{{ product.maker.user.username|default:"—" }}</td>
+              <td>{{ sample.maker.user.username|default:"—" }}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Submission Date</th>
               <td>
-                {% if product.submission_date %}
-                  <span class="badge bg-primary" style="font-size:.82rem;">{{ product.submission_date }}</span>
+                {% if sample.submission_date %}
+                  <span class="badge bg-primary" style="font-size:.82rem;">{{ sample.submission_date }}</span>
                 {% else %}<span class="text-muted">—</span>{% endif %}
               </td>
             </tr>
@@ -166,27 +166,27 @@
           <tbody>
             <tr>
               <th class="bg-light" style="width:42%;font-size:.85rem;">GG</th>
-              <td>{{ product.gg|default:"—" }}</td>
+              <td>{{ sample.gg|default:"—" }}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">End / Ply</th>
-              <td>{{ product.end_ply }}</td>
+              <td>{{ sample.end_ply }}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Weight</th>
-              <td>{{ product.weight }}</td>
+              <td>{{ sample.weight }}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Yarn Composition</th>
-              <td>{{ product.yarn_composition|default:"—" }}</td>
+              <td>{{ sample.yarn_composition|default:"—" }}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Knitting SMV</th>
-              <td>{{ product.knitting_smv }}</td>
+              <td>{{ sample.knitting_smv }}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Linking SMV</th>
-              <td>{{ product.linking_smv }}</td>
+              <td>{{ sample.linking_smv }}</td>
             </tr>
           </tbody>
         </table>
@@ -197,7 +197,7 @@
 </div>
 
 <!-- Description & Notes -->
-{% if product.description or product.challenge_in %}
+{% if sample.description or sample.challenge_in %}
 <div class="card mb-4">
   <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
     <i class="fa fa-file-lines me-2 text-primary"></i>Description &amp; Notes
@@ -205,16 +205,16 @@
   <div class="card-body p-0">
     <table class="table table-bordered mb-0">
       <tbody>
-        {% if product.description %}
+        {% if sample.description %}
         <tr>
           <th class="bg-light" style="width:20%;font-size:.85rem;vertical-align:top;">Description</th>
-          <td style="white-space:pre-line;">{{ product.description }}</td>
+          <td style="white-space:pre-line;">{{ sample.description }}</td>
         </tr>
         {% endif %}
-        {% if product.challenge_in %}
+        {% if sample.challenge_in %}
         <tr>
           <th class="bg-light" style="font-size:.85rem;vertical-align:top;">Challenge In</th>
-          <td style="white-space:pre-line;">{{ product.challenge_in }}</td>
+          <td style="white-space:pre-line;">{{ sample.challenge_in }}</td>
         </tr>
         {% endif %}
       </tbody>
@@ -224,19 +224,18 @@
 {% endif %}
 
 <!-- Document -->
-{% if product.documents %}
+{% if sample.documents %}
 <div class="card">
   <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
     <i class="fa fa-paperclip me-2 text-primary"></i>Attached Document
   </div>
   <div class="card-body">
-    <a href="{{ product.documents.url }}" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
+    <a href="{{ sample.documents.url }}" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
       <i class="fa fa-file-arrow-down me-2"></i>Download Document
     </a>
   </div>
 </div>
 {% endif %}
-
 
 <!-- ── Lightbox Modal ─────────────────────────────────────────────── -->
 <div class="modal fade" id="lightboxModal" tabindex="-1" aria-hidden="true">
@@ -255,7 +254,6 @@
 
 {% endblock %}
 
-
 {% block extra_js %}
 <style>
   .img-slot {
@@ -270,40 +268,16 @@
     position: relative;
     cursor: pointer;
   }
-  .img-slot.filled {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    transition: transform .2s;
-  }
-  .img-slot.filled:hover {
-    transform: scale(1.02);
-  }
-  .img-slot.filled img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
+  .img-slot.filled { background:#f8fafc; border:1px solid #e2e8f0; transition:transform .2s; }
+  .img-slot.filled:hover { transform:scale(1.02); }
+  .img-slot.filled img { width:100%; height:100%; object-fit:cover; display:block; }
   .img-slot-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    opacity: 0;
-    transition: opacity .2s, background .2s;
+    position:absolute; inset:0; background:rgba(0,0,0,0);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; opacity:0; transition:opacity .2s, background .2s;
   }
-  .img-slot.filled:hover .img-slot-overlay {
-    opacity: 1;
-    background: rgba(0,0,0,.35);
-  }
-  .img-slot.empty {
-    background: #f8fafc;
-    border: 2px dashed #e2e8f0;
-    cursor: default;
-  }
+  .img-slot.filled:hover .img-slot-overlay { opacity:1; background:rgba(0,0,0,.35); }
+  .img-slot.empty { background:#f8fafc; border:2px dashed #e2e8f0; cursor:default; }
 </style>
 <script>
   document.querySelectorAll('[data-bs-target="#lightboxModal"]').forEach(function (el) {
