@@ -56,11 +56,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sample_tracking_system.wsgi.application'
 
 # ── Database ──────────────────────────────────────────────────────────────────
-# Uses DATABASE_URL env var on Render; falls back to SQLite locally
+# Uses DATABASE_URL env var when set (Render/production); falls back to MySQL locally
 DATABASES = {
     'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        default='mysql://root@localhost/sample_tracking',
         conn_max_age=600,
+        engine='django.db.backends.mysql',
     )
 }
 
