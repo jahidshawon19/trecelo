@@ -25,6 +25,7 @@ class StaffProfile(models.Model):
 
 class Sample(models.Model):
     product_name = models.CharField(max_length=100, verbose_name="Sample Name")
+    style_number = models.CharField(max_length=100, blank=True, verbose_name="Style Number")
     buyer = models.ForeignKey(Buyer, on_delete=models.CASCADE, null=True, blank=True)
     maker = models.ForeignKey(
         StaffProfile,

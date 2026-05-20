@@ -134,6 +134,10 @@
               <td class="fw-semibold">{{ sample.product_name }}</td>
             </tr>
             <tr>
+              <th class="bg-light" style="font-size:.85rem;">Style Number</th>
+              <td>{{ sample.style_number|default:"—" }}</td>
+            </tr>
+            <tr>
               <th class="bg-light" style="font-size:.85rem;">Buyer</th>
               <td>{{ sample.buyer.buyer_name|default:"—" }}</td>
             </tr>

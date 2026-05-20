@@ -79,6 +79,7 @@ class SampleForm(forms.ModelForm):
         model = Sample
         fields = [
             'product_name',
+            'style_number',
             'buyer',
             'maker',
             'front_part_image',
