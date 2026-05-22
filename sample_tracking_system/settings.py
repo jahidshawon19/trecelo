@@ -59,7 +59,7 @@ WSGI_APPLICATION = 'sample_tracking_system.wsgi.application'
 # Uses DATABASE_URL env var when set (Render/production); falls back to MySQL locally
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://jahidhasanshawon@localhost/sample_tracking',
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
     )
 }
