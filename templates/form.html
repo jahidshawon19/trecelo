@@ -187,11 +187,54 @@
 
 <style>
   .slot-label { font-size:.875rem; font-weight:600; color:#374151; margin-bottom:8px; }
-  /* Checkbox multi-select */
-  .checkbox-group { display:flex; flex-wrap:wrap; gap:8px; padding:10px 12px; border:1px solid #dee2e6; border-radius:6px; background:#fff; min-height:44px; }
-  .checkbox-group li { list-style:none; }
-  .checkbox-group li label { display:flex; align-items:center; gap:6px; font-size:.875rem; color:#374151; cursor:pointer; user-select:none; }
-  .checkbox-group li input[type=checkbox] { width:15px; height:15px; accent-color:#3b82f6; cursor:pointer; }
+  /* Pill checkbox group */
+  .pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+    min-height: 52px;
+    align-content: flex-start;
+  }
+  .pill-group li { list-style: none; margin: 0; padding: 0; }
+  .pill-group li label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 15px;
+    border-radius: 20px;
+    border: 1.5px solid #cbd5e1;
+    background: #fff;
+    color: #64748b;
+    font-size: .82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .15s ease;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .pill-group li label:hover {
+    border-color: #93c5fd;
+    color: #2563eb;
+    background: #eff6ff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(59,130,246,.12);
+  }
+  .pill-group li label.is-checked {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(59,130,246,.35);
+    transform: translateY(-1px);
+  }
+  .pill-group li label.is-checked:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+  }
+  .pill-group li input[type=checkbox] { display: none; }
   .slot-preview {
     width:100%; aspect-ratio:1; border:2px dashed #e2e8f0; border-radius:10px;
     overflow:hidden; background:#f8fafc; display:flex; align-items:center;
@@ -206,9 +249,19 @@
 </style>
 
 <script>
-  // Style checkbox multi-select lists
-  document.querySelectorAll('#id_category, #id_brand, #id_gg, #id_challenge_in').forEach(function (ul) {
-    if (ul && ul.tagName === 'UL') ul.classList.add('checkbox-group');
+  // Pill-style checkbox groups
+  ['id_category', 'id_brand', 'id_gg', 'id_challenge_in'].forEach(function (id) {
+    var ul = document.getElementById(id);
+    if (!ul || ul.tagName !== 'UL') return;
+    ul.classList.add('pill-group');
+    ul.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+      var label = cb.closest('label');
+      if (!label) return;
+      if (cb.checked) label.classList.add('is-checked');
+      cb.addEventListener('change', function () {
+        label.classList.toggle('is-checked', this.checked);
+      });
+    });
   });
 
   // Bootstrap classes on inputs
