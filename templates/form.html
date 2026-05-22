@@ -28,52 +28,52 @@
           <i class="fa fa-images me-2 text-primary"></i>Sample Images
         </div>
         <div class="card-body">
-          <div class="row g-4">
+          <div class="row g-3 justify-content-start">
 
             <!-- Front Part -->
-            <div class="col-md-6">
+            <div class="col-6 col-sm-4 col-md-3">
               <div class="image-slot">
                 <div class="slot-label">
-                  <span class="badge bg-primary me-2">1</span>Front Part
+                  <span class="badge bg-primary me-1">1</span>Front Part
                 </div>
                 <div class="slot-preview" id="preview_front_part_image">
                   {% if form.instance.front_part_image %}
                     <img src="{{ form.instance.front_part_image.url }}" alt="Front Part">
-                    <div class="slot-current">Current image</div>
+                    <div class="slot-current">Current</div>
                   {% else %}
                     <div class="slot-placeholder">
-                      <i class="fa fa-image fa-2x text-muted d-block mb-2"></i>
-                      <span class="text-muted small">No image</span>
+                      <i class="fa fa-image text-muted d-block mb-1"></i>
+                      <span class="text-muted" style="font-size:.72rem;">No image</span>
                     </div>
                   {% endif %}
                 </div>
                 <div class="mt-2">{{ form.front_part_image }}</div>
                 {% for error in form.front_part_image.errors %}
-                  <div class="text-danger mt-1" style="font-size:.82rem;"><i class="fa fa-circle-exclamation me-1"></i>{{ error }}</div>
+                  <div class="text-danger mt-1" style="font-size:.78rem;"><i class="fa fa-circle-exclamation me-1"></i>{{ error }}</div>
                 {% endfor %}
               </div>
             </div>
 
             <!-- Back Part -->
-            <div class="col-md-6">
+            <div class="col-6 col-sm-4 col-md-3">
               <div class="image-slot">
                 <div class="slot-label">
-                  <span class="badge bg-primary me-2">2</span>Back Part
+                  <span class="badge bg-primary me-1">2</span>Back Part
                 </div>
                 <div class="slot-preview" id="preview_back_part_image">
                   {% if form.instance.back_part_image %}
                     <img src="{{ form.instance.back_part_image.url }}" alt="Back Part">
-                    <div class="slot-current">Current image</div>
+                    <div class="slot-current">Current</div>
                   {% else %}
                     <div class="slot-placeholder">
-                      <i class="fa fa-image fa-2x text-muted d-block mb-2"></i>
-                      <span class="text-muted small">No image</span>
+                      <i class="fa fa-image text-muted d-block mb-1"></i>
+                      <span class="text-muted" style="font-size:.72rem;">No image</span>
                     </div>
                   {% endif %}
                 </div>
                 <div class="mt-2">{{ form.back_part_image }}</div>
                 {% for error in form.back_part_image.errors %}
-                  <div class="text-danger mt-1" style="font-size:.82rem;"><i class="fa fa-circle-exclamation me-1"></i>{{ error }}</div>
+                  <div class="text-danger mt-1" style="font-size:.78rem;"><i class="fa fa-circle-exclamation me-1"></i>{{ error }}</div>
                 {% endfor %}
               </div>
             </div>
