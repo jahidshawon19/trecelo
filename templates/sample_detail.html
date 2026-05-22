@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ sample.product_name }}{% endblock %}
-{% block page_title %}{{ sample.product_name }}{% endblock %}
+{% block title %}{{ sample.style_number|default:"Sample" }}{% endblock %}
+{% block page_title %}{{ sample.style_number|default:"Sample" }}{% endblock %}
 
 {% block content %}
 
@@ -14,7 +14,7 @@
           <i class="fa fa-boxes-stacked me-1"></i>Samples
         </a>
       </li>
-      <li class="breadcrumb-item active">{{ sample.product_name }}</li>
+      <li class="breadcrumb-item active">{{ sample.style_number|default:"Sample" }}</li>
     </ol>
   </nav>
   {% if user.is_staff or user.is_superuser %}
@@ -36,10 +36,10 @@
     <i class="fa fa-images me-2 text-primary"></i>Sample Images
   </div>
   <div class="card-body">
-    <div class="row g-4">
+    <div class="row g-3">
 
       <!-- Front Part -->
-      <div class="col-md-4">
+      <div class="col-6 col-sm-3 col-md-2">
         <div class="text-center">
           <div class="mb-2 d-flex align-items-center justify-content-center gap-2">
             <span class="badge bg-primary" style="font-size:.8rem;">1</span>
@@ -64,7 +64,7 @@
       </div>
 
       <!-- Back Part -->
-      <div class="col-md-4">
+      <div class="col-6 col-sm-3 col-md-2">
         <div class="text-center">
           <div class="mb-2 d-flex align-items-center justify-content-center gap-2">
             <span class="badge bg-primary" style="font-size:.8rem;">2</span>
@@ -137,12 +137,32 @@
         <table class="table table-bordered mb-0">
           <tbody>
             <tr>
-              <th class="bg-light" style="width:42%;font-size:.85rem;">Sample Name</th>
-              <td class="fw-semibold">{{ sample.product_name }}</td>
+              <th class="bg-light" style="width:42%;font-size:.85rem;">Style Number</th>
+              <td>{{ sample.style_number|default:"—" }}</td>
             </tr>
             <tr>
-              <th class="bg-light" style="font-size:.85rem;">Style Number</th>
-              <td>{{ sample.style_number|default:"—" }}</td>
+              <th class="bg-light" style="font-size:.85rem;">Sample Type</th>
+              <td>{{ sample.sample_type|default:"—" }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">Color</th>
+              <td>{{ sample.color|default:"—" }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">Season</th>
+              <td>{{ sample.season|default:"—" }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">Status</th>
+              <td>
+                {% if sample.status == 'approved' %}
+                  <span class="badge bg-success">Approved</span>
+                {% elif sample.status == 'pending' %}
+                  <span class="badge bg-warning text-dark">Pending</span>
+                {% else %}
+                  <span class="badge bg-secondary">Draft</span>
+                {% endif %}
+              </td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Category</th>
@@ -265,7 +285,7 @@
 <style>
   .img-slot {
     width: 100%;
-    aspect-ratio: 1;
+    height: 110px;
     border-radius: 10px;
     overflow: hidden;
     display: flex;
@@ -274,6 +294,9 @@
     flex-direction: column;
     position: relative;
     cursor: pointer;
+  }
+  @media (max-width: 575px) {
+    .img-slot { height: 90px; }
   }
   .img-slot.filled { background:#f8fafc; border:1px solid #e2e8f0; transition:transform .2s; }
   .img-slot.filled:hover { transform:scale(1.02); }

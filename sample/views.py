@@ -294,7 +294,7 @@ def challengein_create(request):
         form.save()
         messages.success(request, 'Challenge In created successfully.')
         return redirect('challengein_list')
-    return render(request, 'form.html', {'form': form, 'title': 'Add Challenge In'})
+    return render(request, 'form.html', {'form': form, 'title': 'Add Challenge'})
 
 
 @login_required
@@ -306,7 +306,7 @@ def challengein_update(request, pk):
         form.save()
         messages.success(request, f'Challenge In "{challenge.title}" updated successfully.')
         return redirect('challengein_list')
-    return render(request, 'form.html', {'form': form, 'title': 'Edit Challenge In'})
+    return render(request, 'form.html', {'form': form, 'title': 'Edit Challenge'})
 
 
 @login_required
@@ -357,7 +357,7 @@ def sample_create(request):
         sample = form.save()
         for img in request.FILES.getlist('challenge_images'):
             ChallengeImage.objects.create(sample=sample, image=img)
-        messages.success(request, f'Sample "{sample.product_name}" created successfully.')
+        messages.success(request, 'Sample created successfully.')
         return redirect('sample_detail', pk=sample.pk)
     return render(request, 'form.html', {'form': form, 'title': 'Add Sample'})
 
@@ -375,7 +375,7 @@ def sample_update(request, pk):
         # Add new challenge images
         for img in request.FILES.getlist('challenge_images'):
             ChallengeImage.objects.create(sample=sample, image=img)
-        messages.success(request, f'Sample "{sample.product_name}" updated successfully.')
+        messages.success(request, 'Sample updated successfully.')
         return redirect('sample_detail', pk=sample.pk)
     challenge_images = sample.challenge_images.all()
     return render(request, 'form.html', {'form': form, 'title': 'Edit Sample', 'challenge_images': challenge_images})
@@ -386,8 +386,7 @@ def sample_update(request, pk):
 def sample_delete(request, pk):
     sample = get_object_or_404(Sample, pk=pk)
     if request.method == 'POST':
-        name = sample.product_name
         sample.delete()
-        messages.success(request, f'Sample "{name}" deleted successfully.')
+        messages.success(request, 'Sample deleted successfully.')
         return redirect('sample_list')
     return render(request, 'confirm_delete.html', {'object': sample})

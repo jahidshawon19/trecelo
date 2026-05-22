@@ -39,7 +39,7 @@
             <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
             <td>
               <div class="d-flex align-items-center gap-3">
-                <div class="av av-blue">{{ item|first|upper }}</div>
+                <div class="av av-blue">{{ item|stringformat:"s"|slice:"0:1"|upper }}</div>
                 <span class="fw-semibold" style="color:#1e293b;">{{ item }}</span>
               </div>
             </td>

@@ -78,8 +78,11 @@ class SampleForm(forms.ModelForm):
     class Meta:
         model = Sample
         fields = [
-            'product_name',
             'style_number',
+            'sample_type',
+            'color',
+            'season',
+            'status',
             'category',
             'front_part_image',
             'back_part_image',
@@ -93,7 +96,6 @@ class SampleForm(forms.ModelForm):
             'submission_date',
             'challenge_in',
             'maker',
-
         ]
         widgets = {
             'submission_date': forms.DateInput(attrs={'type': 'date'}),

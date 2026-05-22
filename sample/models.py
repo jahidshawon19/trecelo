@@ -63,8 +63,21 @@ class StaffProfile(models.Model):
 
 
 class Sample(models.Model):
-    product_name = models.CharField(max_length=100, verbose_name="Sample Name")
+
+    STATUS_PENDING  = 'pending'
+    STATUS_APPROVED = 'approved'
+    STATUS_DRAFT    = 'draft'
+    STATUS_CHOICES  = [
+        (STATUS_PENDING,  'Pending'),
+        (STATUS_APPROVED, 'Approved'),
+        (STATUS_DRAFT,    'Draft'),
+    ]
+
     style_number = models.CharField(max_length=100, blank=True, verbose_name="Style Number")
+    sample_type  = models.CharField(max_length=100, blank=True, verbose_name="Sample Type")
+    color        = models.CharField(max_length=100, blank=True, verbose_name="Color")
+    season       = models.IntegerField(null=True, blank=True, verbose_name="Season")
+    status       = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_DRAFT, verbose_name="Status")
     category = models.ManyToManyField(Category, blank=True)
     brand = models.ManyToManyField(Brand, blank=True, verbose_name="Brand Name")
     buyer = models.ForeignKey(Buyer, on_delete=models.CASCADE, null=True, blank=True)
@@ -92,7 +105,7 @@ class Sample(models.Model):
     submission_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return self.product_name
+        return self.style_number or f"Sample #{self.pk}"
 
 
 class ChallengeImage(models.Model):
