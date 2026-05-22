@@ -284,10 +284,42 @@
       <a href="{% url 'staff_list' %}"
          class="{% if 'staff' in request.resolver_match.url_name %}active{% endif %}">
         <span class="nav-icon"><i class="fa fa-users"></i></span>
-        Staff
+        Maker
       </a>
     </li>
     {% endif %}
+  </ul>
+
+  <span class="sidebar-section-label">Lookups</span>
+  <ul class="sidebar-nav">
+    <li>
+      <a href="{% url 'category_list' %}"
+         class="{% if 'category' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon"><i class="fa fa-tags"></i></span>
+        Categories
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'brand_list' %}"
+         class="{% if 'brand' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon"><i class="fa fa-copyright"></i></span>
+        Brands
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'gg_list' %}"
+         class="{% if 'gg' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon"><i class="fa fa-gauge"></i></span>
+        GGs
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'challengein_list' %}"
+         class="{% if 'challengein' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon"><i class="fa fa-triangle-exclamation"></i></span>
+        Challenges In
+      </a>
+    </li>
   </ul>
   {% endif %}
 
@@ -310,7 +342,7 @@
       {% if user.is_superuser %}
         <span class="badge role-badge bg-danger">Super Admin</span>
       {% elif user.is_staff %}
-        <span class="badge role-badge bg-primary">Staff</span>
+        <span class="badge role-badge bg-primary">Maker</span>
       {% else %}
         <span class="badge role-badge bg-secondary">Buyer</span>
       {% endif %}

@@ -15,6 +15,26 @@ urlpatterns = [
     path('buyers/update/<int:pk>/', views.buyer_update, name='buyer_update'),
     path('buyers/delete/<int:pk>/', views.buyer_delete, name='buyer_delete'),
 
+    path('categories/', views.category_list, name='category_list'),
+    path('categories/create/', views.category_create, name='category_create'),
+    path('categories/update/<int:pk>/', views.category_update, name='category_update'),
+    path('categories/delete/<int:pk>/', views.category_delete, name='category_delete'),
+
+    path('brands/', views.brand_list, name='brand_list'),
+    path('brands/create/', views.brand_create, name='brand_create'),
+    path('brands/update/<int:pk>/', views.brand_update, name='brand_update'),
+    path('brands/delete/<int:pk>/', views.brand_delete, name='brand_delete'),
+
+    path('gg/', views.gg_list, name='gg_list'),
+    path('gg/create/', views.gg_create, name='gg_create'),
+    path('gg/update/<int:pk>/', views.gg_update, name='gg_update'),
+    path('gg/delete/<int:pk>/', views.gg_delete, name='gg_delete'),
+
+    path('challenges-in/', views.challengein_list, name='challengein_list'),
+    path('challenges-in/create/', views.challengein_create, name='challengein_create'),
+    path('challenges-in/update/<int:pk>/', views.challengein_update, name='challengein_update'),
+    path('challenges-in/delete/<int:pk>/', views.challengein_delete, name='challengein_delete'),
+
     path('samples/', views.sample_list, name='sample_list'),
     path('samples/<int:pk>/', views.sample_detail, name='sample_detail'),
     path('samples/create/', views.sample_create, name='sample_create'),

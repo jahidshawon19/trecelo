@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Buyer, Sample, StaffProfile
+from .models import Brand, Buyer, Category, ChallengeIn, GG, Sample, StaffProfile
 
 
 class BuyerForm(forms.ModelForm):
@@ -102,3 +102,27 @@ class SampleForm(forms.ModelForm):
             'back_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
             'challenge_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
         }
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name']
+
+
+class BrandForm(forms.ModelForm):
+    class Meta:
+        model = Brand
+        fields = ['name']
+
+
+class GGForm(forms.ModelForm):
+    class Meta:
+        model = GG
+        fields = ['title']
+
+
+class ChallengeInForm(forms.ModelForm):
+    class Meta:
+        model = ChallengeIn
+        fields = ['title']

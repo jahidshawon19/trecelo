@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .models import Buyer, Sample, StaffProfile
-from .forms import BuyerForm, SampleForm, StaffForm
+from .models import Brand, Buyer, Category, ChallengeIn, GG, Sample, StaffProfile
+from .forms import BrandForm, BuyerForm, CategoryForm, ChallengeInForm, GGForm, SampleForm, StaffForm
 
 
 def is_staff_or_admin(user):
@@ -119,6 +119,206 @@ def buyer_delete(request, pk):
         messages.success(request, f'Buyer "{name}" deleted successfully.')
         return redirect('buyer_list')
     return render(request, 'confirm_delete.html', {'object': buyer})
+
+
+# ---------- CATEGORY CRUD ----------
+@login_required
+@user_passes_test(is_staff_or_admin)
+def category_list(request):
+    categories = Category.objects.all()
+    return render(request, 'lookup_list.html', {
+        'items': categories,
+        'title': 'Categories',
+        'create_url': 'category_create',
+        'update_url': 'category_update',
+        'delete_url': 'category_delete',
+        'field': 'name',
+    })
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def category_create(request):
+    form = CategoryForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Category created successfully.')
+        return redirect('category_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Add Category'})
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def category_update(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    form = CategoryForm(request.POST or None, instance=category)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f'Category "{category.name}" updated successfully.')
+        return redirect('category_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Edit Category'})
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def category_delete(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        name = category.name
+        category.delete()
+        messages.success(request, f'Category "{name}" deleted successfully.')
+        return redirect('category_list')
+    return render(request, 'confirm_delete.html', {'object': category})
+
+
+# ---------- BRAND CRUD ----------
+@login_required
+@user_passes_test(is_staff_or_admin)
+def brand_list(request):
+    brands = Brand.objects.all()
+    return render(request, 'lookup_list.html', {
+        'items': brands,
+        'title': 'Brands',
+        'create_url': 'brand_create',
+        'update_url': 'brand_update',
+        'delete_url': 'brand_delete',
+        'field': 'name',
+    })
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def brand_create(request):
+    form = BrandForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Brand created successfully.')
+        return redirect('brand_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Add Brand'})
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def brand_update(request, pk):
+    brand = get_object_or_404(Brand, pk=pk)
+    form = BrandForm(request.POST or None, instance=brand)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f'Brand "{brand.name}" updated successfully.')
+        return redirect('brand_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Edit Brand'})
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def brand_delete(request, pk):
+    brand = get_object_or_404(Brand, pk=pk)
+    if request.method == 'POST':
+        name = brand.name
+        brand.delete()
+        messages.success(request, f'Brand "{name}" deleted successfully.')
+        return redirect('brand_list')
+    return render(request, 'confirm_delete.html', {'object': brand})
+
+
+# ---------- GG CRUD ----------
+@login_required
+@user_passes_test(is_staff_or_admin)
+def gg_list(request):
+    ggs = GG.objects.all()
+    return render(request, 'lookup_list.html', {
+        'items': ggs,
+        'title': 'GGs',
+        'create_url': 'gg_create',
+        'update_url': 'gg_update',
+        'delete_url': 'gg_delete',
+        'field': 'title',
+    })
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def gg_create(request):
+    form = GGForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'GG created successfully.')
+        return redirect('gg_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Add GG'})
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def gg_update(request, pk):
+    gg = get_object_or_404(GG, pk=pk)
+    form = GGForm(request.POST or None, instance=gg)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f'GG "{gg.title}" updated successfully.')
+        return redirect('gg_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Edit GG'})
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def gg_delete(request, pk):
+    gg = get_object_or_404(GG, pk=pk)
+    if request.method == 'POST':
+        title = gg.title
+        gg.delete()
+        messages.success(request, f'GG "{title}" deleted successfully.')
+        return redirect('gg_list')
+    return render(request, 'confirm_delete.html', {'object': gg})
+
+
+# ---------- CHALLENGE IN CRUD ----------
+@login_required
+@user_passes_test(is_staff_or_admin)
+def challengein_list(request):
+    challenges = ChallengeIn.objects.all()
+    return render(request, 'lookup_list.html', {
+        'items': challenges,
+        'title': 'Challenges In',
+        'create_url': 'challengein_create',
+        'update_url': 'challengein_update',
+        'delete_url': 'challengein_delete',
+        'field': 'title',
+    })
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def challengein_create(request):
+    form = ChallengeInForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Challenge In created successfully.')
+        return redirect('challengein_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Add Challenge In'})
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def challengein_update(request, pk):
+    challenge = get_object_or_404(ChallengeIn, pk=pk)
+    form = ChallengeInForm(request.POST or None, instance=challenge)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f'Challenge In "{challenge.title}" updated successfully.')
+        return redirect('challengein_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Edit Challenge In'})
+
+
+@login_required
+@user_passes_test(is_staff_or_admin)
+def challengein_delete(request, pk):
+    challenge = get_object_or_404(ChallengeIn, pk=pk)
+    if request.method == 'POST':
+        title = challenge.title
+        challenge.delete()
+        messages.success(request, f'Challenge In "{title}" deleted successfully.')
+        return redirect('challengein_list')
+    return render(request, 'confirm_delete.html', {'object': challenge})
 
 
 # ---------- SAMPLE CRUD ----------

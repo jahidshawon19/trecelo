@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+      <h5 class="mb-0 me-auto" style="font-weight:600;color:#1e293b;">
+        <i class="fa fa-list me-2 text-primary"></i>{{ title }}
+      </h5>
+
+      <div style="position:relative;min-width:220px;">
+        <i class="fa fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:0.85rem;"></i>
+        <input
+          type="text"
+          id="lookupSearch"
+          class="form-control form-control-sm"
+          placeholder="Search…"
+          style="padding-left:34px;border-radius:8px;"
+        >
+      </div>
+
+      <a href="{% url create_url %}" class="btn btn-primary btn-sm">
+        <i class="fa fa-plus me-1"></i>Add {{ title|slice:":-1" }}
+      </a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-bordered align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th style="width:60px;">#</th>
+            <th>{{ title|slice:":-1" }}</th>
+            <th class="text-center" style="width:140px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="lookupTableBody">
+          {% for item in items %}
+          <tr>
+            <td class="text-muted" style="font-size:0.85rem;">{{ forloop.counter }}</td>
+            <td class="fw-semibold">{{ item }}</td>
+            <td class="text-center">
+              <div class="d-flex gap-1 justify-content-center">
+                <a href="{% url update_url item.pk %}" class="btn btn-sm btn-warning" title="Edit" style="border-radius:6px;">
+                  <i class="fa fa-pen"></i>
+                </a>
+                <a href="{% url delete_url item.pk %}" class="btn btn-sm btn-danger" title="Delete" style="border-radius:6px;">
+                  <i class="fa fa-trash"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr id="emptyRow">
+            <td colspan="3" class="text-center py-5">
+              <div style="color:#94a3b8;">
+                <i class="fa fa-inbox fa-2x mb-3 d-block"></i>
+                <div style="font-size:1rem;font-weight:500;">No {{ title|lower }} found.</div>
+                <a href="{% url create_url %}" class="btn btn-primary btn-sm mt-3">
+                  <i class="fa fa-plus me-1"></i>Add your first one
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div id="noSearchResult" class="text-center py-5" style="display:none!important;">
+      <i class="fa fa-magnifying-glass fa-2x text-muted mb-3 d-block"></i>
+      <div class="text-muted">No results match your search.</div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const searchInput = document.getElementById('lookupSearch');
+  const tableBody   = document.getElementById('lookupTableBody');
+  const noResult    = document.getElementById('noSearchResult');
+
+  if (searchInput && tableBody) {
+    searchInput.addEventListener('input', function () {
+      const q = this.value.toLowerCase().trim();
+      let visible = 0;
+      tableBody.querySelectorAll('tr').forEach(function (row) {
+        if (row.id === 'emptyRow') return;
+        const text = row.cells[1] ? row.cells[1].textContent.toLowerCase() : '';
+        const show = !q || text.includes(q);
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      if (noResult) noResult.style.setProperty('display', visible === 0 && q ? 'block' : 'none', 'important');
+    });
+  }
+</script>
+{% endblock %}
