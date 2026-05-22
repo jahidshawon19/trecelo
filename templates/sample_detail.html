@@ -88,32 +88,39 @@
         </div>
       </div>
 
-      <!-- Challenge Part -->
-      <div class="col-md-4">
-        <div class="text-center">
-          <div class="mb-2 d-flex align-items-center justify-content-center gap-2">
-            <span class="badge bg-warning text-dark" style="font-size:.8rem;">3</span>
-            <span style="font-weight:600;font-size:.9rem;color:#374151;">Challenge Part</span>
-          </div>
-          {% if sample.challenge_part_image %}
-            <a href="{{ sample.challenge_part_image.url }}"
-               data-bs-toggle="modal" data-bs-target="#lightboxModal"
-               data-img="{{ sample.challenge_part_image.url }}" data-caption="Challenge Part">
-              <div class="img-slot filled">
-                <img src="{{ sample.challenge_part_image.url }}" alt="Challenge Part">
-                <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
-              </div>
-            </a>
-          {% else %}
-            <div class="img-slot empty">
-              <i class="fa fa-image fa-2x text-muted mb-2 d-block"></i>
-              <span class="text-muted small">Not uploaded</span>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-
     </div>
+  </div>
+</div>
+
+<!-- ── Challenge Part Images ─────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
+    <i class="fa fa-triangle-exclamation me-2 text-warning"></i>Challenge Part Images
+  </div>
+  <div class="card-body">
+    {% with challenge_images=sample.challenge_images.all %}
+    {% if challenge_images %}
+      <div class="row g-3">
+        {% for ci in challenge_images %}
+        <div class="col-6 col-md-3">
+          <a href="{{ ci.image.url }}"
+             data-bs-toggle="modal" data-bs-target="#lightboxModal"
+             data-img="{{ ci.image.url }}" data-caption="Challenge Part {{ forloop.counter }}">
+            <div class="img-slot filled">
+              <img src="{{ ci.image.url }}" alt="Challenge Part {{ forloop.counter }}">
+              <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-3" style="color:#94a3b8;">
+        <i class="fa fa-image fa-2x mb-2 d-block"></i>
+        <span class="small">No challenge images uploaded</span>
+      </div>
+    {% endif %}
+    {% endwith %}
   </div>
 </div>
 

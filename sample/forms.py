@@ -86,7 +86,6 @@ class SampleForm(forms.ModelForm):
             'maker',
             'front_part_image',
             'back_part_image',
-            'challenge_part_image',
             'documents',
             'gg',
             'end_ply',
@@ -102,7 +101,6 @@ class SampleForm(forms.ModelForm):
             'submission_date': forms.DateInput(attrs={'type': 'date'}),
             'front_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
             'back_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
-            'challenge_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
         }
 
 

@@ -76,10 +76,9 @@ class Sample(models.Model):
         verbose_name="Maker Name",
     )
 
-    # Three fixed image slots
+    # Fixed image slots
     front_part_image = models.ImageField(upload_to='samples/front/', blank=True, null=True, verbose_name="Front Part Image")
     back_part_image = models.ImageField(upload_to='samples/back/', blank=True, null=True, verbose_name="Back Part Image")
-    challenge_part_image = models.ImageField(upload_to='samples/challenge/', blank=True, null=True, verbose_name="Challenge Part Image")
 
     # Document
     documents = models.FileField(upload_to='samples/documents/', blank=True, null=True)
@@ -99,3 +98,11 @@ class Sample(models.Model):
 
     def __str__(self):
         return self.product_name
+
+
+class ChallengeImage(models.Model):
+    sample = models.ForeignKey(Sample, on_delete=models.CASCADE, related_name='challenge_images')
+    image = models.ImageField(upload_to='samples/challenge/')
+
+    def __str__(self):
+        return f"Challenge image for {self.sample.product_name}"

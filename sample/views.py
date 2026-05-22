@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .models import Brand, Buyer, Category, ChallengeIn, GG, Sample, StaffProfile
+from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, Sample, StaffProfile
 from .forms import BrandForm, BuyerForm, CategoryForm, ChallengeInForm, GGForm, SampleForm, StaffForm
 
 
@@ -355,6 +355,8 @@ def sample_create(request):
     form = SampleForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         sample = form.save()
+        for img in request.FILES.getlist('challenge_images'):
+            ChallengeImage.objects.create(sample=sample, image=img)
         messages.success(request, f'Sample "{sample.product_name}" created successfully.')
         return redirect('sample_detail', pk=sample.pk)
     return render(request, 'form.html', {'form': form, 'title': 'Add Sample'})
@@ -367,9 +369,16 @@ def sample_update(request, pk):
     form = SampleForm(request.POST or None, request.FILES or None, instance=sample)
     if form.is_valid():
         form.save()
+        # Delete removed challenge images
+        for img_id in request.POST.getlist('delete_challenge_images'):
+            ChallengeImage.objects.filter(pk=img_id, sample=sample).delete()
+        # Add new challenge images
+        for img in request.FILES.getlist('challenge_images'):
+            ChallengeImage.objects.create(sample=sample, image=img)
         messages.success(request, f'Sample "{sample.product_name}" updated successfully.')
         return redirect('sample_detail', pk=sample.pk)
-    return render(request, 'form.html', {'form': form, 'title': 'Edit Sample'})
+    challenge_images = sample.challenge_images.all()
+    return render(request, 'form.html', {'form': form, 'title': 'Edit Sample', 'challenge_images': challenge_images})
 
 
 @login_required

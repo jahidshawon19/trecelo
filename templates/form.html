@@ -21,7 +21,7 @@
     <form method="post" enctype="multipart/form-data" novalidate>
       {% csrf_token %}
 
-      <!-- ── Image upload section (sample form only) ──────────── -->
+      <!-- ── Front & Back image slots (sample form only) ──────────── -->
       {% if form.front_part_image %}
       <div class="card mb-4">
         <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
@@ -31,8 +31,8 @@
           <div class="row g-4">
 
             <!-- Front Part -->
-            <div class="col-md-4">
-              <div class="image-slot" data-field="id_front_part_image">
+            <div class="col-md-6">
+              <div class="image-slot">
                 <div class="slot-label">
                   <span class="badge bg-primary me-2">1</span>Front Part
                 </div>
@@ -55,8 +55,8 @@
             </div>
 
             <!-- Back Part -->
-            <div class="col-md-4">
-              <div class="image-slot" data-field="id_back_part_image">
+            <div class="col-md-6">
+              <div class="image-slot">
                 <div class="slot-label">
                   <span class="badge bg-primary me-2">2</span>Back Part
                 </div>
@@ -78,31 +78,44 @@
               </div>
             </div>
 
-            <!-- Challenge Part -->
-            <div class="col-md-4">
-              <div class="image-slot" data-field="id_challenge_part_image">
-                <div class="slot-label">
-                  <span class="badge bg-warning text-dark me-2">3</span>Challenge Part
-                </div>
-                <div class="slot-preview" id="preview_challenge_part_image">
-                  {% if form.instance.challenge_part_image %}
-                    <img src="{{ form.instance.challenge_part_image.url }}" alt="Challenge Part">
-                    <div class="slot-current">Current image</div>
-                  {% else %}
-                    <div class="slot-placeholder">
-                      <i class="fa fa-image fa-2x text-muted d-block mb-2"></i>
-                      <span class="text-muted small">No image</span>
-                    </div>
-                  {% endif %}
-                </div>
-                <div class="mt-2">{{ form.challenge_part_image }}</div>
-                {% for error in form.challenge_part_image.errors %}
-                  <div class="text-danger mt-1" style="font-size:.82rem;"><i class="fa fa-circle-exclamation me-1"></i>{{ error }}</div>
-                {% endfor %}
-              </div>
-            </div>
-
           </div>
+        </div>
+      </div>
+
+      <!-- ── Challenge Part — multiple images ──────────────────────── -->
+      <div class="card mb-4">
+        <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
+          <i class="fa fa-triangle-exclamation me-2 text-warning"></i>Challenge Part Images
+        </div>
+        <div class="card-body">
+
+          <!-- Existing challenge images (edit mode) -->
+          {% if challenge_images %}
+          <p class="fw-semibold mb-2" style="font-size:.875rem;color:#374151;">Existing Images</p>
+          <div class="row g-3 mb-4" id="existingChallengeGrid">
+            {% for ci in challenge_images %}
+            <div class="col-6 col-md-3" id="ci-{{ ci.pk }}">
+              <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid #e2e8f0;">
+                <img src="{{ ci.image.url }}" alt="Challenge" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
+                <label style="position:absolute;top:6px;right:6px;background:rgba(220,38,38,.85);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;" title="Mark for deletion">
+                  <input type="checkbox" name="delete_challenge_images" value="{{ ci.pk }}" style="display:none;" onchange="toggleDelete(this)">
+                  <i class="fa fa-trash text-white" style="font-size:.7rem;"></i>
+                </label>
+              </div>
+              <div class="delete-label text-danger text-center mt-1" style="font-size:.75rem;display:none;">Will be deleted</div>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- New upload -->
+          <p class="fw-semibold mb-2" style="font-size:.875rem;color:#374151;">
+            {% if challenge_images %}Add More{% else %}Upload Images{% endif %}
+          </p>
+          <input type="file" name="challenge_images" id="challengeImagesInput"
+                 accept="image/*" multiple class="form-control mb-3">
+          <div class="row g-2" id="challengePreviewGrid"></div>
+
         </div>
       </div>
       {% endif %}
@@ -116,7 +129,7 @@
 
           <div class="row g-3" id="formFieldsGrid">
           {% for field in form %}
-            {% if field.name == 'front_part_image' or field.name == 'back_part_image' or field.name == 'challenge_part_image' %}
+            {% if field.name == 'front_part_image' or field.name == 'back_part_image' %}
               {# Already rendered in the image section above #}
             {% else %}
             <div class="col-md-6 field-col">
@@ -169,48 +182,26 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- CKEditor 4 -->
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
 <style>
-  .slot-label {
-    font-size: .875rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 8px;
-  }
+  .slot-label { font-size:.875rem; font-weight:600; color:#374151; margin-bottom:8px; }
   .slot-preview {
-    width: 100%;
-    aspect-ratio: 1;
-    border: 2px dashed #e2e8f0;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #f8fafc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    position: relative;
+    width:100%; aspect-ratio:1; border:2px dashed #e2e8f0; border-radius:10px;
+    overflow:hidden; background:#f8fafc; display:flex; align-items:center;
+    justify-content:center; flex-direction:column; position:relative;
   }
-  .slot-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+  .slot-preview img { width:100%; height:100%; object-fit:cover; }
   .slot-current {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0,0,0,.45);
-    color: #fff;
-    font-size: .72rem;
-    text-align: center;
-    padding: 4px;
+    position:absolute; bottom:0; left:0; right:0;
+    background:rgba(0,0,0,.45); color:#fff; font-size:.72rem; text-align:center; padding:4px;
   }
-  .slot-placeholder {
-    text-align: center;
-  }
+  .slot-placeholder { text-align:center; }
 </style>
+
 <script>
-  // Add Bootstrap classes to Django-rendered inputs
+  // Bootstrap classes on inputs
   document.querySelectorAll(
     'input:not([type=submit]):not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea'
   ).forEach(function (el) {
@@ -222,7 +213,7 @@
     el.classList.add('form-control');
   });
 
-  // Textareas and file inputs → full width (col-12)
+  // Textareas and file inputs → full width
   document.querySelectorAll('#formFieldsGrid .field-col').forEach(function (col) {
     var hasTextarea = col.querySelector('textarea');
     var hasFile     = col.querySelector('input[type=file]');
@@ -233,9 +224,9 @@
     }
   });
 
-  // Live preview for each image slot
-  ['front_part_image', 'back_part_image', 'challenge_part_image'].forEach(function (name) {
-    var input = document.getElementById('id_' + name);
+  // Live preview for front/back slots
+  ['front_part_image', 'back_part_image'].forEach(function (name) {
+    var input   = document.getElementById('id_' + name);
     var preview = document.getElementById('preview_' + name);
     if (!input || !preview) return;
     input.addEventListener('change', function () {
@@ -244,11 +235,59 @@
       var reader = new FileReader();
       reader.onload = function (e) {
         preview.innerHTML =
-          '<img src="' + e.target.result + '" alt="' + name + '" style="width:100%;height:100%;object-fit:cover;">' +
+          '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">' +
           '<div class="slot-current">New image selected</div>';
       };
       reader.readAsDataURL(file);
     });
   });
+
+  // Challenge multi-image preview
+  var challengeInput = document.getElementById('challengeImagesInput');
+  var previewGrid    = document.getElementById('challengePreviewGrid');
+  if (challengeInput && previewGrid) {
+    challengeInput.addEventListener('change', function () {
+      previewGrid.innerHTML = '';
+      Array.from(this.files).forEach(function (file) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          var col = document.createElement('div');
+          col.className = 'col-6 col-md-3';
+          col.innerHTML = '<img src="' + e.target.result + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;">';
+          previewGrid.appendChild(col);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  }
+
+  // Toggle delete on existing challenge images
+  function toggleDelete(checkbox) {
+    var col   = checkbox.closest('[id^="ci-"]');
+    var label = col.querySelector('.delete-label');
+    var img   = col.querySelector('img');
+    if (checkbox.checked) {
+      img.style.opacity = '0.35';
+      label.style.display = 'block';
+    } else {
+      img.style.opacity = '1';
+      label.style.display = 'none';
+    }
+  }
+
+  // Init CKEditor on description textarea
+  if (document.getElementById('id_description')) {
+    CKEDITOR.replace('id_description', {
+      toolbar: [
+        { name: 'basicstyles', items: ['Bold','Italic','Underline','Strike','-','RemoveFormat'] },
+        { name: 'paragraph',   items: ['NumberedList','BulletedList','-','Blockquote'] },
+        { name: 'links',       items: ['Link','Unlink'] },
+        { name: 'styles',      items: ['Format'] },
+        { name: 'tools',       items: ['Maximize'] },
+      ],
+      height: 200,
+      removePlugins: 'elementspath',
+    });
+  }
 </script>
 {% endblock %}

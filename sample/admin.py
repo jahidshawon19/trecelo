@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Brand, Buyer, Category, ChallengeIn, GG, Sample, StaffProfile
+from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, Sample, StaffProfile
 
 
 @admin.register(Sample)
@@ -15,3 +15,4 @@ admin.site.register(Category)
 admin.site.register(Brand)
 admin.site.register(GG)
 admin.site.register(ChallengeIn)
+admin.site.register(ChallengeImage)
