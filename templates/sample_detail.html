@@ -215,7 +215,7 @@
         {% if sample.description %}
         <tr>
           <th class="bg-light" style="width:20%;font-size:.85rem;vertical-align:top;">Description</th>
-          <td style="white-space:pre-line;">{{ sample.description }}</td>
+          <td style="white-space:pre-line;">{{ sample.description | safe }}</td>
         </tr>
         {% endif %}
         {% if sample.challenge_in %}
