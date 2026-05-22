@@ -1,64 +1,78 @@
 {% extends 'base.html' %}
-
 {% block title %}R&D Team Management{% endblock %}
-
 {% block page_title %}R&D Team Management{% endblock %}
 
 {% block content %}
 
 <div class="card">
-  <div class="card-body">
-
-    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
-      <h5 class="mb-0 me-auto" style="font-weight:600;color:#1e293b;">
-        <i class="fa fa-users me-2 text-primary"></i>R&D Team Members
-      </h5>
-      {% if user.is_superuser %}
-      <a href="{% url 'staff_create' %}" class="btn btn-primary btn-sm">
-        <i class="fa fa-plus me-1"></i>Add Members
-      </a>
-      {% endif %}
+  <div class="card-body pb-0">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      <div>
+        <h5 class="mb-0 fw-bold" style="color:#1e293b;"><i class="fa fa-users me-2 text-primary"></i>R&D Team Members</h5>
+        <p class="mb-0 text-muted" style="font-size:.78rem;">Manage staff accounts</p>
+      </div>
+      <div class="ms-auto d-flex gap-2 flex-wrap align-items-center">
+        <div class="tbl-search">
+          <i class="fa fa-magnifying-glass si"></i>
+          <input type="text" id="staffSearch" placeholder="Search members…" style="min-width:200px;">
+        </div>
+        {% if user.is_superuser %}
+        <a href="{% url 'staff_create' %}" class="btn btn-primary btn-sm px-3" style="border-radius:8px;height:36px;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fa fa-plus"></i> Add Member
+        </a>
+        {% endif %}
+      </div>
     </div>
+  </div>
 
+  <div class="card-body pt-3">
     <div class="table-responsive">
-      <table class="table table-striped table-hover table-bordered align-middle mb-0">
-        <thead class="table-dark">
+      <table class="bt">
+        <thead>
           <tr>
             <th>#</th>
+            <th>Member</th>
             <th>Emp ID</th>
-            <th>Username</th>
             <th>Role</th>
             <th>Designation</th>
             <th>Phone</th>
-            {% if user.is_superuser %}
-            <th class="text-center">Actions</th>
-            {% endif %}
+            {% if user.is_superuser %}<th class="text-center">Actions</th>{% endif %}
           </tr>
         </thead>
-        <tbody>
+        <tbody id="staffTableBody">
           {% for s in staffs %}
           <tr>
-            <td class="text-muted" style="font-size:.85rem;">{{ forloop.counter }}</td>
+            <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
             <td>
-              <span class="badge bg-secondary" style="font-size:.8rem;font-weight:600;">{{ s.emp_id }}</span>
+              <div class="d-flex align-items-center gap-3">
+                <div class="av av-green">{{ s.user.username|first|upper }}</div>
+                <div>
+                  <div class="fw-semibold" style="color:#1e293b;">{{ s.user.username }}</div>
+                  <div style="font-size:.75rem;color:#94a3b8;">{{ s.address|truncatechars:28 }}</div>
+                </div>
+              </div>
             </td>
-            <td class="fw-semibold">{{ s.user.username }}</td>
             <td>
-              <span class="badge bg-primary" style="font-size:.78rem;">{{ s.role }}</span>
+              <span style="background:#f1f5f9;color:#475569;font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:6px;font-family:monospace;">
+                {{ s.emp_id }}
+              </span>
             </td>
-            <td>{{ s.designation }}</td>
             <td>
-              <i class="fa fa-phone me-1 text-muted" style="font-size:.8rem;"></i>{{ s.phone_number }}
+              <span style="background:#ede9fe;color:#7c3aed;font-size:.76rem;font-weight:600;padding:3px 10px;border-radius:20px;">
+                {{ s.role }}
+              </span>
+            </td>
+            <td style="font-size:.875rem;color:#475569;">{{ s.designation }}</td>
+            <td>
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:.82rem;color:#475569;">
+                <i class="fa fa-phone text-muted" style="font-size:.7rem;"></i>{{ s.phone_number }}
+              </span>
             </td>
             {% if user.is_superuser %}
             <td class="text-center">
               <div class="d-flex gap-1 justify-content-center">
-                <a href="{% url 'staff_update' s.id %}" class="btn btn-sm btn-warning" style="border-radius:6px;" title="Edit">
-                  <i class="fa fa-pen"></i>
-                </a>
-                <a href="{% url 'staff_delete' s.id %}" class="btn btn-sm btn-danger" style="border-radius:6px;" title="Delete">
-                  <i class="fa fa-trash"></i>
-                </a>
+                <a href="{% url 'staff_update' s.id %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
+                <a href="{% url 'staff_delete' s.id %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
               </div>
             </td>
             {% endif %}
@@ -68,10 +82,10 @@
             <td colspan="7" class="text-center py-5">
               <div style="color:#94a3b8;">
                 <i class="fa fa-users fa-2x mb-3 d-block"></i>
-                <div style="font-size:1rem;font-weight:500;">No staff members found.</div>
+                <div style="font-size:.95rem;font-weight:500;">No staff members found.</div>
                 {% if user.is_superuser %}
                 <a href="{% url 'staff_create' %}" class="btn btn-primary btn-sm mt-3">
-                  <i class="fa fa-plus me-1"></i>Add first staff member
+                  <i class="fa fa-plus me-1"></i>Add first member
                 </a>
                 {% endif %}
               </div>
@@ -82,7 +96,32 @@
       </table>
     </div>
 
+    <div id="noStaffResult" class="text-center py-5" style="display:none!important;">
+      <i class="fa fa-magnifying-glass fa-2x text-muted mb-3 d-block"></i>
+      <div class="text-muted" style="font-size:.9rem;">No members match your search.</div>
+    </div>
   </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const s = document.getElementById('staffSearch');
+  const b = document.getElementById('staffTableBody');
+  const n = document.getElementById('noStaffResult');
+  if (s && b) {
+    s.addEventListener('input', function () {
+      const q = this.value.toLowerCase().trim();
+      let v = 0;
+      b.querySelectorAll('tr').forEach(function (row) {
+        const t = row.textContent.toLowerCase();
+        const show = !q || t.includes(q);
+        row.style.display = show ? '' : 'none';
+        if (show) v++;
+      });
+      if (n) n.style.setProperty('display', v === 0 && q ? 'block' : 'none', 'important');
+    });
+  }
+</script>
 {% endblock %}
