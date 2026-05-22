@@ -138,6 +138,14 @@
               <td>{{ sample.style_number|default:"—" }}</td>
             </tr>
             <tr>
+              <th class="bg-light" style="font-size:.85rem;">Category</th>
+              <td>{{ sample.category.name|default:"—" }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light" style="font-size:.85rem;">Brand Name</th>
+              <td>{{ sample.brand.name|default:"—" }}</td>
+            </tr>
+            <tr>
               <th class="bg-light" style="font-size:.85rem;">Buyer</th>
               <td>{{ sample.buyer.buyer_name|default:"—" }}</td>
             </tr>
@@ -170,7 +178,7 @@
           <tbody>
             <tr>
               <th class="bg-light" style="width:42%;font-size:.85rem;">GG</th>
-              <td>{{ sample.gg|default:"—" }}</td>
+              <td>{{ sample.gg.title|default:"—" }}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">End / Ply</th>
@@ -218,7 +226,7 @@
         {% if sample.challenge_in %}
         <tr>
           <th class="bg-light" style="font-size:.85rem;vertical-align:top;">Challenge In</th>
-          <td style="white-space:pre-line;">{{ sample.challenge_in }}</td>
+          <td>{{ sample.challenge_in.title }}</td>
         </tr>
         {% endif %}
       </tbody>

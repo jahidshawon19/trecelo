@@ -80,6 +80,8 @@ class SampleForm(forms.ModelForm):
         fields = [
             'product_name',
             'style_number',
+            'category',
+            'brand',
             'buyer',
             'maker',
             'front_part_image',

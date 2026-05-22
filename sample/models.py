@@ -65,6 +65,8 @@ class StaffProfile(models.Model):
 class Sample(models.Model):
     product_name = models.CharField(max_length=100, verbose_name="Sample Name")
     style_number = models.CharField(max_length=100, blank=True, verbose_name="Style Number")
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Brand Name")
     buyer = models.ForeignKey(Buyer, on_delete=models.CASCADE, null=True, blank=True)
     maker = models.ForeignKey(
         StaffProfile,
@@ -83,12 +85,12 @@ class Sample(models.Model):
     documents = models.FileField(upload_to='samples/documents/', blank=True, null=True)
 
     # Technical Specifications
-    gg = models.TextField(verbose_name="GG", blank=True)
+    gg = models.ForeignKey(GG, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="GG")
     end_ply = models.IntegerField(default=0)
     weight = models.FloatField(default=0.0)
     yarn_composition = models.TextField(blank=True)
     description = models.TextField(blank=True)
-    challenge_in = models.TextField(blank=True)
+    challenge_in = models.ForeignKey(ChallengeIn, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Challenge In")
 
     # Dates and SMVs
     submission_date = models.DateField(null=True, blank=True)
