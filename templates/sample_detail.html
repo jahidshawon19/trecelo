@@ -188,24 +188,12 @@
               <td>{{ sample.gg.title|default:"—" }}</td>
             </tr>
             <tr>
-              <th class="bg-light" style="font-size:.85rem;">End / Ply</th>
-              <td>{{ sample.end_ply }}</td>
-            </tr>
-            <tr>
               <th class="bg-light" style="font-size:.85rem;">Weight</th>
-              <td>{{ sample.weight }}</td>
+              <td>{{ sample.weight|default:"—" }}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Yarn Composition</th>
               <td>{{ sample.yarn_composition|default:"—" }}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Knitting SMV</th>
-              <td>{{ sample.knitting_smv }}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Linking SMV</th>
-              <td>{{ sample.linking_smv }}</td>
             </tr>
           </tbody>
         </table>

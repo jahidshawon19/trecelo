@@ -85,16 +85,11 @@ class Sample(models.Model):
 
     # Technical Specifications
     gg = models.ForeignKey(GG, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="GG")
-    end_ply = models.IntegerField(default=0)
     weight = models.CharField(max_length=100, blank=True, verbose_name="Weight")
     yarn_composition = models.CharField(max_length=255, blank=True, verbose_name="Yarn Composition")
     description = models.TextField(blank=True)
     challenge_in = models.ForeignKey(ChallengeIn, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Challenge In")
-
-    # Dates and SMVs
     submission_date = models.DateField(null=True, blank=True)
-    knitting_smv = models.IntegerField(default=0)
-    linking_smv = models.IntegerField(default=0)
 
     def __str__(self):
         return self.product_name

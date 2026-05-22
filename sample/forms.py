@@ -81,21 +81,21 @@ class SampleForm(forms.ModelForm):
             'product_name',
             'style_number',
             'category',
-            'brand',
-            'buyer',
-            'maker',
             'front_part_image',
             'back_part_image',
             'documents',
+            'brand',
+            'buyer',
             'gg',
-            'end_ply',
             'weight',
             'yarn_composition',
             'description',
-            'challenge_in',
             'submission_date',
-            'knitting_smv',
-            'linking_smv',
+            'challenge_in',
+            'maker',
+
+
+
         ]
         widgets = {
             'submission_date': forms.DateInput(attrs={'type': 'date'}),
