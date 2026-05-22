@@ -94,8 +94,6 @@ class SampleForm(forms.ModelForm):
             'challenge_in',
             'maker',
 
-
-
         ]
         widgets = {
             'submission_date': forms.DateInput(attrs={'type': 'date'}),
