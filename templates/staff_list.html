@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
-{% block title %}Staff Management{% endblock %}
+{% block title %}R&D Team Management{% endblock %}
 
-{% block page_title %}Staff Management{% endblock %}
+{% block page_title %}R&D Team Management{% endblock %}
 
 {% block content %}
 
@@ -11,11 +11,11 @@
 
     <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
       <h5 class="mb-0 me-auto" style="font-weight:600;color:#1e293b;">
-        <i class="fa fa-users me-2 text-primary"></i>Staff Members
+        <i class="fa fa-users me-2 text-primary"></i>R&D Team Members
       </h5>
       {% if user.is_superuser %}
       <a href="{% url 'staff_create' %}" class="btn btn-primary btn-sm">
-        <i class="fa fa-plus me-1"></i>Add Staff
+        <i class="fa fa-plus me-1"></i>Add Members
       </a>
       {% endif %}
     </div>

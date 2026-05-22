@@ -51,7 +51,7 @@ def staff_create(request):
         form.save()
         messages.success(request, 'Staff member created successfully.')
         return redirect('staff_list')
-    return render(request, 'form.html', {'form': form, 'title': 'Add Staff'})
+    return render(request, 'form.html', {'form': form, 'title': 'Add Members'})
 
 
 @login_required
