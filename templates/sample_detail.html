@@ -146,11 +146,11 @@
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Category</th>
-              <td>{{ sample.category.name|default:"—" }}</td>
+              <td>{% for c in sample.category.all %}<span class="badge bg-primary me-1">{{ c.name }}</span>{% empty %}—{% endfor %}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Brand Name</th>
-              <td>{{ sample.brand.name|default:"—" }}</td>
+              <td>{% for b in sample.brand.all %}<span class="badge bg-secondary me-1">{{ b.name }}</span>{% empty %}—{% endfor %}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Buyer</th>
@@ -185,7 +185,7 @@
           <tbody>
             <tr>
               <th class="bg-light" style="width:42%;font-size:.85rem;">GG</th>
-              <td>{{ sample.gg.title|default:"—" }}</td>
+              <td>{% for g in sample.gg.all %}<span class="badge bg-info text-dark me-1">{{ g.title }}</span>{% empty %}—{% endfor %}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Weight</th>
@@ -218,10 +218,10 @@
           <td style="white-space:pre-line;">{{ sample.description | safe }}</td>
         </tr>
         {% endif %}
-        {% if sample.challenge_in %}
+        {% if sample.challenge_in.exists %}
         <tr>
           <th class="bg-light" style="font-size:.85rem;vertical-align:top;">Challenge In</th>
-          <td>{{ sample.challenge_in.title }}</td>
+          <td>{% for ci in sample.challenge_in.all %}<span class="badge bg-warning text-dark me-1">{{ ci.title }}</span>{% endfor %}</td>
         </tr>
         {% endif %}
       </tbody>

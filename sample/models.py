@@ -65,8 +65,8 @@ class StaffProfile(models.Model):
 class Sample(models.Model):
     product_name = models.CharField(max_length=100, verbose_name="Sample Name")
     style_number = models.CharField(max_length=100, blank=True, verbose_name="Style Number")
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Brand Name")
+    category = models.ManyToManyField(Category, blank=True)
+    brand = models.ManyToManyField(Brand, blank=True, verbose_name="Brand Name")
     buyer = models.ForeignKey(Buyer, on_delete=models.CASCADE, null=True, blank=True)
     maker = models.ForeignKey(
         StaffProfile,
@@ -84,11 +84,11 @@ class Sample(models.Model):
     documents = models.FileField(upload_to='samples/documents/', blank=True, null=True)
 
     # Technical Specifications
-    gg = models.ForeignKey(GG, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="GG")
+    gg = models.ManyToManyField(GG, blank=True, verbose_name="GG")
     weight = models.CharField(max_length=100, blank=True, verbose_name="Weight")
     yarn_composition = models.CharField(max_length=255, blank=True, verbose_name="Yarn Composition")
     description = models.TextField(blank=True)
-    challenge_in = models.ForeignKey(ChallengeIn, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Challenge In")
+    challenge_in = models.ManyToManyField(ChallengeIn, blank=True, verbose_name="Challenge In")
     submission_date = models.DateField(null=True, blank=True)
 
     def __str__(self):

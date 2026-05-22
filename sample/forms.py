@@ -99,6 +99,10 @@ class SampleForm(forms.ModelForm):
             'submission_date': forms.DateInput(attrs={'type': 'date'}),
             'front_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
             'back_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'category': forms.CheckboxSelectMultiple(),
+            'brand': forms.CheckboxSelectMultiple(),
+            'gg': forms.CheckboxSelectMultiple(),
+            'challenge_in': forms.CheckboxSelectMultiple(),
         }
 
 
