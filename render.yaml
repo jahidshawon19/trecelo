@@ -19,4 +19,4 @@ services:
           name: sample-tracking-db
           property: connectionString
       - key: PYTHON_VERSION
-        value: "3.13.0"
+        value: "3.11.0"

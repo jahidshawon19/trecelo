@@ -61,7 +61,6 @@ DATABASES = {
     'default': dj_database_url.config(
         default='mysql://root@localhost/sample_tracking',
         conn_max_age=600,
-        engine='django.db.backends.mysql',
     )
 }
 
