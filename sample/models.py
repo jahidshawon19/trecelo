@@ -87,7 +87,7 @@ class Sample(models.Model):
     # Technical Specifications
     gg = models.ForeignKey(GG, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="GG")
     end_ply = models.IntegerField(default=0)
-    weight = models.FloatField(default=0.0)
+    weight = models.CharField(max_length=100, blank=True, verbose_name="Weight")
     yarn_composition = models.TextField(blank=True)
     description = models.TextField(blank=True)
     challenge_in = models.ForeignKey(ChallengeIn, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Challenge In")
