@@ -80,14 +80,14 @@ def staff_delete(request, pk):
 
 # ---------- BUYER CRUD ----------
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def buyer_list(request):
     buyers = Buyer.objects.select_related('user').all()
     return render(request, 'buyer_list.html', {'buyers': buyers})
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def buyer_create(request):
     form = BuyerForm(request.POST or None)
     if form.is_valid():
@@ -98,7 +98,7 @@ def buyer_create(request):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def buyer_update(request, pk):
     buyer = get_object_or_404(Buyer, pk=pk)
     form = BuyerForm(request.POST or None, instance=buyer)
@@ -110,7 +110,7 @@ def buyer_update(request, pk):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def buyer_delete(request, pk):
     buyer = get_object_or_404(Buyer, pk=pk)
     if request.method == 'POST':
@@ -123,7 +123,7 @@ def buyer_delete(request, pk):
 
 # ---------- CATEGORY CRUD ----------
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def category_list(request):
     categories = Category.objects.all()
     return render(request, 'lookup_list.html', {
@@ -137,7 +137,7 @@ def category_list(request):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def category_create(request):
     form = CategoryForm(request.POST or None)
     if form.is_valid():
@@ -148,7 +148,7 @@ def category_create(request):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def category_update(request, pk):
     category = get_object_or_404(Category, pk=pk)
     form = CategoryForm(request.POST or None, instance=category)
@@ -160,7 +160,7 @@ def category_update(request, pk):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def category_delete(request, pk):
     category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
@@ -173,7 +173,7 @@ def category_delete(request, pk):
 
 # ---------- BRAND CRUD ----------
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def brand_list(request):
     brands = Brand.objects.all()
     return render(request, 'lookup_list.html', {
@@ -187,7 +187,7 @@ def brand_list(request):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def brand_create(request):
     form = BrandForm(request.POST or None)
     if form.is_valid():
@@ -198,7 +198,7 @@ def brand_create(request):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def brand_update(request, pk):
     brand = get_object_or_404(Brand, pk=pk)
     form = BrandForm(request.POST or None, instance=brand)
@@ -210,7 +210,7 @@ def brand_update(request, pk):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def brand_delete(request, pk):
     brand = get_object_or_404(Brand, pk=pk)
     if request.method == 'POST':
@@ -223,7 +223,7 @@ def brand_delete(request, pk):
 
 # ---------- GG CRUD ----------
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def gg_list(request):
     ggs = GG.objects.all()
     return render(request, 'lookup_list.html', {
@@ -237,7 +237,7 @@ def gg_list(request):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def gg_create(request):
     form = GGForm(request.POST or None)
     if form.is_valid():
@@ -248,7 +248,7 @@ def gg_create(request):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def gg_update(request, pk):
     gg = get_object_or_404(GG, pk=pk)
     form = GGForm(request.POST or None, instance=gg)
@@ -260,7 +260,7 @@ def gg_update(request, pk):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def gg_delete(request, pk):
     gg = get_object_or_404(GG, pk=pk)
     if request.method == 'POST':
@@ -273,7 +273,7 @@ def gg_delete(request, pk):
 
 # ---------- CHALLENGE IN CRUD ----------
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def challengein_list(request):
     challenges = ChallengeIn.objects.all()
     return render(request, 'lookup_list.html', {
@@ -287,7 +287,7 @@ def challengein_list(request):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def challengein_create(request):
     form = ChallengeInForm(request.POST or None)
     if form.is_valid():
@@ -298,7 +298,7 @@ def challengein_create(request):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def challengein_update(request, pk):
     challenge = get_object_or_404(ChallengeIn, pk=pk)
     form = ChallengeInForm(request.POST or None, instance=challenge)
@@ -310,7 +310,7 @@ def challengein_update(request, pk):
 
 
 @login_required
-@user_passes_test(is_staff_or_admin)
+@user_passes_test(is_superadmin)
 def challengein_delete(request, pk):
     challenge = get_object_or_404(ChallengeIn, pk=pk)
     if request.method == 'POST':

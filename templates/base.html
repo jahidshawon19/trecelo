@@ -269,7 +269,7 @@
     </li>
   </ul>
 
-  {% if user.is_staff or user.is_superuser %}
+  {% if user.is_superuser %}
   <span class="sidebar-section-label">Management</span>
   <ul class="sidebar-nav">
     <li>
@@ -279,7 +279,6 @@
         Buyers
       </a>
     </li>
-    {% if user.is_superuser %}
     <li>
       <a href="{% url 'staff_list' %}"
          class="{% if 'staff' in request.resolver_match.url_name %}active{% endif %}">
@@ -287,7 +286,6 @@
         Maker
       </a>
     </li>
-    {% endif %}
   </ul>
 
   <span class="sidebar-section-label">Lookups</span>
