@@ -2,6 +2,45 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name_plural = 'Categories'
+
+    def __str__(self):
+        return self.name
+
+
+class Brand(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class GG(models.Model):
+    title = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = 'GG'
+        verbose_name_plural = 'GGs'
+
+    def __str__(self):
+        return self.title
+
+
+class ChallengeIn(models.Model):
+    title = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = 'Challenge In'
+        verbose_name_plural = 'Challenges In'
+
+    def __str__(self):
+        return self.title
+
+
 class Buyer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     buyer_name = models.CharField(max_length=100)

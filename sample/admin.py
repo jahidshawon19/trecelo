@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Buyer, Sample, StaffProfile
+from .models import Brand, Buyer, Category, ChallengeIn, GG, Sample, StaffProfile
 
 
 @admin.register(Sample)
@@ -11,3 +11,7 @@ class SampleAdmin(admin.ModelAdmin):
 
 admin.site.register(Buyer)
 admin.site.register(StaffProfile)
+admin.site.register(Category)
+admin.site.register(Brand)
+admin.site.register(GG)
+admin.site.register(ChallengeIn)
