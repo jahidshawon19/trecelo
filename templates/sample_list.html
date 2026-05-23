@@ -12,7 +12,7 @@
         <i class="fa fa-boxes-stacked"></i>
       </div>
       <div>
-        <div style="font-size:1.6rem;font-weight:700;color:#1e293b;line-height:1;">{{ samples|length }}</div>
+        <div style="font-size:1.6rem;font-weight:700;color:#1e293b;line-height:1;">{{ total_count }}</div>
         <div style="font-size:.78rem;color:#64748b;font-weight:500;margin-top:2px;">Total Samples</div>
       </div>
     </div>
@@ -28,10 +28,17 @@
         <p class="mb-0 text-muted" style="font-size:.78rem;">All registered samples</p>
       </div>
       <div class="ms-auto d-flex gap-2 flex-wrap align-items-center">
-        <div class="tbl-search">
-          <i class="fa fa-magnifying-glass si"></i>
-          <input type="text" id="sampleSearch" placeholder="Search samples…" style="min-width:210px;">
-        </div>
+        <form method="get" class="d-flex gap-2 align-items-center">
+          <div class="tbl-search">
+            <i class="fa fa-magnifying-glass si"></i>
+            <input type="text" name="q" value="{{ q }}" placeholder="Search samples…" style="min-width:210px;">
+          </div>
+          {% if q %}
+          <a href="{% url 'sample_list' %}" class="btn btn-outline-secondary btn-sm" title="Clear search">
+            <i class="fa fa-xmark"></i>
+          </a>
+          {% endif %}
+        </form>
         {% if user.is_staff or user.is_superuser %}
         <a href="{% url 'sample_create' %}" class="btn btn-primary btn-sm px-3" style="border-radius:8px;height:36px;display:inline-flex;align-items:center;gap:6px;">
           <i class="fa fa-plus"></i> Add Sample
@@ -47,58 +54,58 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Sample</th>
+            <th>Style No</th>
             <th>Buyer</th>
-            <th>Maker</th>
-            <th>Status</th>
+            <th>Sample Type</th>
+            <th>GG</th>
+            <th>Color</th>
+            <th>Season</th>
             <th>Submission Date</th>
+            <th>Status</th>
             <th class="text-center">Actions</th>
           </tr>
         </thead>
-        <tbody id="sampleTableBody">
+        <tbody>
           {% for s in samples %}
           <tr>
-            <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
+            <td style="color:#94a3b8;font-size:.8rem;width:36px;">{{ page_obj.start_index|add:forloop.counter0 }}</td>
             <td>
-              <div class="d-flex align-items-center gap-3">
-                <div class="av av-blue">{{ s.style_number|default:"S"|first|upper }}</div>
-                <div>
-                  <div class="fw-semibold" style="color:#1e293b;">{{ s.style_number|default:"—" }}</div>
-                  {% if s.sample_type %}<div style="font-size:.75rem;color:#94a3b8;">{{ s.sample_type }}</div>{% endif %}
-                </div>
+              <div class="d-flex align-items-center gap-2">
+                <div class="av av-blue" style="width:30px;height:30px;font-size:.7rem;flex-shrink:0;">{{ s.style_number|default:"S"|first|upper }}</div>
+                <span class="fw-semibold" style="color:#1e293b;font-size:.875rem;">{{ s.style_number|default:"—" }}</span>
               </div>
             </td>
             <td>
               {% if s.buyer %}
               <div class="d-flex align-items-center gap-2">
-                <div class="av av-purple" style="width:28px;height:28px;font-size:.7rem;">{{ s.buyer.buyer_name|first|upper }}</div>
-                <span style="font-size:.875rem;">{{ s.buyer.buyer_name }}</span>
+                <div class="av av-purple" style="width:28px;height:28px;font-size:.68rem;flex-shrink:0;">{{ s.buyer.buyer_name|first|upper }}</div>
+                <span style="font-size:.82rem;">{{ s.buyer.buyer_name }}</span>
               </div>
               {% else %}<span class="text-muted">—</span>{% endif %}
             </td>
+            <td style="font-size:.82rem;color:#475569;">{{ s.sample_type|default:"—" }}</td>
             <td>
-              {% if s.maker %}
-              <div class="d-flex align-items-center gap-2">
-                <div class="av av-green" style="width:28px;height:28px;font-size:.7rem;">{{ s.maker.user.username|first|upper }}</div>
-                <span style="font-size:.875rem;">{{ s.maker.user.username }}</span>
-              </div>
+              {% for g in s.gg.all %}
+                <span style="background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;">{{ g.title }}</span>
+              {% empty %}<span class="text-muted">—</span>{% endfor %}
+            </td>
+            <td style="font-size:.82rem;color:#475569;">{{ s.color|default:"—" }}</td>
+            <td style="font-size:.82rem;color:#475569;">{{ s.season|default:"—" }}</td>
+            <td>
+              {% if s.submission_date %}
+                <span style="display:inline-flex;align-items:center;gap:4px;background:#f0fdf4;color:#15803d;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #bbf7d0;white-space:nowrap;">
+                  <i class="fa fa-calendar" style="font-size:.66rem;"></i>{{ s.submission_date }}
+                </span>
               {% else %}<span class="text-muted">—</span>{% endif %}
             </td>
             <td>
               {% if s.status == 'approved' %}
-                <span style="background:#f0fdf4;color:#15803d;font-size:.76rem;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid #bbf7d0;">Approved</span>
+                <span style="background:#f0fdf4;color:#15803d;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #bbf7d0;white-space:nowrap;">Approved</span>
               {% elif s.status == 'pending' %}
-                <span style="background:#fffbeb;color:#b45309;font-size:.76rem;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid #fde68a;">Pending</span>
+                <span style="background:#fffbeb;color:#b45309;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #fde68a;white-space:nowrap;">Pending</span>
               {% else %}
-                <span style="background:#f1f5f9;color:#64748b;font-size:.76rem;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;">Draft</span>
+                <span style="background:#f1f5f9;color:#64748b;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #e2e8f0;white-space:nowrap;">Draft</span>
               {% endif %}
-            </td>
-            <td>
-              {% if s.submission_date %}
-                <span style="display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;color:#15803d;font-size:.78rem;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid #bbf7d0;">
-                  <i class="fa fa-calendar" style="font-size:.7rem;"></i>{{ s.submission_date }}
-                </span>
-              {% else %}<span class="text-muted">—</span>{% endif %}
             </td>
             <td class="text-center">
               <div class="d-flex gap-1 justify-content-center">
@@ -111,12 +118,14 @@
             </td>
           </tr>
           {% empty %}
-          <tr id="emptyRow">
-            <td colspan="6" class="text-center py-5">
+          <tr>
+            <td colspan="10" class="text-center py-5">
               <div style="color:#94a3b8;">
                 <i class="fa fa-box-open fa-2x mb-3 d-block"></i>
-                <div style="font-size:.95rem;font-weight:500;">No samples found.</div>
-                {% if user.is_staff or user.is_superuser %}
+                <div style="font-size:.95rem;font-weight:500;">
+                  {% if q %}No samples match "{{ q }}".{% else %}No samples found.{% endif %}
+                </div>
+                {% if not q and user.is_staff or user.is_superuser %}
                 <a href="{% url 'sample_create' %}" class="btn btn-primary btn-sm mt-3">
                   <i class="fa fa-plus me-1"></i>Add your first sample
                 </a>
@@ -129,10 +138,54 @@
       </table>
     </div>
 
-    <div id="noSearchResult" class="text-center py-5" style="display:none!important;">
-      <i class="fa fa-magnifying-glass fa-2x text-muted mb-3 d-block"></i>
-      <div class="text-muted" style="font-size:.9rem;">No samples match your search.</div>
+    <!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pt-3 border-top">
+      <div style="font-size:.82rem;color:#64748b;">
+        Showing <strong>{{ page_obj.start_index }}–{{ page_obj.end_index }}</strong> of <strong>{{ total_count }}</strong> samples
+      </div>
+      <nav>
+        <ul class="pagination pagination-sm mb-0 gap-1">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}page={{ page_obj.previous_page_number }}" style="border-radius:6px;">
+              <i class="fa fa-chevron-left" style="font-size:.7rem;"></i>
+            </a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" style="border-radius:6px;"><i class="fa fa-chevron-left" style="font-size:.7rem;"></i></span>
+          </li>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+              <span class="page-link" style="border-radius:6px;background:#3b82f6;border-color:#3b82f6;">{{ num }}</span>
+            </li>
+            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+            <li class="page-item">
+              <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}page={{ num }}" style="border-radius:6px;">{{ num }}</a>
+            </li>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}page={{ page_obj.next_page_number }}" style="border-radius:6px;">
+              <i class="fa fa-chevron-right" style="font-size:.7rem;"></i>
+            </a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" style="border-radius:6px;"><i class="fa fa-chevron-right" style="font-size:.7rem;"></i></span>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
     </div>
+    {% endif %}
+
   </div>
 </div>
 
@@ -140,21 +193,13 @@
 
 {% block extra_js %}
 <script>
-  const searchInput = document.getElementById('sampleSearch');
-  const tableBody   = document.getElementById('sampleTableBody');
-  const noResult    = document.getElementById('noSearchResult');
-  if (searchInput && tableBody) {
-    searchInput.addEventListener('input', function () {
-      const q = this.value.toLowerCase().trim();
-      let visible = 0;
-      tableBody.querySelectorAll('tr').forEach(function (row) {
-        if (row.id === 'emptyRow') return;
-        const text = row.cells[1] ? row.cells[1].textContent.toLowerCase() : '';
-        const show = !q || text.includes(q);
-        row.style.display = show ? '' : 'none';
-        if (show) visible++;
-      });
-      if (noResult) noResult.style.setProperty('display', visible === 0 && q ? 'block' : 'none', 'important');
+  // Submit search form on typing with debounce
+  const si = document.querySelector('input[name="q"]');
+  if (si) {
+    let t;
+    si.addEventListener('input', function () {
+      clearTimeout(t);
+      t = setTimeout(() => this.closest('form').submit(), 400);
     });
   }
 </script>

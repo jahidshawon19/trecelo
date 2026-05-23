@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db.models import Q
 from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, Sample, StaffProfile
 from .forms import BrandForm, BuyerForm, CategoryForm, ChallengeInForm, GGForm, SampleForm, StaffForm
 
@@ -324,15 +326,31 @@ def challengein_delete(request, pk):
 # ---------- SAMPLE CRUD ----------
 @login_required
 def sample_list(request):
+    q = request.GET.get('q', '').strip()
     if request.user.is_staff or request.user.is_superuser:
-        samples = Sample.objects.select_related('buyer', 'maker__user').all()
+        qs = Sample.objects.select_related('buyer', 'maker__user').prefetch_related('gg').all()
     else:
         try:
             buyer = Buyer.objects.get(user=request.user)
-            samples = Sample.objects.select_related('buyer', 'maker__user').filter(buyer=buyer)
+            qs = Sample.objects.select_related('buyer', 'maker__user').prefetch_related('gg').filter(buyer=buyer)
         except Buyer.DoesNotExist:
-            samples = Sample.objects.none()
-    return render(request, 'sample_list.html', {'samples': samples})
+            qs = Sample.objects.none()
+    if q:
+        qs = qs.filter(
+            Q(style_number__icontains=q) |
+            Q(buyer__buyer_name__icontains=q) |
+            Q(sample_type__icontains=q) |
+            Q(color__icontains=q) |
+            Q(season__icontains=q)
+        )
+    paginator = Paginator(qs, 10)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'sample_list.html', {
+        'samples': page_obj,
+        'page_obj': page_obj,
+        'total_count': paginator.count,
+        'q': q,
+    })
 
 
 @login_required
