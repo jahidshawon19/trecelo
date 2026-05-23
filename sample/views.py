@@ -397,7 +397,7 @@ def sample_export_pdf(request):
 
     header = ['#', 'Style No', 'Buyer', 'Sample Type', 'GG', 'Color', 'Season', 'Sub. Date', 'Status']
     data = [header]
-    start = (paginator.get_page(page).start_index)
+    start = paginator.get_page(page).start_index()
     for i, s in enumerate(samples, start=start):
         gg_titles = ', '.join(g.title for g in s.gg.all()) or '—'
         data.append([
@@ -469,7 +469,7 @@ def sample_export_excel(request):
         cell.border    = border
         ws.column_dimensions[cell.column_letter].width = w
 
-    start = page_obj.start_index
+    start = page_obj.start_index()
     for i, s in enumerate(samples, start=start):
         row = i - start + 2
         ws.row_dimensions[row].height = 18
