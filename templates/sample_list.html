@@ -28,17 +28,31 @@
         <p class="mb-0 text-muted" style="font-size:.78rem;">All registered samples</p>
       </div>
       <div class="ms-auto d-flex gap-2 flex-wrap align-items-center">
-        <form method="get" class="d-flex gap-2 align-items-center">
+        <form method="get" id="filterForm" class="d-flex gap-2 flex-wrap align-items-center">
+          {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
           <div class="tbl-search">
             <i class="fa fa-magnifying-glass si"></i>
-            <input type="text" name="q" value="{{ q }}" placeholder="Search samples…" style="min-width:210px;">
+            <input type="text" name="q" id="sampleSearch" value="{{ q }}" placeholder="Search samples…" style="min-width:200px;">
           </div>
           {% if q %}
-          <a href="{% url 'sample_list' %}" class="btn btn-outline-secondary btn-sm" title="Clear search">
+          <a href="?{% if status %}status={{ status }}{% endif %}" class="btn btn-outline-secondary btn-sm" title="Clear search">
             <i class="fa fa-xmark"></i>
           </a>
           {% endif %}
         </form>
+
+        <!-- Export buttons (pass current filters + page) -->
+        <a href="{% url 'sample_export_pdf' %}?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.number }}"
+           class="btn btn-sm px-3"
+           style="background:#ef4444;color:#fff;border-radius:8px;height:36px;display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:.82rem;">
+          <i class="fa fa-file-pdf"></i> PDF
+        </a>
+        <a href="{% url 'sample_export_excel' %}?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.number }}"
+           class="btn btn-sm px-3"
+           style="background:#16a34a;color:#fff;border-radius:8px;height:36px;display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:.82rem;">
+          <i class="fa fa-file-excel"></i> Excel
+        </a>
+
         {% if user.is_staff or user.is_superuser %}
         <a href="{% url 'sample_create' %}" class="btn btn-primary btn-sm px-3" style="border-radius:8px;height:36px;display:inline-flex;align-items:center;gap:6px;">
           <i class="fa fa-plus"></i> Add Sample
@@ -46,11 +60,23 @@
         {% endif %}
       </div>
     </div>
+
+    <!-- Status filter pills -->
+    <div class="d-flex flex-wrap gap-2 mt-3">
+      <a href="?{% if q %}q={{ q }}&{% endif %}"
+         class="filter-pill {% if not status %}active{% endif %}">All</a>
+      <a href="?{% if q %}q={{ q }}&{% endif %}status=draft"
+         class="filter-pill {% if status == 'draft' %}active{% endif %}">Draft</a>
+      <a href="?{% if q %}q={{ q }}&{% endif %}status=pending"
+         class="filter-pill {% if status == 'pending' %}active{% endif %}">Pending</a>
+      <a href="?{% if q %}q={{ q }}&{% endif %}status=approved"
+         class="filter-pill {% if status == 'approved' %}active{% endif %}">Approved</a>
+    </div>
   </div>
 
   <div class="card-body pt-3">
     <div class="table-responsive">
-      <table class="bt" id="sampleTable">
+      <table class="bt">
         <thead>
           <tr>
             <th>#</th>
@@ -123,9 +149,9 @@
               <div style="color:#94a3b8;">
                 <i class="fa fa-box-open fa-2x mb-3 d-block"></i>
                 <div style="font-size:.95rem;font-weight:500;">
-                  {% if q %}No samples match "{{ q }}".{% else %}No samples found.{% endif %}
+                  {% if q or status %}No samples match the current filters.{% else %}No samples found.{% endif %}
                 </div>
-                {% if not q and user.is_staff or user.is_superuser %}
+                {% if not q and not status and user.is_staff or user.is_superuser %}
                 <a href="{% url 'sample_create' %}" class="btn btn-primary btn-sm mt-3">
                   <i class="fa fa-plus me-1"></i>Add your first sample
                 </a>
@@ -148,7 +174,7 @@
         <ul class="pagination pagination-sm mb-0 gap-1">
           {% if page_obj.has_previous %}
           <li class="page-item">
-            <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}page={{ page_obj.previous_page_number }}" style="border-radius:6px;">
+            <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.previous_page_number }}" style="border-radius:6px;">
               <i class="fa fa-chevron-left" style="font-size:.7rem;"></i>
             </a>
           </li>
@@ -165,14 +191,14 @@
             </li>
             {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
             <li class="page-item">
-              <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}page={{ num }}" style="border-radius:6px;">{{ num }}</a>
+              <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ num }}" style="border-radius:6px;">{{ num }}</a>
             </li>
             {% endif %}
           {% endfor %}
 
           {% if page_obj.has_next %}
           <li class="page-item">
-            <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}page={{ page_obj.next_page_number }}" style="border-radius:6px;">
+            <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.next_page_number }}" style="border-radius:6px;">
               <i class="fa fa-chevron-right" style="font-size:.7rem;"></i>
             </a>
           </li>
@@ -192,9 +218,18 @@
 {% endblock %}
 
 {% block extra_js %}
+<style>
+  .filter-pill {
+    display: inline-flex; align-items: center;
+    padding: 4px 14px; border-radius: 20px; font-size: .78rem; font-weight: 600;
+    border: 1.5px solid #e2e8f0; background: #f8fafc; color: #64748b;
+    text-decoration: none; transition: all .15s;
+  }
+  .filter-pill:hover { border-color: #93c5fd; color: #2563eb; background: #eff6ff; }
+  .filter-pill.active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+</style>
 <script>
-  // Submit search form on typing with debounce
-  const si = document.querySelector('input[name="q"]');
+  const si = document.getElementById('sampleSearch');
   if (si) {
     let t;
     si.addEventListener('input', function () {

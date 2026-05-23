@@ -1,9 +1,11 @@
+import io
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import HttpResponse
 from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, Sample, StaffProfile
 from .forms import BrandForm, BuyerForm, CategoryForm, ChallengeInForm, GGForm, SampleForm, StaffForm
 
@@ -323,18 +325,21 @@ def challengein_delete(request, pk):
     return render(request, 'confirm_delete.html', {'object': challenge})
 
 
-# ---------- SAMPLE CRUD ----------
-@login_required
-def sample_list(request):
-    q = request.GET.get('q', '').strip()
+# ---------- helpers ----------
+def _sample_queryset(request):
+    """Return the base Sample queryset filtered by the current user's role."""
     if request.user.is_staff or request.user.is_superuser:
-        qs = Sample.objects.select_related('buyer', 'maker__user').prefetch_related('gg').all()
-    else:
-        try:
-            buyer = Buyer.objects.get(user=request.user)
-            qs = Sample.objects.select_related('buyer', 'maker__user').prefetch_related('gg').filter(buyer=buyer)
-        except Buyer.DoesNotExist:
-            qs = Sample.objects.none()
+        return Sample.objects.select_related('buyer', 'maker__user').prefetch_related('gg').all()
+    try:
+        buyer = Buyer.objects.get(user=request.user)
+        return Sample.objects.select_related('buyer', 'maker__user').prefetch_related('gg').filter(buyer=buyer)
+    except Buyer.DoesNotExist:
+        return Sample.objects.none()
+
+
+def _apply_filters(qs, q, status):
+    if status:
+        qs = qs.filter(status=status)
     if q:
         qs = qs.filter(
             Q(style_number__icontains=q) |
@@ -343,14 +348,157 @@ def sample_list(request):
             Q(color__icontains=q) |
             Q(season__icontains=q)
         )
+    return qs
+
+
+# ---------- SAMPLE CRUD ----------
+@login_required
+def sample_list(request):
+    q      = request.GET.get('q', '').strip()
+    status = request.GET.get('status', '').strip()
+    qs     = _apply_filters(_sample_queryset(request), q, status)
     paginator = Paginator(qs, 10)
-    page_obj = paginator.get_page(request.GET.get('page'))
+    page_obj  = paginator.get_page(request.GET.get('page'))
     return render(request, 'sample_list.html', {
-        'samples': page_obj,
-        'page_obj': page_obj,
+        'samples':     page_obj,
+        'page_obj':    page_obj,
         'total_count': paginator.count,
-        'q': q,
+        'q':           q,
+        'status':      status,
     })
+
+
+@login_required
+def sample_export_pdf(request):
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.lib import colors
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import cm
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+
+    q      = request.GET.get('q', '').strip()
+    status = request.GET.get('status', '').strip()
+    page   = request.GET.get('page', 1)
+    qs     = _apply_filters(_sample_queryset(request), q, status)
+    paginator = Paginator(qs, 10)
+    samples   = list(paginator.get_page(page))
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="samples.pdf"'
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=landscape(A4),
+                            leftMargin=1.5*cm, rightMargin=1.5*cm,
+                            topMargin=1.5*cm, bottomMargin=1.5*cm)
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('title', parent=styles['Heading1'],
+                                 fontSize=14, spaceAfter=10)
+
+    header = ['#', 'Style No', 'Buyer', 'Sample Type', 'GG', 'Color', 'Season', 'Sub. Date', 'Status']
+    data = [header]
+    start = (paginator.get_page(page).start_index)
+    for i, s in enumerate(samples, start=start):
+        gg_titles = ', '.join(g.title for g in s.gg.all()) or '—'
+        data.append([
+            str(i),
+            s.style_number or '—',
+            s.buyer.buyer_name if s.buyer else '—',
+            s.sample_type or '—',
+            gg_titles,
+            s.color or '—',
+            str(s.season) if s.season else '—',
+            str(s.submission_date) if s.submission_date else '—',
+            s.get_status_display(),
+        ])
+
+    col_widths = [1*cm, 3*cm, 3.5*cm, 3*cm, 3*cm, 2.5*cm, 2*cm, 2.8*cm, 2.2*cm]
+    tbl = Table(data, colWidths=col_widths, repeatRows=1)
+    tbl.setStyle(TableStyle([
+        ('BACKGROUND',   (0, 0), (-1, 0), colors.HexColor('#1e293b')),
+        ('TEXTCOLOR',    (0, 0), (-1, 0), colors.white),
+        ('FONTNAME',     (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE',     (0, 0), (-1, 0), 8),
+        ('FONTSIZE',     (0, 1), (-1, -1), 8),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8fafc')]),
+        ('GRID',         (0, 0), (-1, -1), 0.4, colors.HexColor('#e2e8f0')),
+        ('ALIGN',        (0, 0), (-1, -1), 'LEFT'),
+        ('VALIGN',       (0, 0), (-1, -1), 'MIDDLE'),
+        ('PADDING',      (0, 0), (-1, -1), 6),
+    ]))
+
+    doc.build([Paragraph('Sample List', title_style), Spacer(1, 0.3*cm), tbl])
+    response.write(buffer.getvalue())
+    return response
+
+
+@login_required
+def sample_export_excel(request):
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+
+    q      = request.GET.get('q', '').strip()
+    status = request.GET.get('status', '').strip()
+    page   = request.GET.get('page', 1)
+    qs     = _apply_filters(_sample_queryset(request), q, status)
+    paginator = Paginator(qs, 10)
+    page_obj  = paginator.get_page(page)
+    samples   = list(page_obj)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Samples'
+
+    header_fill   = PatternFill('solid', fgColor='1E293B')
+    header_font   = Font(bold=True, color='FFFFFF', size=10)
+    center        = Alignment(horizontal='center', vertical='center')
+    left          = Alignment(horizontal='left', vertical='center')
+    thin          = Side(style='thin', color='E2E8F0')
+    border        = Border(left=thin, right=thin, top=thin, bottom=thin)
+    alt_fill      = PatternFill('solid', fgColor='F8FAFC')
+
+    headers = ['#', 'Style No', 'Buyer', 'Sample Type', 'GG', 'Color', 'Season', 'Submission Date', 'Status']
+    col_widths = [5, 18, 20, 18, 20, 14, 10, 18, 12]
+
+    ws.row_dimensions[1].height = 22
+    for col, (h, w) in enumerate(zip(headers, col_widths), start=1):
+        cell = ws.cell(row=1, column=col, value=h)
+        cell.font      = header_font
+        cell.fill      = header_fill
+        cell.alignment = center
+        cell.border    = border
+        ws.column_dimensions[cell.column_letter].width = w
+
+    start = page_obj.start_index
+    for i, s in enumerate(samples, start=start):
+        row = i - start + 2
+        ws.row_dimensions[row].height = 18
+        fill = alt_fill if (i % 2 == 0) else None
+        gg_titles = ', '.join(g.title for g in s.gg.all()) or '—'
+        values = [
+            i,
+            s.style_number or '—',
+            s.buyer.buyer_name if s.buyer else '—',
+            s.sample_type or '—',
+            gg_titles,
+            s.color or '—',
+            s.season or '—',
+            str(s.submission_date) if s.submission_date else '—',
+            s.get_status_display(),
+        ]
+        for col, val in enumerate(values, start=1):
+            cell = ws.cell(row=row, column=col, value=val)
+            cell.alignment = center if col == 1 else left
+            cell.border    = border
+            if fill:
+                cell.fill = fill
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="samples.xlsx"'
+    wb.save(response)
+    return response
 
 
 @login_required
