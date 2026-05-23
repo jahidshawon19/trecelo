@@ -360,11 +360,13 @@ def sample_list(request):
     paginator = Paginator(qs, 10)
     page_obj  = paginator.get_page(request.GET.get('page'))
     return render(request, 'sample_list.html', {
-        'samples':     page_obj,
-        'page_obj':    page_obj,
-        'total_count': paginator.count,
-        'q':           q,
-        'status':      status,
+        'samples':      page_obj,
+        'page_obj':     page_obj,
+        'total_count':  paginator.count,
+        'total_buyers': Buyer.objects.count(),
+        'total_makers': StaffProfile.objects.count(),
+        'q':            q,
+        'status':       status,
     })
 
 
