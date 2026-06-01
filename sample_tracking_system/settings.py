@@ -1,13 +1,14 @@
 import os
 import dj_database_url
 from pathlib import Path
+from decouple import config, Csv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ── Security ──────────────────────────────────────────────────────────────────
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-h5m&_@5-1u#)_5=0(vcmx2$ru)hq2dc%9_hj!1!v!d!!p7rao+')
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-h5m&_@5-1u#)_5=0(vcmx2$ru)hq2dc%9_hj!1!v!d!!p7rao+')
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = ['sample-tracking-qzpe.onrender.com', '*']
 
@@ -56,8 +57,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sample_tracking_system.wsgi.application'
 
 # ── Database ──────────────────────────────────────────────────────────────────
-# Uses DATABASE_URL env var when set (Render/production); falls back to MySQL locally
-_db_url = os.environ.get('DATABASE_URL')
+# Uses DATABASE_URL when set (Render/production); falls back to MySQL locally
+_db_url = config('DATABASE_URL', default='')
 if _db_url:
     DATABASES = {
         'default': dj_database_url.config(
@@ -69,11 +70,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE':   'django.db.backends.mysql',
-            'NAME':     os.environ.get('DB_NAME',     'sample_tracking'),
-            'USER':     os.environ.get('DB_USER',     'root'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-            'HOST':     os.environ.get('DB_HOST',     '127.0.0.1'),
-            'PORT':     os.environ.get('DB_PORT',     '3306'),
+            'NAME':     config('DB_NAME',     default='sample_tracking'),
+            'USER':     config('DB_USER',     default='root'),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST':     config('DB_HOST',     default='127.0.0.1'),
+            'PORT':     config('DB_PORT',     default='3306'),
             'OPTIONS':  {'charset': 'utf8mb4'},
         }
     }
