@@ -57,12 +57,26 @@ WSGI_APPLICATION = 'sample_tracking_system.wsgi.application'
 
 # ── Database ──────────────────────────────────────────────────────────────────
 # Uses DATABASE_URL env var when set (Render/production); falls back to MySQL locally
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-    )
-}
+_db_url = os.environ.get('DATABASE_URL')
+if _db_url:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=_db_url,
+            conn_max_age=600,
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE':   'django.db.backends.mysql',
+            'NAME':     os.environ.get('DB_NAME',     'sample_tracking'),
+            'USER':     os.environ.get('DB_USER',     'root'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST':     os.environ.get('DB_HOST',     '127.0.0.1'),
+            'PORT':     os.environ.get('DB_PORT',     '3306'),
+            'OPTIONS':  {'charset': 'utf8mb4'},
+        }
+    }
 
 # ── Password validation ───────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
