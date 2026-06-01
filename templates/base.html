@@ -308,8 +308,15 @@
   <span class="sidebar-section-label">Main</span>
   <ul class="sidebar-nav">
     <li>
+      <a href="{% url 'dashboard' %}"
+         class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+        <span class="nav-icon"><i class="fa fa-chart-pie"></i></span>
+        Dashboard
+      </a>
+    </li>
+    <li>
       <a href="{% url 'sample_list' %}"
-         class="{% if 'sample' in request.resolver_match.url_name %}active{% endif %}">
+         class="{% if 'sample' in request.resolver_match.url_name and request.resolver_match.url_name != 'dashboard' %}active{% endif %}">
         <span class="nav-icon"><i class="fa fa-boxes-stacked"></i></span>
         Samples
       </a>

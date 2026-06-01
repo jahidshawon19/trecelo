@@ -67,10 +67,12 @@ class Sample(models.Model):
     STATUS_PENDING  = 'pending'
     STATUS_APPROVED = 'approved'
     STATUS_DRAFT    = 'draft'
+    STATUS_REJECTED = 'rejected'
     STATUS_CHOICES  = [
         (STATUS_PENDING,  'Pending'),
         (STATUS_APPROVED, 'Approved'),
         (STATUS_DRAFT,    'Draft'),
+        (STATUS_REJECTED, 'Rejected'),
     ]
 
     style_number = models.CharField(max_length=100, blank=True, verbose_name="Style Number")

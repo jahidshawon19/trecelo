@@ -1,10 +1,12 @@
 import io
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.db.models.functions import TruncMonth
 from django.http import HttpResponse
 from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, Sample, StaffProfile
 from .forms import BrandForm, BuyerForm, CategoryForm, ChallengeInForm, GGForm, SampleForm, StaffForm
@@ -28,7 +30,7 @@ def user_login(request):
         )
         if user:
             login(request, user)
-            return redirect('sample_list')
+            return redirect('dashboard')
         return render(request, 'login.html', {'error': 'Invalid username or password. Please try again.'})
     return render(request, 'login.html')
 
@@ -37,6 +39,87 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('login')
+
+
+# ---------- DASHBOARD ----------
+@login_required
+def dashboard(request):
+    if request.user.is_staff or request.user.is_superuser:
+        sample_qs = Sample.objects.all()
+        total_buyers = Buyer.objects.count()
+        total_makers = StaffProfile.objects.count()
+    else:
+        try:
+            buyer = Buyer.objects.get(user=request.user)
+            sample_qs = Sample.objects.filter(buyer=buyer)
+        except Buyer.DoesNotExist:
+            sample_qs = Sample.objects.none()
+        total_buyers = 1
+        total_makers = 0
+
+    total_samples  = sample_qs.count()
+    total_approved = sample_qs.filter(status='approved').count()
+    total_pending  = sample_qs.filter(status='pending').count()
+    total_draft    = sample_qs.filter(status='draft').count()
+    total_rejected = sample_qs.filter(status='rejected').count()
+
+    # Doughnut — status distribution
+    status_chart = json.dumps({
+        'labels': ['Approved', 'Pending', 'Draft', 'Rejected'],
+        'data':   [total_approved, total_pending, total_draft, total_rejected],
+        'colors': ['#22c55e', '#f59e0b', '#94a3b8', '#ef4444'],
+    })
+
+    # Bar — top buyers by sample count
+    top_buyers = (
+        sample_qs.filter(buyer__isnull=False)
+        .values('buyer__buyer_name')
+        .annotate(count=Count('id'))
+        .order_by('-count')[:8]
+    )
+    buyer_chart = json.dumps({
+        'labels': [b['buyer__buyer_name'] for b in top_buyers],
+        'data':   [b['count'] for b in top_buyers],
+    })
+
+    # Line — monthly submissions
+    monthly = (
+        sample_qs.filter(submission_date__isnull=False)
+        .annotate(month=TruncMonth('submission_date'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('month')
+    )
+    monthly_chart = json.dumps({
+        'labels': [m['month'].strftime('%b %Y') for m in monthly],
+        'data':   [m['count'] for m in monthly],
+    })
+
+    # Pie — samples by sample type
+    by_type = (
+        sample_qs.filter(sample_type__gt='')
+        .values('sample_type')
+        .annotate(count=Count('id'))
+        .order_by('-count')[:6]
+    )
+    type_chart = json.dumps({
+        'labels': [t['sample_type'] for t in by_type],
+        'data':   [t['count'] for t in by_type],
+    })
+
+    return render(request, 'dashboard.html', {
+        'total_samples':  total_samples,
+        'total_buyers':   total_buyers,
+        'total_makers':   total_makers,
+        'total_approved': total_approved,
+        'total_pending':  total_pending,
+        'total_draft':    total_draft,
+        'total_rejected': total_rejected,
+        'status_chart':   status_chart,
+        'buyer_chart':    buyer_chart,
+        'monthly_chart':  monthly_chart,
+        'type_chart':     type_chart,
+    })
 
 
 # ---------- STAFF CRUD (SUPERADMIN ONLY) ----------
