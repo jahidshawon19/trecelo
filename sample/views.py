@@ -262,15 +262,8 @@ def category_delete(request, pk):
 @login_required
 @user_passes_test(is_superadmin)
 def brand_list(request):
-    brands = Brand.objects.all()
-    return render(request, 'lookup_list.html', {
-        'items': brands,
-        'title': 'Brands',
-        'create_url': 'brand_create',
-        'update_url': 'brand_update',
-        'delete_url': 'brand_delete',
-        'field': 'name',
-    })
+    brands = Brand.objects.annotate(style_count=Count('sample')).all()
+    return render(request, 'brand_list.html', {'brands': brands})
 
 
 @login_required

@@ -117,7 +117,7 @@ class CategoryForm(forms.ModelForm):
 class BrandForm(forms.ModelForm):
     class Meta:
         model = Brand
-        fields = ['name']
+        fields = ['name', 'origin']
 
 
 class GGForm(forms.ModelForm):

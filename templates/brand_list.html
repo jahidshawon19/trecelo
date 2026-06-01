@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Brands{% endblock %}
+{% block page_title %}Brands{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-body pb-0">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      <div>
+        <h5 class="mb-0 fw-bold" style="color:#1e293b;"><i class="fa fa-copyright me-2 text-primary"></i>Brands</h5>
+        <p class="mb-0 text-muted" style="font-size:.78rem;">Manage brands</p>
+      </div>
+      <div class="ms-auto d-flex gap-2 flex-wrap align-items-center">
+        <div class="tbl-search">
+          <i class="fa fa-magnifying-glass si"></i>
+          <input type="text" id="brandSearch" placeholder="Search brands…" style="min-width:200px;">
+        </div>
+        <a href="{% url 'brand_create' %}" class="btn btn-primary btn-sm px-3" style="border-radius:8px;height:36px;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fa fa-plus"></i> Add Brand
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body pt-3">
+    <div class="table-responsive">
+      <table class="bt">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Brand Name</th>
+            <th>Origin Country</th>
+            <th class="text-center">Styles</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="brandTableBody">
+          {% for brand in brands %}
+          <tr>
+            <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <div class="av av-orange">{{ brand.name|first|upper }}</div>
+                <span class="fw-semibold" style="color:#1e293b;">{{ brand.name }}</span>
+              </div>
+            </td>
+            <td>
+              {% if brand.origin %}
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa fa-globe" style="color:#94a3b8;font-size:.8rem;"></i>
+                <span style="font-size:.875rem;color:#475569;">{{ brand.origin }}</span>
+              </div>
+              {% else %}
+              <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <span style="background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;">{{ brand.style_count }}</span>
+            </td>
+            <td class="text-center">
+              <div class="d-flex gap-1 justify-content-center">
+                <a href="{% url 'brand_update' brand.pk %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
+                <a href="{% url 'brand_delete' brand.pk %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="text-center py-5">
+              <div style="color:#94a3b8;">
+                <i class="fa fa-copyright fa-2x mb-3 d-block"></i>
+                <div style="font-size:.95rem;font-weight:500;">No brands found.</div>
+                <a href="{% url 'brand_create' %}" class="btn btn-primary btn-sm mt-3">
+                  <i class="fa fa-plus me-1"></i>Add first brand
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div id="noBrandResult" class="text-center py-5" style="display:none!important;">
+      <i class="fa fa-magnifying-glass fa-2x text-muted mb-3 d-block"></i>
+      <div class="text-muted" style="font-size:.9rem;">No brands match your search.</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const s = document.getElementById('brandSearch');
+  const b = document.getElementById('brandTableBody');
+  const n = document.getElementById('noBrandResult');
+  if (s && b) {
+    s.addEventListener('input', function () {
+      const q = this.value.toLowerCase().trim();
+      let v = 0;
+      b.querySelectorAll('tr').forEach(function (row) {
+        const t = row.textContent.toLowerCase();
+        const show = !q || t.includes(q);
+        row.style.display = show ? '' : 'none';
+        if (show) v++;
+      });
+      if (n) n.style.setProperty('display', v === 0 && q ? 'block' : 'none', 'important');
+    });
+  }
+</script>
+{% endblock %}
