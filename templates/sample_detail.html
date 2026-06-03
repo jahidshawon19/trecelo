@@ -178,7 +178,7 @@
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Maker</th>
-              <td>{{ sample.maker.user.username|default:"—" }}</td>
+              <td>{% for m in sample.maker.all %}<span class="badge bg-info text-dark me-1">{{ m.user.username }}</span>{% empty %}—{% endfor %}</td>
             </tr>
             <tr>
               <th class="bg-light" style="font-size:.85rem;">Submission Date</th>
