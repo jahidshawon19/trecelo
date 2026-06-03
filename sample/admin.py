@@ -4,8 +4,8 @@ from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, Sam
 
 @admin.register(Sample)
 class SampleAdmin(admin.ModelAdmin):
-    list_display = ['style_number', 'buyer', 'submission_date']
-    list_filter = ['buyer']
+    list_display = ['style_number', 'buyer', 'maker', 'submission_date']
+    list_filter = ['buyer', 'maker']
     search_fields = ['style_number']
 
 

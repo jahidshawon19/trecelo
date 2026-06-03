@@ -405,10 +405,10 @@ def challengein_delete(request, pk):
 def _sample_queryset(request):
     """Return the base Sample queryset filtered by the current user's role."""
     if request.user.is_staff or request.user.is_superuser:
-        return Sample.objects.select_related('buyer').prefetch_related('gg', 'maker__user').all()
+        return Sample.objects.select_related('buyer', 'maker__user').prefetch_related('gg').all()
     try:
         buyer = Buyer.objects.get(user=request.user)
-        return Sample.objects.select_related('buyer').prefetch_related('gg', 'maker__user').filter(buyer=buyer)
+        return Sample.objects.select_related('buyer', 'maker__user').prefetch_related('gg').filter(buyer=buyer)
     except Buyer.DoesNotExist:
         return Sample.objects.none()
 
@@ -581,7 +581,7 @@ def sample_export_excel(request):
 
 @login_required
 def sample_detail(request, pk):
-    sample = get_object_or_404(Sample.objects.select_related('buyer').prefetch_related('maker__user'), pk=pk)
+    sample = get_object_or_404(Sample.objects.select_related('buyer', 'maker__user'), pk=pk)
     if not (request.user.is_staff or request.user.is_superuser):
         try:
             buyer = Buyer.objects.get(user=request.user)

@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth.models import User
-from django_select2.forms import ModelSelect2MultipleWidget
 from .models import Brand, Buyer, Category, ChallengeIn, GG, Sample, StaffProfile
 
 
@@ -106,11 +105,6 @@ class SampleForm(forms.ModelForm):
             'brand': forms.CheckboxSelectMultiple(),
             'gg': forms.CheckboxSelectMultiple(),
             'challenge_in': forms.CheckboxSelectMultiple(),
-            'maker': ModelSelect2MultipleWidget(
-                model=StaffProfile,
-                search_fields=['user__username', 'emp_id', 'designation'],
-                attrs={'data-placeholder': 'Search and select makers…', 'style': 'width:100%;'},
-            ),
         }
 
 

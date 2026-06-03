@@ -118,8 +118,10 @@ class Sample(models.Model):
     category = models.ManyToManyField(Category, blank=True)
     brand = models.ManyToManyField(Brand, blank=True, verbose_name="Brand Name")
     buyer = models.ForeignKey(Buyer, on_delete=models.CASCADE, null=True, blank=True)
-    maker = models.ManyToManyField(
+    maker = models.ForeignKey(
         StaffProfile,
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
         verbose_name="Maker Name",
     )
