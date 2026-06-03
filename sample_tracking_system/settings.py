@@ -57,7 +57,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sample_tracking_system.wsgi.application'
 
 # ── Database ──────────────────────────────────────────────────────────────────
-# Uses DATABASE_URL when set (Render/production); falls back to MySQL locally
+# Uses DATABASE_URL when set (Render/production); falls back to SQLite locally
 _db_url = config('DATABASE_URL', default='')
 if _db_url:
     DATABASES = {
@@ -69,13 +69,8 @@ if _db_url:
 else:
     DATABASES = {
         'default': {
-            'ENGINE':   'django.db.backends.mysql',
-            'NAME':     config('DB_NAME',     default='sample_tracking'),
-            'USER':     config('DB_USER',     default='root'),
-            'PASSWORD': config('DB_PASSWORD', default=''),
-            'HOST':     config('DB_HOST',     default='127.0.0.1'),
-            'PORT':     config('DB_PORT',     default='3306'),
-            'OPTIONS':  {'charset': 'utf8mb4'},
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME':   BASE_DIR / 'db.sqlite3',
         }
     }
 
