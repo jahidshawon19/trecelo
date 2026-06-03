@@ -105,6 +105,7 @@ class SampleForm(forms.ModelForm):
             'brand': forms.CheckboxSelectMultiple(),
             'gg': forms.CheckboxSelectMultiple(),
             'challenge_in': forms.CheckboxSelectMultiple(),
+            'maker': forms.CheckboxSelectMultiple(),
         }
 
 

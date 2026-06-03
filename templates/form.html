@@ -429,25 +429,11 @@
     renderControl();
   }
 
-  buildMultiDropdown('id_category', 'Select categories…');
-  buildMultiDropdown('id_brand',    'Select brands…');
-  buildMultiDropdown('id_gg',       'Select GG…');
-
-  // ── Pill-style (challenge_in only) ────────────────────────────────────────
-  (function() {
-    var container = document.getElementById('id_challenge_in');
-    if (!container) return;
-    // Works for both <ul> (old Django) and <div> (Django 6+)
-    container.classList.add('pill-group');
-    container.querySelectorAll('input[type=checkbox]').forEach(function(cb) {
-      var label = cb.closest('label');
-      if (!label) return;
-      if (cb.checked) label.classList.add('is-checked');
-      cb.addEventListener('change', function() {
-        label.classList.toggle('is-checked', this.checked);
-      });
-    });
-  })();
+  buildMultiDropdown('id_category',    'Select categories…');
+  buildMultiDropdown('id_brand',       'Select brands…');
+  buildMultiDropdown('id_gg',          'Select GG…');
+  buildMultiDropdown('id_challenge_in','Select challenge in…');
+  buildMultiDropdown('id_maker',       'Select makers…');
 
   // Bootstrap classes on inputs
   document.querySelectorAll(
