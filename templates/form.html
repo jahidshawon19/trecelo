@@ -187,54 +187,88 @@
 
 <style>
   .slot-label { font-size:.875rem; font-weight:600; color:#374151; margin-bottom:8px; }
-  /* Pill checkbox group */
+
+  /* ── Multi-Select Dropdown ───────────────────────── */
+  .msd-wrapper { position: relative; }
+  .msd-control {
+    border: 1.5px solid #e2e8f0; border-radius: 8px; background: #fff;
+    min-height: 42px; padding: 5px 36px 5px 10px; cursor: pointer;
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+    transition: border-color .15s, box-shadow .15s; position: relative;
+  }
+  .msd-control:hover { border-color: #cbd5e1; }
+  .msd-wrapper:focus-within .msd-control {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+    outline: none;
+  }
+  .msd-placeholder { color: #94a3b8; font-size: .85rem; line-height: 30px; }
+  .msd-pill {
+    background: #dbeafe; color: #1e40af; font-size: .74rem; font-weight: 600;
+    padding: 3px 8px 3px 10px; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  }
+  .msd-remove { cursor: pointer; font-size: .85rem; opacity: .6; font-weight: 400; line-height: 1; }
+  .msd-remove:hover { opacity: 1; }
+  .msd-caret {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    color: #94a3b8; font-size: .75rem; pointer-events: none; transition: transform .15s;
+  }
+  .msd-panel {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 1050;
+    background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.1); display: none; flex-direction: column;
+    overflow: hidden;
+  }
+  .msd-panel.open { display: flex; }
+  .msd-search-wrap { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; background: #fafafa; }
+  .msd-search {
+    width: 100%; border: 1.5px solid #e2e8f0; border-radius: 6px;
+    padding: 6px 10px; font-size: .82rem; outline: none; background: #fff;
+    box-sizing: border-box;
+  }
+  .msd-search:focus { border-color: #3b82f6; }
+  .msd-list { max-height: 220px; overflow-y: auto; padding: 4px 0; }
+  .msd-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 14px;
+    cursor: pointer; font-size: .85rem; color: #334155; transition: background .1s;
+    user-select: none;
+  }
+  .msd-item:hover { background: #f0f7ff; }
+  .msd-item.msd-selected { background: #eff6ff; font-weight: 500; }
+  .msd-check {
+    width: 16px; height: 16px; border: 1.5px solid #cbd5e1; border-radius: 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .65rem; color: #fff; flex-shrink: 0; background: #fff;
+    font-weight: 800; transition: all .1s;
+  }
+  .msd-item.msd-selected .msd-check { background: #3b82f6; border-color: #3b82f6; }
+  .msd-empty { padding: 14px; color: #94a3b8; font-size: .82rem; text-align: center; }
+
+  /* ── Pill checkbox group (challenge_in only) ──── */
   .pill-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px 14px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
-    background: #f8fafc;
-    min-height: 52px;
-    align-content: flex-start;
+    display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 14px;
+    border: 1.5px solid #e2e8f0; border-radius: 10px; background: #f8fafc;
+    min-height: 52px; align-content: flex-start;
   }
   .pill-group li { list-style: none; margin: 0; padding: 0; }
   .pill-group li label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 15px;
-    border-radius: 20px;
-    border: 1.5px solid #cbd5e1;
-    background: #fff;
-    color: #64748b;
-    font-size: .82rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all .15s ease;
-    user-select: none;
-    white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 15px; border-radius: 20px; border: 1.5px solid #cbd5e1;
+    background: #fff; color: #64748b; font-size: .82rem; font-weight: 500;
+    cursor: pointer; transition: all .15s ease; user-select: none; white-space: nowrap;
   }
   .pill-group li label:hover {
-    border-color: #93c5fd;
-    color: #2563eb;
-    background: #eff6ff;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(59,130,246,.12);
+    border-color: #93c5fd; color: #2563eb; background: #eff6ff;
+    transform: translateY(-1px); box-shadow: 0 2px 8px rgba(59,130,246,.12);
   }
   .pill-group li label.is-checked {
-    background: #3b82f6;
-    border-color: #3b82f6;
-    color: #fff;
-    box-shadow: 0 2px 10px rgba(59,130,246,.35);
-    transform: translateY(-1px);
+    background: #3b82f6; border-color: #3b82f6; color: #fff;
+    box-shadow: 0 2px 10px rgba(59,130,246,.35); transform: translateY(-1px);
   }
-  .pill-group li label.is-checked:hover {
-    background: #2563eb;
-    border-color: #2563eb;
-  }
+  .pill-group li label.is-checked:hover { background: #2563eb; border-color: #2563eb; }
   .pill-group li input[type=checkbox] { display: none; }
+
   .slot-preview {
     width:100%; height:110px; border:2px dashed #e2e8f0; border-radius:10px;
     overflow:hidden; background:#f8fafc; display:flex; align-items:center;
@@ -252,20 +286,159 @@
 </style>
 
 <script>
-  // Pill-style checkbox groups
-  ['id_category', 'id_brand', 'id_gg', 'id_challenge_in'].forEach(function (id) {
-    var ul = document.getElementById(id);
+  // ── Multi-Select Dropdown (category, brand, gg) ──────────────────────────
+  function buildMultiDropdown(ulId, placeholder) {
+    var ul = document.getElementById(ulId);
+    if (!ul || ul.tagName !== 'UL') return;
+    ul.style.display = 'none';
+
+    var wrapper = document.createElement('div');
+    wrapper.className = 'msd-wrapper';
+    ul.parentNode.insertBefore(wrapper, ul);
+
+    var control = document.createElement('div');
+    control.className = 'msd-control';
+    control.setAttribute('tabindex', '0');
+    wrapper.appendChild(control);
+
+    var panel = document.createElement('div');
+    panel.className = 'msd-panel';
+    wrapper.appendChild(panel);
+
+    var searchWrap = document.createElement('div');
+    searchWrap.className = 'msd-search-wrap';
+    var searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.className = 'msd-search';
+    searchInput.placeholder = 'Search…';
+    searchWrap.appendChild(searchInput);
+    panel.appendChild(searchWrap);
+
+    var optList = document.createElement('div');
+    optList.className = 'msd-list';
+    panel.appendChild(optList);
+
+    function getCheckboxes() {
+      return Array.from(ul.querySelectorAll('input[type=checkbox]'));
+    }
+
+    function getLabel(cb) {
+      var lbl = cb.closest('label');
+      return lbl ? lbl.textContent.trim() : cb.value;
+    }
+
+    function renderControl() {
+      control.innerHTML = '';
+      var checked = getCheckboxes().filter(function(cb){ return cb.checked; });
+      if (checked.length === 0) {
+        var ph = document.createElement('span');
+        ph.className = 'msd-placeholder';
+        ph.textContent = placeholder;
+        control.appendChild(ph);
+      } else {
+        checked.forEach(function(cb) {
+          var pill = document.createElement('span');
+          pill.className = 'msd-pill';
+          var txt = document.createTextNode(getLabel(cb) + ' ');
+          var rem = document.createElement('span');
+          rem.className = 'msd-remove';
+          rem.innerHTML = '&times;';
+          rem.addEventListener('click', function(e) {
+            e.stopPropagation();
+            cb.checked = false;
+            renderControl();
+            renderOptions(searchInput.value);
+          });
+          pill.appendChild(txt);
+          pill.appendChild(rem);
+          control.appendChild(pill);
+        });
+      }
+      var caret = document.createElement('span');
+      caret.className = 'msd-caret';
+      caret.innerHTML = panel.classList.contains('open') ? '&#9650;' : '&#9660;';
+      control.appendChild(caret);
+    }
+
+    function renderOptions(query) {
+      optList.innerHTML = '';
+      var q = query.toLowerCase().trim();
+      var boxes = getCheckboxes().filter(function(cb) {
+        return !q || getLabel(cb).toLowerCase().includes(q);
+      });
+      if (boxes.length === 0) {
+        optList.innerHTML = '<div class="msd-empty">No results found</div>';
+        return;
+      }
+      boxes.forEach(function(cb) {
+        var item = document.createElement('div');
+        item.className = 'msd-item' + (cb.checked ? ' msd-selected' : '');
+        var chk = document.createElement('span');
+        chk.className = 'msd-check';
+        chk.textContent = cb.checked ? '✓' : '';
+        var txt = document.createTextNode(getLabel(cb));
+        item.appendChild(chk);
+        item.appendChild(txt);
+        item.addEventListener('click', function() {
+          cb.checked = !cb.checked;
+          renderControl();
+          renderOptions(searchInput.value);
+        });
+        optList.appendChild(item);
+      });
+    }
+
+    function openPanel() {
+      document.querySelectorAll('.msd-panel.open').forEach(function(p){ p.classList.remove('open'); });
+      panel.classList.add('open');
+      searchInput.value = '';
+      renderOptions('');
+      renderControl();
+      setTimeout(function(){ searchInput.focus(); }, 0);
+    }
+
+    function closePanel() {
+      panel.classList.remove('open');
+      renderControl();
+    }
+
+    control.addEventListener('click', function() {
+      panel.classList.contains('open') ? closePanel() : openPanel();
+    });
+
+    control.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPanel(); }
+      if (e.key === 'Escape') closePanel();
+    });
+
+    searchInput.addEventListener('input', function() { renderOptions(this.value); });
+    searchInput.addEventListener('keydown', function(e) { if (e.key === 'Escape') closePanel(); });
+
+    document.addEventListener('click', function(e) {
+      if (!wrapper.contains(e.target)) closePanel();
+    });
+
+    renderControl();
+  }
+
+  buildMultiDropdown('id_category', 'Select categories…');
+  buildMultiDropdown('id_brand',    'Select brands…');
+  buildMultiDropdown('id_gg',       'Select GG…');
+
+  // ── Pill-style (challenge_in only) ────────────────────────────────────────
+  (function() {
+    var ul = document.getElementById('id_challenge_in');
     if (!ul || ul.tagName !== 'UL') return;
     ul.classList.add('pill-group');
-    ul.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+    ul.querySelectorAll('input[type=checkbox]').forEach(function(cb) {
       var label = cb.closest('label');
       if (!label) return;
       if (cb.checked) label.classList.add('is-checked');
-      cb.addEventListener('change', function () {
+      cb.addEventListener('change', function() {
         label.classList.toggle('is-checked', this.checked);
       });
     });
-  });
+  })();
 
   // Bootstrap classes on inputs
   document.querySelectorAll(
