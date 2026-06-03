@@ -287,14 +287,15 @@
 
 <script>
   // ── Multi-Select Dropdown (category, brand, gg) ──────────────────────────
-  function buildMultiDropdown(ulId, placeholder) {
-    var ul = document.getElementById(ulId);
-    if (!ul || ul.tagName !== 'UL') return;
-    ul.style.display = 'none';
+  // Django 6.x renders CheckboxSelectMultiple as <div id="..."> not <ul>
+  function buildMultiDropdown(containerId, placeholder) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.style.display = 'none';
 
     var wrapper = document.createElement('div');
     wrapper.className = 'msd-wrapper';
-    ul.parentNode.insertBefore(wrapper, ul);
+    container.parentNode.insertBefore(wrapper, container);
 
     var control = document.createElement('div');
     control.className = 'msd-control';
@@ -319,12 +320,17 @@
     panel.appendChild(optList);
 
     function getCheckboxes() {
-      return Array.from(ul.querySelectorAll('input[type=checkbox]'));
+      return Array.from(container.querySelectorAll('input[type=checkbox]'));
     }
 
     function getLabel(cb) {
       var lbl = cb.closest('label');
-      return lbl ? lbl.textContent.trim() : cb.value;
+      if (!lbl) return cb.value;
+      // Clone label, remove the input node, get remaining text
+      var clone = lbl.cloneNode(true);
+      var inp = clone.querySelector('input');
+      if (inp) inp.remove();
+      return clone.textContent.trim();
     }
 
     function renderControl() {
@@ -339,16 +345,16 @@
         checked.forEach(function(cb) {
           var pill = document.createElement('span');
           pill.className = 'msd-pill';
-          var txt = document.createTextNode(getLabel(cb) + ' ');
+          var txt = document.createTextNode(getLabel(cb) + ' ');
           var rem = document.createElement('span');
           rem.className = 'msd-remove';
           rem.innerHTML = '&times;';
-          rem.addEventListener('click', function(e) {
+          (function(checkbox){ rem.addEventListener('click', function(e) {
             e.stopPropagation();
-            cb.checked = false;
+            checkbox.checked = false;
             renderControl();
             renderOptions(searchInput.value);
-          });
+          }); })(cb);
           pill.appendChild(txt);
           pill.appendChild(rem);
           control.appendChild(pill);
@@ -379,11 +385,13 @@
         var txt = document.createTextNode(getLabel(cb));
         item.appendChild(chk);
         item.appendChild(txt);
-        item.addEventListener('click', function() {
-          cb.checked = !cb.checked;
-          renderControl();
-          renderOptions(searchInput.value);
-        });
+        (function(checkbox, el, chkSpan){
+          el.addEventListener('click', function() {
+            checkbox.checked = !checkbox.checked;
+            renderControl();
+            renderOptions(searchInput.value);
+          });
+        })(cb, item, chk);
         optList.appendChild(item);
       });
     }
@@ -427,10 +435,11 @@
 
   // ── Pill-style (challenge_in only) ────────────────────────────────────────
   (function() {
-    var ul = document.getElementById('id_challenge_in');
-    if (!ul || ul.tagName !== 'UL') return;
-    ul.classList.add('pill-group');
-    ul.querySelectorAll('input[type=checkbox]').forEach(function(cb) {
+    var container = document.getElementById('id_challenge_in');
+    if (!container) return;
+    // Works for both <ul> (old Django) and <div> (Django 6+)
+    container.classList.add('pill-group');
+    container.querySelectorAll('input[type=checkbox]').forEach(function(cb) {
       var label = cb.closest('label');
       if (!label) return;
       if (cb.checked) label.classList.add('is-checked');
