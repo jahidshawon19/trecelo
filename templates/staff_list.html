@@ -4,20 +4,20 @@
 
 {% block content %}
 
-<div class="card">
-  <div class="card-body pb-0">
-    <div class="d-flex flex-wrap align-items-center gap-3">
+<div class="bg-white rounded-xl shadow-sm">
+  <div class="p-5 pb-0">
+    <div class="flex flex-wrap items-center gap-3">
       <div>
-        <h5 class="mb-0 fw-bold" style="color:#1e293b;"><i class="fa fa-users me-2 text-primary"></i>R&D Team Members</h5>
-        <p class="mb-0 text-muted" style="font-size:.78rem;">Manage staff accounts</p>
+        <h5 class="mb-0 font-bold text-slate-800"><i class="fa fa-users mr-2 text-blue-500"></i>R&D Team Members</h5>
+        <p class="mb-0 text-slate-400 text-xs mt-0.5">Manage staff accounts</p>
       </div>
-      <div class="ms-auto d-flex gap-2 flex-wrap align-items-center">
+      <div class="ml-auto flex gap-2 flex-wrap items-center">
         <div class="tbl-search">
           <i class="fa fa-magnifying-glass si"></i>
           <input type="text" id="staffSearch" placeholder="Search members…" style="min-width:200px;">
         </div>
         {% if user.is_superuser %}
-        <a href="{% url 'staff_create' %}" class="btn btn-primary btn-sm px-3" style="border-radius:8px;height:36px;display:inline-flex;align-items:center;gap:6px;">
+        <a href="{% url 'staff_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
           <i class="fa fa-plus"></i> Add Member
         </a>
         {% endif %}
@@ -25,8 +25,8 @@
     </div>
   </div>
 
-  <div class="card-body pt-3">
-    <div class="table-responsive">
+  <div class="p-5 pt-3">
+    <div class="overflow-x-auto">
       <table class="bt">
         <thead>
           <tr>
@@ -44,10 +44,10 @@
           <tr>
             <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
             <td>
-              <div class="d-flex align-items-center gap-3">
+              <div class="flex items-center gap-3">
                 <div class="av av-green">{{ s.user.username|first|upper }}</div>
                 <div>
-                  <div class="fw-semibold" style="color:#1e293b;">{{ s.user.username }}</div>
+                  <div class="font-semibold text-slate-800">{{ s.user.username }}</div>
                   <div style="font-size:.75rem;color:#94a3b8;">{{ s.address|truncatechars:28 }}</div>
                 </div>
               </div>
@@ -65,12 +65,12 @@
             <td style="font-size:.875rem;color:#475569;">{{ s.designation }}</td>
             <td>
               <span style="display:inline-flex;align-items:center;gap:5px;font-size:.82rem;color:#475569;">
-                <i class="fa fa-phone text-muted" style="font-size:.7rem;"></i>{{ s.phone_number }}
+                <i class="fa fa-phone text-slate-400" style="font-size:.7rem;"></i>{{ s.phone_number }}
               </span>
             </td>
             {% if user.is_superuser %}
             <td class="text-center">
-              <div class="d-flex gap-1 justify-content-center">
+              <div class="flex gap-1 justify-center">
                 <a href="{% url 'staff_update' s.id %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
                 <a href="{% url 'staff_delete' s.id %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
               </div>
@@ -81,11 +81,11 @@
           <tr>
             <td colspan="7" class="text-center py-5">
               <div style="color:#94a3b8;">
-                <i class="fa fa-users fa-2x mb-3 d-block"></i>
+                <i class="fa fa-users fa-2x mb-3 block"></i>
                 <div style="font-size:.95rem;font-weight:500;">No staff members found.</div>
                 {% if user.is_superuser %}
-                <a href="{% url 'staff_create' %}" class="btn btn-primary btn-sm mt-3">
-                  <i class="fa fa-plus me-1"></i>Add first member
+                <a href="{% url 'staff_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline mt-3">
+                  <i class="fa fa-plus mr-1"></i>Add first member
                 </a>
                 {% endif %}
               </div>
@@ -97,8 +97,8 @@
     </div>
 
     <div id="noStaffResult" class="text-center py-5" style="display:none!important;">
-      <i class="fa fa-magnifying-glass fa-2x text-muted mb-3 d-block"></i>
-      <div class="text-muted" style="font-size:.9rem;">No members match your search.</div>
+      <i class="fa fa-magnifying-glass fa-2x text-slate-400 mb-3 block"></i>
+      <div class="text-slate-400" style="font-size:.9rem;">No members match your search.</div>
     </div>
   </div>
 </div>

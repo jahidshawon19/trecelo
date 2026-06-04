@@ -4,43 +4,42 @@
 
 {% block content %}
 
-
-<div class="card">
+<div class="bg-white rounded-xl shadow-sm">
   <!-- Toolbar -->
-  <div class="card-body pb-0">
-    <div class="d-flex flex-wrap align-items-center gap-3">
+  <div class="p-5 pb-0">
+    <div class="flex flex-wrap items-center gap-3">
       <div>
-        <h5 class="mb-0 fw-bold" style="color:#1e293b;">Sample List</h5>
-        <p class="mb-0 text-muted" style="font-size:.78rem;">All registered samples</p>
+        <h5 class="mb-0 font-bold text-slate-800">Sample List</h5>
+        <p class="mb-0 text-slate-400 text-xs mt-0.5">All registered samples</p>
       </div>
-      <div class="ms-auto d-flex gap-2 flex-wrap align-items-center">
-        <form method="get" id="filterForm" class="d-flex gap-2 flex-wrap align-items-center">
+      <div class="ml-auto flex gap-2 flex-wrap items-center">
+        <form method="get" id="filterForm" class="flex gap-2 flex-wrap items-center">
           {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
           <div class="tbl-search">
             <i class="fa fa-magnifying-glass si"></i>
             <input type="text" name="q" id="sampleSearch" value="{{ q }}" placeholder="Search samples…" style="min-width:200px;">
           </div>
           {% if q %}
-          <a href="?{% if status %}status={{ status }}{% endif %}" class="btn btn-outline-secondary btn-sm" title="Clear search">
+          <a href="?{% if status %}status={{ status }}{% endif %}" class="border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors no-underline" title="Clear search">
             <i class="fa fa-xmark"></i>
           </a>
           {% endif %}
         </form>
 
-        <!-- Export buttons (pass current filters + page) -->
+        <!-- Export buttons -->
         <a href="{% url 'sample_export_pdf' %}?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.number }}"
-           class="btn btn-sm px-3"
-           style="background:#ef4444;color:#fff;border-radius:8px;height:36px;display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:.82rem;">
+           class="no-underline inline-flex items-center gap-1.5 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+           style="background:#ef4444;">
           <i class="fa fa-file-pdf"></i> PDF
         </a>
         <a href="{% url 'sample_export_excel' %}?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.number }}"
-           class="btn btn-sm px-3"
-           style="background:#16a34a;color:#fff;border-radius:8px;height:36px;display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:.82rem;">
+           class="no-underline inline-flex items-center gap-1.5 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+           style="background:#16a34a;">
           <i class="fa fa-file-excel"></i> Excel
         </a>
 
         {% if user.is_staff or user.is_superuser %}
-        <a href="{% url 'sample_create' %}" class="btn btn-primary btn-sm px-3" style="border-radius:8px;height:36px;display:inline-flex;align-items:center;gap:6px;">
+        <a href="{% url 'sample_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
           <i class="fa fa-plus"></i> Add Sample
         </a>
         {% endif %}
@@ -48,7 +47,7 @@
     </div>
 
     <!-- Status filter pills -->
-    <div class="d-flex flex-wrap gap-2 mt-3">
+    <div class="flex flex-wrap gap-2 mt-3">
       <a href="?{% if q %}q={{ q }}&{% endif %}"
          class="filter-pill {% if not status %}active{% endif %}">All</a>
       <a href="?{% if q %}q={{ q }}&{% endif %}status=draft"
@@ -60,8 +59,8 @@
     </div>
   </div>
 
-  <div class="card-body pt-3">
-    <div class="table-responsive">
+  <div class="p-5 pt-3">
+    <div class="overflow-x-auto">
       <table class="bt">
         <thead>
           <tr>
@@ -82,24 +81,24 @@
           <tr>
             <td style="color:#94a3b8;font-size:.8rem;width:36px;">{{ page_obj.start_index|add:forloop.counter0 }}</td>
             <td>
-              <div class="d-flex align-items-center gap-2">
+              <div class="flex items-center gap-2">
                 <div class="av av-blue" style="width:30px;height:30px;font-size:.7rem;flex-shrink:0;">{{ s.style_number|default:"S"|first|upper }}</div>
-                <span class="fw-semibold" style="color:#1e293b;font-size:.875rem;">{{ s.style_number|default:"—" }}</span>
+                <span class="font-semibold" style="color:#1e293b;font-size:.875rem;">{{ s.style_number|default:"—" }}</span>
               </div>
             </td>
             <td>
               {% if s.buyer %}
-              <div class="d-flex align-items-center gap-2">
+              <div class="flex items-center gap-2">
                 <div class="av av-purple" style="width:28px;height:28px;font-size:.68rem;flex-shrink:0;">{{ s.buyer.buyer_name|first|upper }}</div>
                 <span style="font-size:.82rem;">{{ s.buyer.buyer_name }}</span>
               </div>
-              {% else %}<span class="text-muted">—</span>{% endif %}
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
             </td>
             <td style="font-size:.82rem;color:#475569;">{{ s.sample_type|default:"—" }}</td>
             <td>
               {% for g in s.gg.all %}
                 <span style="background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;">{{ g.title }}</span>
-              {% empty %}<span class="text-muted">—</span>{% endfor %}
+              {% empty %}<span class="text-slate-400">—</span>{% endfor %}
             </td>
             <td style="font-size:.82rem;color:#475569;">{{ s.color|default:"—" }}</td>
             <td style="font-size:.82rem;color:#475569;">{{ s.season|default:"—" }}</td>
@@ -108,7 +107,7 @@
                 <span style="display:inline-flex;align-items:center;gap:4px;background:#f0fdf4;color:#15803d;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #bbf7d0;white-space:nowrap;">
                   <i class="fa fa-calendar" style="font-size:.66rem;"></i>{{ s.submission_date }}
                 </span>
-              {% else %}<span class="text-muted">—</span>{% endif %}
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
             </td>
             <td>
               {% if s.status == 'approved' %}
@@ -120,7 +119,7 @@
               {% endif %}
             </td>
             <td class="text-center">
-              <div class="d-flex gap-1 justify-content-center">
+              <div class="flex gap-1 justify-center">
                 <a href="{% url 'sample_detail' s.id %}" class="btn-act view" title="View"><i class="fa fa-eye"></i></a>
                 {% if user.is_staff or user.is_superuser %}
                 <a href="{% url 'sample_update' s.id %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
@@ -133,13 +132,13 @@
           <tr>
             <td colspan="10" class="text-center py-5">
               <div style="color:#94a3b8;">
-                <i class="fa fa-box-open fa-2x mb-3 d-block"></i>
+                <i class="fa fa-box-open fa-2x mb-3 block"></i>
                 <div style="font-size:.95rem;font-weight:500;">
                   {% if q or status %}No samples match the current filters.{% else %}No samples found.{% endif %}
                 </div>
                 {% if not q and not status and user.is_staff or user.is_superuser %}
-                <a href="{% url 'sample_create' %}" class="btn btn-primary btn-sm mt-3">
-                  <i class="fa fa-plus me-1"></i>Add your first sample
+                <a href="{% url 'sample_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline mt-3">
+                  <i class="fa fa-plus mr-1"></i>Add your first sample
                 </a>
                 {% endif %}
               </div>
@@ -152,45 +151,49 @@
 
     <!-- Pagination -->
     {% if page_obj.paginator.num_pages > 1 %}
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pt-3 border-top">
+    <div class="flex flex-wrap items-center justify-between gap-3 mt-4 pt-3 border-t border-slate-100">
       <div style="font-size:.82rem;color:#64748b;">
         Showing <strong>{{ page_obj.start_index }}–{{ page_obj.end_index }}</strong> of <strong>{{ total_count }}</strong> samples
       </div>
       <nav>
-        <ul class="pagination pagination-sm mb-0 gap-1">
+        <ul class="flex gap-1 mb-0 list-none p-0">
           {% if page_obj.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.previous_page_number }}" style="border-radius:6px;">
+          <li>
+            <a class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs no-underline" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.previous_page_number }}">
               <i class="fa fa-chevron-left" style="font-size:.7rem;"></i>
             </a>
           </li>
           {% else %}
-          <li class="page-item disabled">
-            <span class="page-link" style="border-radius:6px;"><i class="fa fa-chevron-left" style="font-size:.7rem;"></i></span>
+          <li>
+            <span class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-100 text-slate-300 text-xs cursor-not-allowed">
+              <i class="fa fa-chevron-left" style="font-size:.7rem;"></i>
+            </span>
           </li>
           {% endif %}
 
           {% for num in page_obj.paginator.page_range %}
             {% if page_obj.number == num %}
-            <li class="page-item active">
-              <span class="page-link" style="border-radius:6px;background:#3b82f6;border-color:#3b82f6;">{{ num }}</span>
+            <li>
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-md text-white text-xs font-semibold" style="background:#3b82f6;">{{ num }}</span>
             </li>
             {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
-            <li class="page-item">
-              <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ num }}" style="border-radius:6px;">{{ num }}</a>
+            <li>
+              <a class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs no-underline" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ num }}">{{ num }}</a>
             </li>
             {% endif %}
           {% endfor %}
 
           {% if page_obj.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.next_page_number }}" style="border-radius:6px;">
+          <li>
+            <a class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs no-underline" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.next_page_number }}">
               <i class="fa fa-chevron-right" style="font-size:.7rem;"></i>
             </a>
           </li>
           {% else %}
-          <li class="page-item disabled">
-            <span class="page-link" style="border-radius:6px;"><i class="fa fa-chevron-right" style="font-size:.7rem;"></i></span>
+          <li>
+            <span class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-100 text-slate-300 text-xs cursor-not-allowed">
+              <i class="fa fa-chevron-right" style="font-size:.7rem;"></i>
+            </span>
           </li>
           {% endif %}
         </ul>

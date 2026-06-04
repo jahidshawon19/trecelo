@@ -4,27 +4,27 @@
 
 {% block content %}
 
-<div class="card">
-  <div class="card-body pb-0">
-    <div class="d-flex flex-wrap align-items-center gap-3">
+<div class="bg-white rounded-xl shadow-sm">
+  <div class="p-5 pb-0">
+    <div class="flex flex-wrap items-center gap-3">
       <div>
-        <h5 class="mb-0 fw-bold" style="color:#1e293b;"><i class="fa fa-tags me-2 text-primary"></i>{{ title }}</h5>
-        <p class="mb-0 text-muted" style="font-size:.78rem;">Manage {{ title|lower }}</p>
+        <h5 class="mb-0 font-bold text-slate-800"><i class="fa fa-tags mr-2 text-blue-500"></i>{{ title }}</h5>
+        <p class="mb-0 text-slate-400 text-xs mt-0.5">Manage {{ title|lower }}</p>
       </div>
-      <div class="ms-auto d-flex gap-2 flex-wrap align-items-center">
+      <div class="ml-auto flex gap-2 flex-wrap items-center">
         <div class="tbl-search">
           <i class="fa fa-magnifying-glass si"></i>
           <input type="text" id="lookupSearch" placeholder="Search {{ title|lower }}…" style="min-width:200px;">
         </div>
-        <a href="{% url create_url %}" class="btn btn-primary btn-sm px-3" style="border-radius:8px;height:36px;display:inline-flex;align-items:center;gap:6px;">
+        <a href="{% url create_url %}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
           <i class="fa fa-plus"></i> Add {{ title|slice:":-1" }}
         </a>
       </div>
     </div>
   </div>
 
-  <div class="card-body pt-3">
-    <div class="table-responsive">
+  <div class="p-5 pt-3">
+    <div class="overflow-x-auto">
       <table class="bt">
         <thead>
           <tr>
@@ -38,13 +38,13 @@
           <tr>
             <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
             <td>
-              <div class="d-flex align-items-center gap-3">
+              <div class="flex items-center gap-3">
                 <div class="av av-blue">{{ item|stringformat:"s"|slice:"0:1"|upper }}</div>
-                <span class="fw-semibold" style="color:#1e293b;">{{ item }}</span>
+                <span class="font-semibold text-slate-800">{{ item }}</span>
               </div>
             </td>
             <td class="text-center">
-              <div class="d-flex gap-1 justify-content-center">
+              <div class="flex gap-1 justify-center">
                 <a href="{% url update_url item.pk %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
                 <a href="{% url delete_url item.pk %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
               </div>
@@ -54,10 +54,10 @@
           <tr id="emptyRow">
             <td colspan="3" class="text-center py-5">
               <div style="color:#94a3b8;">
-                <i class="fa fa-tags fa-2x mb-3 d-block"></i>
+                <i class="fa fa-tags fa-2x mb-3 block"></i>
                 <div style="font-size:.95rem;font-weight:500;">No {{ title|lower }} found.</div>
-                <a href="{% url create_url %}" class="btn btn-primary btn-sm mt-3">
-                  <i class="fa fa-plus me-1"></i>Add your first one
+                <a href="{% url create_url %}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline mt-3">
+                  <i class="fa fa-plus mr-1"></i>Add your first one
                 </a>
               </div>
             </td>
@@ -68,8 +68,8 @@
     </div>
 
     <div id="noSearchResult" class="text-center py-5" style="display:none!important;">
-      <i class="fa fa-magnifying-glass fa-2x text-muted mb-3 d-block"></i>
-      <div class="text-muted" style="font-size:.9rem;">No {{ title|lower }} match your search.</div>
+      <i class="fa fa-magnifying-glass fa-2x text-slate-400 mb-3 block"></i>
+      <div class="text-slate-400" style="font-size:.9rem;">No {{ title|lower }} match your search.</div>
     </div>
   </div>
 </div>

@@ -6,48 +6,49 @@
 {% block content %}
 
 <!-- Breadcrumb + actions -->
-<div class="d-flex flex-wrap align-items-center gap-2 mb-4">
-  <nav aria-label="breadcrumb" class="me-auto">
-    <ol class="breadcrumb mb-0">
-      <li class="breadcrumb-item">
-        <a href="{% url 'sample_list' %}" class="text-decoration-none text-primary">
-          <i class="fa fa-boxes-stacked me-1"></i>Samples
+<div class="flex flex-wrap items-center gap-2 mb-4">
+  <nav aria-label="breadcrumb" class="mr-auto">
+    <ol class="flex items-center gap-1.5 text-sm mb-0">
+      <li>
+        <a href="{% url 'sample_list' %}" class="no-underline text-blue-500">
+          <i class="fa fa-boxes-stacked mr-1"></i>Samples
         </a>
       </li>
-      <li class="breadcrumb-item active">{{ sample.style_number|default:"Sample" }}</li>
+      <li class="text-slate-400">/</li>
+      <li class="text-slate-500">{{ sample.style_number|default:"Sample" }}</li>
     </ol>
   </nav>
   {% if user.is_staff or user.is_superuser %}
-  <a href="{% url 'sample_update' sample.id %}" class="btn btn-warning btn-sm">
-    <i class="fa fa-pen me-1"></i>Edit
+  <a href="{% url 'sample_update' sample.id %}" class="bg-amber-400 hover:bg-amber-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline">
+    <i class="fa fa-pen mr-1"></i>Edit
   </a>
-  <a href="{% url 'sample_delete' sample.id %}" class="btn btn-danger btn-sm">
-    <i class="fa fa-trash me-1"></i>Delete
+  <a href="{% url 'sample_delete' sample.id %}" class="bg-red-500 hover:bg-red-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline">
+    <i class="fa fa-trash mr-1"></i>Delete
   </a>
   {% endif %}
-  <a href="{% url 'sample_list' %}" class="btn btn-outline-secondary btn-sm">
-    <i class="fa fa-arrow-left me-1"></i>Back
+  <a href="{% url 'sample_list' %}" class="border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline">
+    <i class="fa fa-arrow-left mr-1"></i>Back
   </a>
 </div>
 
 <!-- ── Three Image Slots ──────────────────────────────────────────── -->
-<div class="card mb-4">
-  <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
-    <i class="fa fa-images me-2 text-primary"></i>Sample Images
+<div class="bg-white rounded-xl shadow-sm mb-4">
+  <div class="px-5 py-4 border-b border-slate-100 font-semibold bg-white rounded-t-xl">
+    <i class="fa fa-images mr-2 text-blue-500"></i>Sample Images
   </div>
-  <div class="card-body">
-    <div class="row g-3">
+  <div class="p-5">
+    <div class="flex flex-wrap gap-3">
 
       <!-- Front Part -->
-      <div class="col-6 col-sm-3 col-md-2">
+      <div style="min-width:130px;max-width:160px;">
         <div class="text-center">
-          <div class="mb-2 d-flex align-items-center justify-content-center gap-2">
-            <span class="badge bg-primary" style="font-size:.8rem;">1</span>
+          <div class="mb-2 flex items-center justify-center gap-2">
+            <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">1</span>
             <span style="font-weight:600;font-size:.9rem;color:#374151;">Front Part</span>
           </div>
           {% if sample.front_part_image %}
             <a href="{{ sample.front_part_image.url }}"
-               data-bs-toggle="modal" data-bs-target="#lightboxModal"
+               class="lightbox-trigger"
                data-img="{{ sample.front_part_image.url }}" data-caption="Front Part">
               <div class="img-slot filled">
                 <img src="{{ sample.front_part_image.url }}" alt="Front Part">
@@ -56,23 +57,23 @@
             </a>
           {% else %}
             <div class="img-slot empty">
-              <i class="fa fa-image fa-2x text-muted mb-2 d-block"></i>
-              <span class="text-muted small">Not uploaded</span>
+              <i class="fa fa-image fa-2x text-slate-400 mb-2 block"></i>
+              <span class="text-slate-400 text-sm">Not uploaded</span>
             </div>
           {% endif %}
         </div>
       </div>
 
       <!-- Back Part -->
-      <div class="col-6 col-sm-3 col-md-2">
+      <div style="min-width:130px;max-width:160px;">
         <div class="text-center">
-          <div class="mb-2 d-flex align-items-center justify-content-center gap-2">
-            <span class="badge bg-primary" style="font-size:.8rem;">2</span>
+          <div class="mb-2 flex items-center justify-center gap-2">
+            <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">2</span>
             <span style="font-weight:600;font-size:.9rem;color:#374151;">Back Part</span>
           </div>
           {% if sample.back_part_image %}
             <a href="{{ sample.back_part_image.url }}"
-               data-bs-toggle="modal" data-bs-target="#lightboxModal"
+               class="lightbox-trigger"
                data-img="{{ sample.back_part_image.url }}" data-caption="Back Part">
               <div class="img-slot filled">
                 <img src="{{ sample.back_part_image.url }}" alt="Back Part">
@@ -81,8 +82,8 @@
             </a>
           {% else %}
             <div class="img-slot empty">
-              <i class="fa fa-image fa-2x text-muted mb-2 d-block"></i>
-              <span class="text-muted small">Not uploaded</span>
+              <i class="fa fa-image fa-2x text-slate-400 mb-2 block"></i>
+              <span class="text-slate-400 text-sm">Not uploaded</span>
             </div>
           {% endif %}
         </div>
@@ -93,18 +94,18 @@
 </div>
 
 <!-- ── Challenge Part Images ─────────────────────────────────────────── -->
-<div class="card mb-4">
-  <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
-    <i class="fa fa-triangle-exclamation me-2 text-warning"></i>Challenge Part Images
+<div class="bg-white rounded-xl shadow-sm mb-4">
+  <div class="px-5 py-4 border-b border-slate-100 font-semibold bg-white rounded-t-xl">
+    <i class="fa fa-triangle-exclamation mr-2 text-amber-500"></i>Challenge Part Images
   </div>
-  <div class="card-body">
+  <div class="p-5">
     {% with challenge_images=sample.challenge_images.all %}
     {% if challenge_images %}
-      <div class="row g-3">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
         {% for ci in challenge_images %}
-        <div class="col-6 col-md-3">
+        <div>
           <a href="{{ ci.image.url }}"
-             data-bs-toggle="modal" data-bs-target="#lightboxModal"
+             class="lightbox-trigger"
              data-img="{{ ci.image.url }}" data-caption="Challenge Part {{ forloop.counter }}">
             <div class="img-slot filled">
               <img src="{{ ci.image.url }}" alt="Challenge Part {{ forloop.counter }}">
@@ -116,8 +117,8 @@
       </div>
     {% else %}
       <div class="text-center py-3" style="color:#94a3b8;">
-        <i class="fa fa-image fa-2x mb-2 d-block"></i>
-        <span class="small">No challenge images uploaded</span>
+        <i class="fa fa-image fa-2x mb-2 block"></i>
+        <span class="text-sm">No challenge images uploaded</span>
       </div>
     {% endif %}
     {% endwith %}
@@ -125,99 +126,95 @@
 </div>
 
 <!-- ── Info Cards ─────────────────────────────────────────────────── -->
-<div class="row g-4 mb-4">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
 
   <!-- Basic Info -->
-  <div class="col-lg-6">
-    <div class="card h-100">
-      <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
-        <i class="fa fa-circle-info me-2 text-primary"></i>Basic Information
-      </div>
-      <div class="card-body p-0">
-        <table class="table table-bordered mb-0">
-          <tbody>
-            <tr>
-              <th class="bg-light" style="width:42%;font-size:.85rem;">Style Number</th>
-              <td>{{ sample.style_number|default:"—" }}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Sample Type</th>
-              <td>{{ sample.sample_type|default:"—" }}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Color</th>
-              <td>{{ sample.color|default:"—" }}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Season</th>
-              <td>{{ sample.season|default:"—" }}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Status</th>
-              <td>
-                {% if sample.status == 'approved' %}
-                  <span class="badge bg-success">Approved</span>
-                {% elif sample.status == 'pending' %}
-                  <span class="badge bg-warning text-dark">Pending</span>
-                {% else %}
-                  <span class="badge bg-secondary">Draft</span>
-                {% endif %}
-              </td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Category</th>
-              <td>{% for c in sample.category.all %}<span class="badge bg-primary me-1">{{ c.name }}</span>{% empty %}—{% endfor %}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Brand Name</th>
-              <td>{% for b in sample.brand.all %}<span class="badge bg-secondary me-1">{{ b.name }}</span>{% empty %}—{% endfor %}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Buyer</th>
-              <td>{{ sample.buyer.buyer_name|default:"—" }}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Maker</th>
-              <td>{% for m in sample.maker.all %}<span class="badge bg-info text-dark me-1">{{ m.user.username }}</span>{% empty %}—{% endfor %}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Submission Date</th>
-              <td>
-                {% if sample.submission_date %}
-                  <span class="badge bg-primary" style="font-size:.82rem;">{{ sample.submission_date }}</span>
-                {% else %}<span class="text-muted">—</span>{% endif %}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="bg-white rounded-xl shadow-sm h-full">
+    <div class="px-5 py-4 border-b border-slate-100 font-semibold bg-white rounded-t-xl">
+      <i class="fa fa-circle-info mr-2 text-blue-500"></i>Basic Information
+    </div>
+    <div>
+      <table class="w-full border-collapse text-sm">
+        <tbody>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="width:42%;font-size:.85rem;">Style Number</th>
+            <td class="px-4 py-3 text-slate-700">{{ sample.style_number|default:"—" }}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Sample Type</th>
+            <td class="px-4 py-3 text-slate-700">{{ sample.sample_type|default:"—" }}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Color</th>
+            <td class="px-4 py-3 text-slate-700">{{ sample.color|default:"—" }}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Season</th>
+            <td class="px-4 py-3 text-slate-700">{{ sample.season|default:"—" }}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Status</th>
+            <td class="px-4 py-3">
+              {% if sample.status == 'approved' %}
+                <span class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">Approved</span>
+              {% elif sample.status == 'pending' %}
+                <span class="bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-0.5 rounded-full">Pending</span>
+              {% else %}
+                <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2 py-0.5 rounded-full">Draft</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Category</th>
+            <td class="px-4 py-3">{% for c in sample.category.all %}<span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full mr-1">{{ c.name }}</span>{% empty %}—{% endfor %}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Brand Name</th>
+            <td class="px-4 py-3">{% for b in sample.brand.all %}<span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2 py-0.5 rounded-full mr-1">{{ b.name }}</span>{% empty %}—{% endfor %}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Buyer</th>
+            <td class="px-4 py-3 text-slate-700">{{ sample.buyer.buyer_name|default:"—" }}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Maker</th>
+            <td class="px-4 py-3">{% for m in sample.maker.all %}<span class="bg-cyan-100 text-cyan-700 text-xs font-semibold px-2 py-0.5 rounded-full mr-1">{{ m.user.username }}</span>{% empty %}—{% endfor %}</td>
+          </tr>
+          <tr>
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Submission Date</th>
+            <td class="px-4 py-3">
+              {% if sample.submission_date %}
+                <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">{{ sample.submission_date }}</span>
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
   <!-- Technical Specs -->
-  <div class="col-lg-6">
-    <div class="card h-100">
-      <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
-        <i class="fa fa-sliders me-2 text-primary"></i>Technical Specifications
-      </div>
-      <div class="card-body p-0">
-        <table class="table table-bordered mb-0">
-          <tbody>
-            <tr>
-              <th class="bg-light" style="width:42%;font-size:.85rem;">GG</th>
-              <td>{% for g in sample.gg.all %}<span class="badge bg-info text-dark me-1">{{ g.title }}</span>{% empty %}—{% endfor %}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Weight</th>
-              <td>{{ sample.weight|default:"—" }}</td>
-            </tr>
-            <tr>
-              <th class="bg-light" style="font-size:.85rem;">Yarn Composition</th>
-              <td>{{ sample.yarn_composition|default:"—" }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="bg-white rounded-xl shadow-sm h-full">
+    <div class="px-5 py-4 border-b border-slate-100 font-semibold bg-white rounded-t-xl">
+      <i class="fa fa-sliders mr-2 text-blue-500"></i>Technical Specifications
+    </div>
+    <div>
+      <table class="w-full border-collapse text-sm">
+        <tbody>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="width:42%;font-size:.85rem;">GG</th>
+            <td class="px-4 py-3">{% for g in sample.gg.all %}<span class="bg-cyan-100 text-cyan-700 text-xs font-semibold px-2 py-0.5 rounded-full mr-1">{{ g.title }}</span>{% empty %}—{% endfor %}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Weight</th>
+            <td class="px-4 py-3 text-slate-700">{{ sample.weight|default:"—" }}</td>
+          </tr>
+          <tr>
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Yarn Composition</th>
+            <td class="px-4 py-3 text-slate-700">{{ sample.yarn_composition|default:"—" }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -225,23 +222,23 @@
 
 <!-- Description & Notes -->
 {% if sample.description or sample.challenge_in %}
-<div class="card mb-4">
-  <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
-    <i class="fa fa-file-lines me-2 text-primary"></i>Description &amp; Notes
+<div class="bg-white rounded-xl shadow-sm mb-4">
+  <div class="px-5 py-4 border-b border-slate-100 font-semibold bg-white rounded-t-xl">
+    <i class="fa fa-file-lines mr-2 text-blue-500"></i>Description &amp; Notes
   </div>
-  <div class="card-body p-0">
-    <table class="table table-bordered mb-0">
+  <div>
+    <table class="w-full border-collapse text-sm">
       <tbody>
         {% if sample.description %}
-        <tr>
-          <th class="bg-light" style="width:20%;font-size:.85rem;vertical-align:top;">Description</th>
-          <td style="white-space:pre-line;">{{ sample.description | safe }}</td>
+        <tr class="border-b border-slate-100">
+          <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600 align-top" style="width:20%;font-size:.85rem;">Description</th>
+          <td class="px-4 py-3 text-slate-700" style="white-space:pre-line;">{{ sample.description | safe }}</td>
         </tr>
         {% endif %}
         {% if sample.challenge_in.exists %}
         <tr>
-          <th class="bg-light" style="font-size:.85rem;vertical-align:top;">Challenge In</th>
-          <td>{% for ci in sample.challenge_in.all %}<span class="badge bg-warning text-dark me-1">{{ ci.title }}</span>{% endfor %}</td>
+          <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600 align-top" style="font-size:.85rem;">Challenge In</th>
+          <td class="px-4 py-3">{% for ci in sample.challenge_in.all %}<span class="bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-0.5 rounded-full mr-1">{{ ci.title }}</span>{% endfor %}</td>
         </tr>
         {% endif %}
       </tbody>
@@ -252,28 +249,28 @@
 
 <!-- Document -->
 {% if sample.documents %}
-<div class="card">
-  <div class="card-header bg-white fw-semibold" style="border-bottom:1px solid #f1f5f9;">
-    <i class="fa fa-paperclip me-2 text-primary"></i>Attached Document
+<div class="bg-white rounded-xl shadow-sm">
+  <div class="px-5 py-4 border-b border-slate-100 font-semibold bg-white rounded-t-xl">
+    <i class="fa fa-paperclip mr-2 text-blue-500"></i>Attached Document
   </div>
-  <div class="card-body">
-    <a href="{{ sample.documents.url }}" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
-      <i class="fa fa-file-arrow-down me-2"></i>Download Document
+  <div class="p-5">
+    <a href="{{ sample.documents.url }}" class="border border-blue-300 text-blue-600 hover:bg-blue-50 text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-2 no-underline" target="_blank" rel="noopener noreferrer">
+      <i class="fa fa-file-arrow-down mr-2"></i>Download Document
     </a>
   </div>
 </div>
 {% endif %}
 
-<!-- ── Lightbox Modal ─────────────────────────────────────────────── -->
-<div class="modal fade" id="lightboxModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content bg-dark border-0">
-      <div class="modal-header border-0 pb-0">
-        <span id="lightboxCaption" class="text-white-50 small fw-semibold"></span>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- ── Lightbox Modal (vanilla JS) ───────────────────────────────── -->
+<div id="lightboxModal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,0.75);">
+  <div class="relative max-w-3xl w-full mx-4">
+    <div class="rounded-xl overflow-hidden" style="background:#1e293b;">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-white/10">
+        <span id="lightboxCaption" class="text-white/60 text-sm font-semibold"></span>
+        <button type="button" id="lightboxClose" class="text-white/60 hover:text-white bg-transparent border-0 cursor-pointer text-xl leading-none">&times;</button>
       </div>
-      <div class="modal-body text-center p-2 pb-4">
-        <img id="lightboxImg" src="" alt="" class="img-fluid rounded" style="max-height:80vh;object-fit:contain;">
+      <div class="text-center p-2 pb-4">
+        <img id="lightboxImg" src="" alt="" style="max-height:80vh;object-fit:contain;border-radius:8px;max-width:100%;">
       </div>
     </div>
   </div>
@@ -310,12 +307,31 @@
   .img-slot.empty { background:#f8fafc; border:2px dashed #e2e8f0; cursor:default; }
 </style>
 <script>
-  document.querySelectorAll('[data-bs-target="#lightboxModal"]').forEach(function (el) {
+  var modal      = document.getElementById('lightboxModal');
+  var modalImg   = document.getElementById('lightboxImg');
+  var modalCap   = document.getElementById('lightboxCaption');
+  var closeBtn   = document.getElementById('lightboxClose');
+
+  document.querySelectorAll('.lightbox-trigger').forEach(function (el) {
     el.addEventListener('click', function (e) {
       e.preventDefault();
-      document.getElementById('lightboxImg').src = this.dataset.img;
-      document.getElementById('lightboxCaption').textContent = this.dataset.caption || '';
+      modalImg.src        = this.dataset.img;
+      modalCap.textContent = this.dataset.caption || '';
+      modal.classList.remove('hidden');
     });
+  });
+
+  function closeLightbox() {
+    modal.classList.add('hidden');
+    modalImg.src = '';
+  }
+
+  if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closeLightbox();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeLightbox();
   });
 </script>
 {% endblock %}
