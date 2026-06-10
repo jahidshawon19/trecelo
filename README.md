@@ -2,6 +2,8 @@
 
 A full-featured, role-based web application built with **Django 6** for managing textile production samples, buyers, and staff. Designed for garment and knitwear manufacturers who need a centralised system to track sample submissions from creation to delivery.
 
+## live link: https://sample-tracking-qzpe.onrender.com/
+
 ---
 
 ## Table of Contents
