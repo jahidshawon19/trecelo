@@ -128,7 +128,7 @@ UNFOLD = {
     "SITE_SYMBOL": "inventory_2",          # Google Material icon
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": True,
-    "THEME": "dark",                       # "light" | "dark" | None (auto)
+    "THEME": "light",                      # "light" | "dark" | None (auto)
     "COLORS": {
         "font": {
             "subtle-light":  "107 114 128",
