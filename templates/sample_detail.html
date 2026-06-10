@@ -18,7 +18,7 @@
       <li class="text-slate-500">{{ sample.style_number|default:"Sample" }}</li>
     </ol>
   </nav>
-  {% if user.is_staff or user.is_superuser %}
+  {% if user.is_staff or user.is_superuser and not is_brand_user %}
   <a href="{% url 'sample_update' sample.id %}" class="bg-amber-400 hover:bg-amber-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline">
     <i class="fa fa-pen mr-1"></i>Edit
   </a>

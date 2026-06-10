@@ -119,9 +119,33 @@ class CategoryForm(forms.ModelForm):
 
 
 class BrandForm(forms.ModelForm):
+    username = forms.CharField(required=False, help_text='Required when creating a new brand.')
+    password = forms.CharField(widget=forms.PasswordInput, required=False, help_text='Required when creating a new brand.')
+
     class Meta:
         model = Brand
         fields = ['name', 'origin']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not self.instance.pk:
+            if not cleaned_data.get('username'):
+                self.add_error('username', 'Username is required.')
+            if not cleaned_data.get('password'):
+                self.add_error('password', 'Password is required.')
+        return cleaned_data
+
+    def save(self, commit=True):
+        brand = super().save(commit=False)
+        if not self.instance.pk:
+            user = User.objects.create_user(
+                username=self.cleaned_data['username'],
+                password=self.cleaned_data['password'],
+            )
+            brand.user = user
+        if commit:
+            brand.save()
+        return brand
 
 
 class GGForm(forms.ModelForm):

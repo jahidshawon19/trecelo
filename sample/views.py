@@ -20,6 +20,22 @@ def is_superadmin(user):
     return user.is_superuser
 
 
+def get_brand_user(user):
+    """Return Brand if the user is a brand account, else None."""
+    try:
+        return Brand.objects.get(user=user)
+    except Brand.DoesNotExist:
+        return None
+
+
+def get_buyer_user(user):
+    """Return Buyer if the user is a buyer account, else None."""
+    try:
+        return Buyer.objects.get(user=user)
+    except Buyer.DoesNotExist:
+        return None
+
+
 # ---------- LOGIN ----------
 def user_login(request):
     if request.method == 'POST':
@@ -45,14 +61,17 @@ def user_logout(request):
 @login_required
 def dashboard(request):
     if request.user.is_staff or request.user.is_superuser:
-        sample_qs = Sample.objects.all()
+        sample_qs    = Sample.objects.all()
         total_buyers = Buyer.objects.count()
         total_makers = StaffProfile.objects.count()
     else:
-        try:
-            buyer = Buyer.objects.get(user=request.user)
+        brand = get_brand_user(request.user)
+        buyer = get_buyer_user(request.user)
+        if brand:
+            sample_qs = Sample.objects.filter(brand=brand)
+        elif buyer:
             sample_qs = Sample.objects.filter(buyer=buyer)
-        except Buyer.DoesNotExist:
+        else:
             sample_qs = Sample.objects.none()
         total_buyers = 1
         total_makers = 0
@@ -404,13 +423,16 @@ def challengein_delete(request, pk):
 # ---------- helpers ----------
 def _sample_queryset(request):
     """Return the base Sample queryset filtered by the current user's role."""
+    base = Sample.objects.select_related('buyer').prefetch_related('gg', 'maker__user')
     if request.user.is_staff or request.user.is_superuser:
-        return Sample.objects.select_related('buyer').prefetch_related('gg', 'maker__user').all()
-    try:
-        buyer = Buyer.objects.get(user=request.user)
-        return Sample.objects.select_related('buyer').prefetch_related('gg', 'maker__user').filter(buyer=buyer)
-    except Buyer.DoesNotExist:
-        return Sample.objects.none()
+        return base.all()
+    brand = get_brand_user(request.user)
+    if brand:
+        return base.filter(brand=brand)
+    buyer = get_buyer_user(request.user)
+    if buyer:
+        return base.filter(buyer=buyer)
+    return Sample.objects.none()
 
 
 def _apply_filters(qs, q, status):
@@ -436,13 +458,14 @@ def sample_list(request):
     paginator = Paginator(qs, 10)
     page_obj  = paginator.get_page(request.GET.get('page'))
     return render(request, 'sample_list.html', {
-        'samples':      page_obj,
-        'page_obj':     page_obj,
-        'total_count':  paginator.count,
-        'total_buyers': Buyer.objects.count(),
-        'total_makers': StaffProfile.objects.count(),
-        'q':            q,
-        'status':       status,
+        'samples':        page_obj,
+        'page_obj':       page_obj,
+        'total_count':    paginator.count,
+        'total_buyers':   Buyer.objects.count(),
+        'total_makers':   StaffProfile.objects.count(),
+        'q':              q,
+        'status':         status,
+        'is_brand_user':  get_brand_user(request.user) is not None,
     })
 
 
@@ -590,7 +613,10 @@ def sample_detail(request, pk):
                 return redirect('sample_list')
         except Buyer.DoesNotExist:
             return redirect('sample_list')
-    return render(request, 'sample_detail.html', {'sample': sample})
+    return render(request, 'sample_detail.html', {
+        'sample':        sample,
+        'is_brand_user': get_brand_user(request.user) is not None,
+    })
 
 
 @login_required
