@@ -9,7 +9,10 @@ class BuyerForm(forms.ModelForm):
 
     class Meta:
         model = Buyer
-        fields = ['buyer_name']
+        fields = ['buyer_name', 'brand']
+        widgets = {
+            'brand': forms.CheckboxSelectMultiple(),
+        }
 
     def clean(self):
         cleaned_data = super().clean()

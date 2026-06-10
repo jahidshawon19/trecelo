@@ -169,7 +169,7 @@ def staff_delete(request, pk):
 @login_required
 @user_passes_test(is_superadmin)
 def buyer_list(request):
-    buyers = Buyer.objects.select_related('user').all()
+    buyers = Buyer.objects.select_related('user').prefetch_related('brand').all()
     return render(request, 'buyer_list.html', {'buyers': buyers})
 
 

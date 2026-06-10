@@ -79,6 +79,7 @@ class ChallengeIn(models.Model):
 class Buyer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     buyer_name = models.CharField(max_length=100)
+    brand = models.ManyToManyField('Brand', blank=True, verbose_name='Brands')
 
     def __str__(self):
         return self.buyer_name
