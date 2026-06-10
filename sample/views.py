@@ -20,14 +20,6 @@ def is_superadmin(user):
     return user.is_superuser
 
 
-def get_brand_user(user):
-    """Return Brand if the user is a brand account, else None."""
-    try:
-        return Brand.objects.get(user=user)
-    except Brand.DoesNotExist:
-        return None
-
-
 def get_buyer_user(user):
     """Return Buyer if the user is a buyer account, else None."""
     try:
@@ -65,12 +57,10 @@ def dashboard(request):
         total_buyers = Buyer.objects.count()
         total_makers = StaffProfile.objects.count()
     else:
-        brand = get_brand_user(request.user)
         buyer = get_buyer_user(request.user)
-        if brand:
-            sample_qs = Sample.objects.filter(brand=brand)
-        elif buyer:
-            sample_qs = Sample.objects.filter(buyer=buyer)
+        if buyer:
+            buyer_brands = buyer.brand.all()
+            sample_qs = Sample.objects.filter(brand__in=buyer_brands).distinct()
         else:
             sample_qs = Sample.objects.none()
         total_buyers = 1
@@ -426,12 +416,10 @@ def _sample_queryset(request):
     base = Sample.objects.select_related('buyer').prefetch_related('gg', 'maker__user')
     if request.user.is_staff or request.user.is_superuser:
         return base.all()
-    brand = get_brand_user(request.user)
-    if brand:
-        return base.filter(brand=brand)
     buyer = get_buyer_user(request.user)
     if buyer:
-        return base.filter(buyer=buyer)
+        buyer_brands = buyer.brand.all()
+        return base.filter(brand__in=buyer_brands).distinct()
     return Sample.objects.none()
 
 
@@ -465,7 +453,6 @@ def sample_list(request):
         'total_makers':   StaffProfile.objects.count(),
         'q':              q,
         'status':         status,
-        'is_brand_user':  get_brand_user(request.user) is not None,
     })
 
 
@@ -613,10 +600,7 @@ def sample_detail(request, pk):
                 return redirect('sample_list')
         except Buyer.DoesNotExist:
             return redirect('sample_list')
-    return render(request, 'sample_detail.html', {
-        'sample':        sample,
-        'is_brand_user': get_brand_user(request.user) is not None,
-    })
+    return render(request, 'sample_detail.html', {'sample': sample})
 
 
 @login_required

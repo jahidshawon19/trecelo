@@ -13,12 +13,6 @@ class Category(models.Model):
 
 
 class Brand(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.SET_NULL,
-        null=True, blank=True,
-        related_name='brand_profile',
-        verbose_name='Login User',
-    )
     COUNTRY_CHOICES = [
         ('Afghanistan', 'Afghanistan'), ('Albania', 'Albania'), ('Algeria', 'Algeria'),
         ('Argentina', 'Argentina'), ('Australia', 'Australia'), ('Austria', 'Austria'),
