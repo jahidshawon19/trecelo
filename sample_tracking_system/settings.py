@@ -16,6 +16,9 @@ ALLOWED_HOSTS = ['sample-tracking-qzpe.onrender.com', '*']
 
 # ── Apps ──────────────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
+    'unfold',                           # must be before django.contrib.admin
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -111,6 +114,115 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = '/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ── Unfold Admin Theme ────────────────────────────────────────────────────────
+UNFOLD = {
+    "SITE_TITLE": "Trecelo",
+    "SITE_HEADER": "Trecelo Admin",
+    "SITE_SUBHEADER": "Sample Tracking System",
+    "SITE_URL": "/",
+    "SITE_ICON": {
+        "light": None,
+        "dark": None,
+    },
+    "SITE_SYMBOL": "inventory_2",          # Google Material icon
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "THEME": "dark",                       # "light" | "dark" | None (auto)
+    "COLORS": {
+        "font": {
+            "subtle-light":  "107 114 128",
+            "subtle-dark":   "156 163 175",
+            "default-light": "75 85 99",
+            "default-dark":  "209 213 219",
+            "important-light": "17 24 39",
+            "important-dark":  "243 244 246",
+        },
+        "primary": {
+            "50":  "239 246 255",
+            "100": "219 234 254",
+            "200": "191 219 254",
+            "300": "147 197 253",
+            "400": "96 165 250",
+            "500": "59 130 246",
+            "600": "37 99 235",
+            "700": "29 78 216",
+            "800": "30 64 175",
+            "900": "30 58 138",
+            "950": "23 37 84",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [
+            {
+                "title": "Navigation",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Dashboard",
+                        "icon": "dashboard",
+                        "link": "/admin/",
+                    },
+                    {
+                        "title": "Users",
+                        "icon": "people",
+                        "link": "/admin/auth/user/",
+                    },
+                ],
+            },
+            {
+                "title": "Sample Management",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Samples",
+                        "icon": "inventory_2",
+                        "link": "/admin/sample/sample/",
+                    },
+                    {
+                        "title": "Buyers",
+                        "icon": "shopping_bag",
+                        "link": "/admin/sample/buyer/",
+                    },
+                    {
+                        "title": "Staff",
+                        "icon": "badge",
+                        "link": "/admin/sample/staffprofile/",
+                    },
+                ],
+            },
+            {
+                "title": "Catalogue",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Brands",
+                        "icon": "copyright",
+                        "link": "/admin/sample/brand/",
+                    },
+                    {
+                        "title": "Categories",
+                        "icon": "category",
+                        "link": "/admin/sample/category/",
+                    },
+                    {
+                        "title": "GG",
+                        "icon": "settings_input_component",
+                        "link": "/admin/sample/gg/",
+                    },
+                    {
+                        "title": "Challenge In",
+                        "icon": "warning",
+                        "link": "/admin/sample/challengein/",
+                    },
+                ],
+            },
+        ],
+    },
+    "TABS": [],
+}
 
 
 
