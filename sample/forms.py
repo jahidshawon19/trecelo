@@ -33,6 +33,7 @@ class BuyerForm(forms.ModelForm):
             buyer.user = user
         if commit:
             buyer.save()
+            self.save_m2m()   # saves brand M2M assignments
         return buyer
 
 
