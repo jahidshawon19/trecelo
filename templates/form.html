@@ -286,83 +286,92 @@
   }
   .slot-placeholder { text-align:center; }
 
-  /* ── Tom Select overrides (matches site Tailwind style) ──── */
+  /* ── Tom Select overrides — single-select, matches site Tailwind style ──── */
   .ts-wrapper { width: 100%; }
-  .ts-wrapper .ts-control {
+  .ts-wrapper.single .ts-control {
     border: 1.5px solid #e2e8f0 !important;
     border-radius: 8px !important;
-    padding: 5px 10px !important;
-    min-height: 42px !important;
+    padding: 0 36px 0 12px !important;
+    height: 42px !important;
     box-shadow: none !important;
-    font-size: .85rem !important;
+    font-size: .875rem !important;
     background: #fff !important;
-    gap: 5px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
   }
-  .ts-wrapper.focus .ts-control,
-  .ts-wrapper.input-active .ts-control {
+  .ts-wrapper.single.focus .ts-control,
+  .ts-wrapper.single.input-active .ts-control {
     border-color: #3b82f6 !important;
     box-shadow: 0 0 0 3px rgba(59,130,246,.12) !important;
     outline: none !important;
   }
-  .ts-wrapper .ts-control .item {
-    background: #dbeafe !important;
-    color: #1e40af !important;
-    border-radius: 20px !important;
-    font-size: .74rem !important;
-    font-weight: 600 !important;
-    padding: 3px 10px 3px 12px !important;
+  /* Selected value text */
+  .ts-wrapper.single .ts-control .item {
+    background: none !important;
     border: none !important;
-    margin: 2px 0 !important;
+    color: #1e293b !important;
+    font-size: .875rem !important;
+    font-weight: 400 !important;
+    padding: 0 !important;
   }
-  .ts-wrapper .ts-control input {
-    font-size: .85rem !important;
+  /* Search input inside control */
+  .ts-wrapper.single .ts-control input {
+    font-size: .875rem !important;
     color: #334155 !important;
+    padding: 0 !important;
+    height: 100% !important;
   }
-  .ts-wrapper .ts-control input::placeholder { color: #94a3b8 !important; }
+  .ts-wrapper.single .ts-control input::placeholder { color: #94a3b8 !important; }
+  /* Caret arrow */
+  .ts-wrapper.single .ts-control:after {
+    border-color: #94a3b8 transparent transparent !important;
+    right: 14px !important;
+  }
+  .ts-wrapper.single.dropdown-active .ts-control:after {
+    border-color: transparent transparent #94a3b8 !important;
+  }
+  /* Dropdown panel */
   .ts-wrapper .ts-dropdown {
     border: 1.5px solid #e2e8f0 !important;
     border-radius: 10px !important;
     box-shadow: 0 8px 28px rgba(0,0,0,.1) !important;
-    font-size: .85rem !important;
+    font-size: .875rem !important;
     margin-top: 4px !important;
     overflow: hidden !important;
   }
   .ts-wrapper .ts-dropdown .ts-dropdown-content { padding: 4px 0 !important; }
   .ts-wrapper .ts-dropdown .option {
-    padding: 8px 14px !important;
+    padding: 9px 14px !important;
     color: #334155 !important;
     transition: background .1s !important;
   }
   .ts-wrapper .ts-dropdown .option:hover,
   .ts-wrapper .ts-dropdown .option.active {
     background: #f0f7ff !important;
-    color: #1e40af !important;
+    color: #1d4ed8 !important;
   }
   .ts-wrapper .ts-dropdown .option.selected {
     background: #eff6ff !important;
-    font-weight: 500 !important;
-    color: #1e40af !important;
+    font-weight: 600 !important;
+    color: #1d4ed8 !important;
   }
-  .ts-wrapper .ts-dropdown .option.selected.active {
-    background: #dbeafe !important;
-  }
-  /* Remove button on selected items */
-  .ts-wrapper .ts-control .item .remove {
-    color: #1e40af !important;
-    opacity: .55;
-    font-weight: 400 !important;
-    font-size: .9rem !important;
+  .ts-wrapper .ts-dropdown .option.selected.active { background: #dbeafe !important; }
+  /* Clear (×) button */
+  .ts-wrapper .ts-clear-button {
+    position: absolute !important;
+    right: 30px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: #cbd5e1 !important;
+    font-size: 1.1rem !important;
+    line-height: 1 !important;
+    background: none !important;
     border: none !important;
-    padding: 0 0 0 4px !important;
+    cursor: pointer !important;
+    padding: 0 !important;
   }
-  .ts-wrapper .ts-control .item .remove:hover { opacity: 1 !important; }
-  /* Clear button */
-  .ts-clear-button {
-    color: #94a3b8 !important;
-    font-size: 1rem !important;
-    margin-right: 4px !important;
-  }
-  .ts-clear-button:hover { color: #ef4444 !important; }
+  .ts-wrapper .ts-clear-button:hover { color: #ef4444 !important; }
 </style>
 
 <script>
@@ -508,24 +517,20 @@
     renderControl();
   }
 
-  // Tom Select for brand, category, gg
+  // Tom Select for brand, category, gg (single-select with search)
   [
-    { id: 'id_brand',    placeholder: 'Select brands…'      },
-    { id: 'id_category', placeholder: 'Select categories…'  },
-    { id: 'id_gg',       placeholder: 'Select GG…'          },
+    { id: 'id_brand',    placeholder: 'Select brand…'     },
+    { id: 'id_category', placeholder: 'Select category…'  },
+    { id: 'id_gg',       placeholder: 'Select GG…'        },
   ].forEach(function(cfg) {
     var el = document.getElementById(cfg.id);
     if (!el) return;
     new TomSelect(el, {
-      plugins: ['remove_button', 'clear_button'],
+      plugins: ['clear_button'],
       create: false,
+      maxItems: 1,
       maxOptions: null,
       placeholder: cfg.placeholder,
-      onInitialize: function() {
-        // Span full width
-        var col = this.wrapper.closest('.field-col');
-        if (col) col.style.gridColumn = '1 / -1';
-      }
     });
   });
 
@@ -546,12 +551,11 @@
     twInputClass.split(' ').forEach(function(cls){ el.classList.add(cls); });
   });
 
-  // Textareas, file inputs, and Tom Select fields → full width (span 2 columns)
+  // Textareas and file inputs → full width (span 2 columns)
   document.querySelectorAll('#formFieldsGrid .field-col').forEach(function (col) {
-    var hasTextarea   = col.querySelector('textarea');
-    var hasFile       = col.querySelector('input[type=file]');
-    var hasTomSelect  = col.querySelector('#id_brand, #id_category, #id_gg');
-    if (hasTextarea || hasFile || hasTomSelect) {
+    var hasTextarea = col.querySelector('textarea');
+    var hasFile     = col.querySelector('input[type=file]');
+    if (hasTextarea || hasFile) {
       col.style.gridColumn = '1 / -1';
       if (hasTextarea && !hasTextarea.rows) hasTextarea.rows = 3;
     }
