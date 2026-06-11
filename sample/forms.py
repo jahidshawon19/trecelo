@@ -11,7 +11,7 @@ class BuyerForm(forms.ModelForm):
         model = Buyer
         fields = ['buyer_name', 'brand']
         widgets = {
-            'brand': forms.CheckboxSelectMultiple(),
+            'brand': forms.SelectMultiple(),
         }
 
     def clean(self):
@@ -105,9 +105,9 @@ class SampleForm(forms.ModelForm):
             'submission_date': forms.DateInput(attrs={'type': 'date'}),
             'front_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
             'back_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
-            'category': forms.CheckboxSelectMultiple(),
-            'brand': forms.CheckboxSelectMultiple(),
-            'gg': forms.CheckboxSelectMultiple(),
+            'category': forms.SelectMultiple(),
+            'brand': forms.SelectMultiple(),
+            'gg': forms.SelectMultiple(),
             'challenge_in': forms.CheckboxSelectMultiple(),
             'maker': forms.CheckboxSelectMultiple(),
         }
