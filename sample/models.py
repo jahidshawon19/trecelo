@@ -134,6 +134,7 @@ class Sample(models.Model):
 
     # Technical Specifications
     gg = models.ManyToManyField(GG, blank=True, verbose_name="GG")
+    size = models.CharField(max_length=100, blank=True, verbose_name="Size")
     weight = models.CharField(max_length=100, blank=True, verbose_name="Weight")
     yarn_composition = models.CharField(max_length=255, blank=True, verbose_name="Yarn Composition")
     description = models.TextField(blank=True)

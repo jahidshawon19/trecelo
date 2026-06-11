@@ -208,6 +208,10 @@
             <td class="px-4 py-3">{% for g in sample.gg.all %}<span class="bg-cyan-100 text-cyan-700 text-xs font-semibold px-2 py-0.5 rounded-full mr-1">{{ g.title }}</span>{% empty %}—{% endfor %}</td>
           </tr>
           <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Size</th>
+            <td class="px-4 py-3 text-slate-700">{{ sample.size|default:"—" }}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
             <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Weight</th>
             <td class="px-4 py-3 text-slate-700">{{ sample.weight|default:"—" }}</td>
           </tr>

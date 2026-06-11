@@ -94,6 +94,7 @@ class SampleForm(forms.ModelForm):
             'brand',
             'buyer',
             'gg',
+            'size',
             'weight',
             'yarn_composition',
             'description',
