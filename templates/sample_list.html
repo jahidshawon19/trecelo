@@ -114,6 +114,8 @@
                 <span style="background:#f0fdf4;color:#15803d;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #bbf7d0;white-space:nowrap;">Approved</span>
               {% elif s.status == 'pending' %}
                 <span style="background:#fffbeb;color:#b45309;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #fde68a;white-space:nowrap;">Pending</span>
+              {% elif s.status == 'rejected' %}
+                <span style="background:#fef2f2;color:#dc2626;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #fecaca;white-space:nowrap;">Rejected</span>
               {% else %}
                 <span style="background:#f1f5f9;color:#64748b;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #e2e8f0;white-space:nowrap;">Draft</span>
               {% endif %}
