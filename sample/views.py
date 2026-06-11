@@ -20,6 +20,14 @@ def is_superadmin(user):
     return user.is_superuser
 
 
+def get_maker_user(user):
+    """Return StaffProfile if the user is a maker account, else None."""
+    try:
+        return StaffProfile.objects.get(user=user)
+    except StaffProfile.DoesNotExist:
+        return None
+
+
 def get_buyer_user(user):
     """Return Buyer if the user is a buyer account, else None."""
     try:
@@ -52,18 +60,21 @@ def user_logout(request):
 # ---------- DASHBOARD ----------
 @login_required
 def dashboard(request):
-    if request.user.is_staff or request.user.is_superuser:
+    if request.user.is_superuser:
         sample_qs    = Sample.objects.all()
         total_buyers = Buyer.objects.count()
         total_makers = StaffProfile.objects.count()
     else:
+        maker = get_maker_user(request.user)
         buyer = get_buyer_user(request.user)
-        if buyer:
+        if maker:
+            sample_qs = Sample.objects.filter(maker=maker).distinct()
+        elif buyer:
             buyer_brands = buyer.brand.all()
             sample_qs = Sample.objects.filter(brand__in=buyer_brands).distinct()
         else:
             sample_qs = Sample.objects.none()
-        total_buyers = 1
+        total_buyers = 0
         total_makers = 0
 
     total_samples  = sample_qs.count()
@@ -414,8 +425,11 @@ def challengein_delete(request, pk):
 def _sample_queryset(request):
     """Return the base Sample queryset filtered by the current user's role."""
     base = Sample.objects.select_related('buyer').prefetch_related('gg', 'maker__user')
-    if request.user.is_staff or request.user.is_superuser:
+    if request.user.is_superuser:
         return base.all()
+    maker = get_maker_user(request.user)
+    if maker:
+        return base.filter(maker=maker).distinct()
     buyer = get_buyer_user(request.user)
     if buyer:
         buyer_brands = buyer.brand.all()

@@ -38,7 +38,7 @@
           <i class="fa fa-file-excel"></i> Excel
         </a>
 
-        {% if user.is_staff or user.is_superuser %}
+        {% if user.is_superuser %}
         <a href="{% url 'sample_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
           <i class="fa fa-plus"></i> Add Sample
         </a>
@@ -121,7 +121,7 @@
             <td class="text-center">
               <div class="flex gap-1 justify-center">
                 <a href="{% url 'sample_detail' s.id %}" class="btn-act view" title="View"><i class="fa fa-eye"></i></a>
-                {% if user.is_staff or user.is_superuser %}
+                {% if user.is_superuser %}
                 <a href="{% url 'sample_update' s.id %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
                 <a href="{% url 'sample_delete' s.id %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
                 {% endif %}
