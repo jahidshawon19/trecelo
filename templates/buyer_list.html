@@ -61,6 +61,7 @@
             </td>
             <td class="text-center">
               <div class="flex gap-1 justify-center">
+                <a href="{% url 'buyer_detail' b.id %}" class="btn-act view" title="View"><i class="fa fa-eye"></i></a>
                 <a href="{% url 'buyer_update' b.id %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
                 <a href="{% url 'buyer_delete' b.id %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
               </div>

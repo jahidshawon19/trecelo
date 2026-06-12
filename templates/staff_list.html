@@ -71,6 +71,7 @@
             {% if user.is_superuser %}
             <td class="text-center">
               <div class="flex gap-1 justify-center">
+                <a href="{% url 'staff_detail' s.id %}" class="btn-act view" title="View"><i class="fa fa-eye"></i></a>
                 <a href="{% url 'staff_update' s.id %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
                 <a href="{% url 'staff_delete' s.id %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
               </div>

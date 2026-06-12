@@ -155,6 +155,14 @@ def staff_list(request):
 
 @login_required
 @user_passes_test(is_superadmin)
+def staff_detail(request, pk):
+    staff   = get_object_or_404(StaffProfile.objects.select_related('user'), pk=pk)
+    samples = Sample.objects.filter(maker=staff).select_related('buyer').prefetch_related('brand', 'gg', 'category').order_by('-submission_date')
+    return render(request, 'staff_detail.html', {'staff': staff, 'samples': samples})
+
+
+@login_required
+@user_passes_test(is_superadmin)
 def staff_create(request):
     form = StaffForm(request.POST or None)
     if form.is_valid():
@@ -194,6 +202,14 @@ def staff_delete(request, pk):
 def buyer_list(request):
     buyers = Buyer.objects.select_related('user').prefetch_related('brand').all()
     return render(request, 'buyer_list.html', {'buyers': buyers})
+
+
+@login_required
+@user_passes_test(is_superadmin)
+def buyer_detail(request, pk):
+    buyer   = get_object_or_404(Buyer.objects.select_related('user').prefetch_related('brand'), pk=pk)
+    samples = Sample.objects.filter(buyer=buyer).select_related('buyer').prefetch_related('brand', 'gg', 'category').order_by('-submission_date')
+    return render(request, 'buyer_detail.html', {'buyer': buyer, 'samples': samples})
 
 
 @login_required
