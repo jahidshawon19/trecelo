@@ -147,6 +147,7 @@ class Buyer(models.Model):
 
 class StaffProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    maker_name = models.CharField(max_length=100, blank=True, verbose_name='Maker Name')
     emp_id = models.CharField(max_length=50, unique=True)
     role = models.CharField(max_length=100)
     designation = models.CharField(max_length=100)

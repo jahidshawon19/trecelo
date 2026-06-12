@@ -47,8 +47,8 @@
               <div class="flex items-center gap-3">
                 <div class="av av-green">{{ s.user.username|first|upper }}</div>
                 <div>
-                  <div class="font-semibold text-slate-800">{{ s.user.username }}</div>
-                  <div style="font-size:.75rem;color:#94a3b8;">{{ s.address|truncatechars:28 }}</div>
+                  <div class="font-semibold text-slate-800">{% if s.maker_name %}{{ s.maker_name }}{% else %}{{ s.user.username }}{% endif %}</div>
+                  <div style="font-size:.75rem;color:#94a3b8;"><i class="fa fa-user mr-1"></i>{{ s.user.username }}</div>
                 </div>
               </div>
             </td>

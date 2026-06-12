@@ -48,6 +48,7 @@ class StaffForm(forms.ModelForm):
     class Meta:
         model = StaffProfile
         fields = [
+            'maker_name',
             'emp_id',
             'role',
             'designation',

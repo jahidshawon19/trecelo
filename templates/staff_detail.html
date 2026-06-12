@@ -33,10 +33,9 @@
       {{ staff.user.username|first|upper }}
     </div>
     <div class="text-center">
-      <div class="font-bold text-slate-800" style="font-size:1.15rem;">{{ staff.user.username }}</div>
-      <div class="text-slate-400 text-xs mt-1">
-        <i class="fa fa-id-badge mr-1"></i>{{ staff.emp_id }}
-      </div>
+      <div class="font-bold text-slate-800" style="font-size:1.15rem;">{% if staff.maker_name %}{{ staff.maker_name }}{% else %}{{ staff.user.username }}{% endif %}</div>
+      <div class="text-slate-400 text-xs mt-1"><i class="fa fa-user mr-1"></i>{{ staff.user.username }}</div>
+      <div class="text-slate-400 text-xs mt-0.5"><i class="fa fa-id-badge mr-1"></i>{{ staff.emp_id }}</div>
     </div>
     <span style="background:#ede9fe;color:#7c3aed;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;">{{ staff.role }}</span>
   </div>
@@ -50,7 +49,11 @@
       <table class="w-full border-collapse text-sm">
         <tbody>
           <tr class="border-b border-slate-100">
-            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="width:38%;font-size:.85rem;">Username</th>
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="width:38%;font-size:.85rem;">Maker Name</th>
+            <td class="px-4 py-3 text-slate-700">{{ staff.maker_name|default:"—" }}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Username</th>
             <td class="px-4 py-3">
               <span style="background:#f1f5f9;color:#475569;font-size:.82rem;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;">
                 <i class="fa fa-user" style="font-size:.7rem;"></i>{{ staff.user.username }}
