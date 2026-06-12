@@ -1,6 +1,6 @@
 # Trecelo — Sample Tracking System
 
-A full-featured, role-based web application built with **Django 6** for managing textile production samples, buyers, brands, and staff. Designed for garment and knitwear manufacturers who need a centralised system to track sample submissions from creation through approval.
+A full-featured, role-based web application built with **Django 6** for managing textile production samples, buyers, brands, and R&D staff. Designed for garment and knitwear manufacturers who need a centralised system to track sample submissions from creation through approval.
 
 **🔗 Live demo:** [https://sample-tracking-qzpe.onrender.com](https://sample-tracking-qzpe.onrender.com)
 
@@ -53,10 +53,14 @@ Samples move through four statuses with colour-coded badges:
 - Create buyers with linked login credentials (username + password)
 - Assign one or more brands to each buyer
 - Buyers can only view samples that belong to their assigned brands
+- Admin can view buyer details including stored credentials with a show/hide password toggle
 
 ### Staff (Maker) Management
-- Register staff members with employee ID, role, designation, NID, phone number
-- Makers can only view samples they are assigned to
+- Register staff members with Maker Name, employee ID, role, designation, NID, and phone number
+- Upload a **profile picture** per maker — shown in the staff list and detail page
+- Makers can update their own profile picture, phone, and address from the **My Profile** page
+- Makers can only view and edit samples they are assigned to
+- Admin can view maker details including stored credentials with a show/hide password toggle
 
 ### Dashboard
 - Stat cards: Total Samples, Buyers, Makers, Approved, Pending, Rejected, Draft
@@ -74,11 +78,11 @@ Samples move through four statuses with colour-coded badges:
 ### UI & UX
 - Tailwind CSS (Play CDN) — utility-first responsive design
 - Fixed dark-navy sidebar with role badge and logout
+- **Animated toast notifications** — floating pop-up messages replace inline banners for all form actions
 - **Tom Select** — searchable single-select dropdowns for Brand, Category, GG, and Origin Country
 - Custom multi-select dropdown (MSD) for Maker and Challenge In fields
 - Status filter pills on the sample list
-- Instant client-side search with 400 ms debounce
-- Django flash messages on every create / update / delete action
+- Instant client-side search with debounce
 - Empty-state prompts when lists have no data
 
 ---
@@ -111,7 +115,7 @@ Samples move through four statuses with colour-coded badges:
 sample_tracking_system/          ← project root
 │
 ├── sample/                      ← main Django app
-│   ├── migrations/              ← 22 migration files
+│   ├── migrations/              ← 25 migration files
 │   ├── admin.py                 ← Unfold-themed admin with inlines
 │   ├── apps.py
 │   ├── context_processors.py    ← injects is_maker / is_buyer into all templates
@@ -127,7 +131,7 @@ sample_tracking_system/          ← project root
 │   └── wsgi.py
 │
 ├── templates/                   ← all HTML templates
-│   ├── base.html                ← sidebar layout, topbar, Tailwind CDN
+│   ├── base.html                ← sidebar layout, topbar, toast notifications
 │   ├── login.html               ← split-panel login page
 │   ├── dashboard.html           ← stat cards, charts, brand carousel
 │   ├── sample_list.html         ← search, status filters, pagination, export
@@ -135,12 +139,16 @@ sample_tracking_system/          ← project root
 │   ├── form.html                ← shared create/edit form (Tom Select, CKEditor)
 │   ├── brand_list.html          ← brand table with logo thumbnails and flag emojis
 │   ├── buyer_list.html          ← buyer table with assigned brands
-│   ├── staff_list.html
+│   ├── buyer_detail.html        ← buyer profile, assigned brands, samples, password
+│   ├── staff_list.html          ← maker table with profile picture thumbnails
+│   ├── staff_detail.html        ← maker profile, picture, samples, password
+│   ├── maker_profile.html       ← maker self-service profile edit page
 │   ├── lookup_list.html         ← shared table for Category, GG, Challenge In
 │   └── confirm_delete.html
 │
 ├── media/                       ← uploaded files (git-ignored on prod)
 │   ├── brands/logos/
+│   ├── staff/profiles/
 │   └── samples/
 │       ├── front/
 │       ├── back/
@@ -161,14 +169,16 @@ sample_tracking_system/          ← project root
 | Action | Buyer | Maker (Staff) | Superadmin |
 |--------|:-----:|:-------------:|:----------:|
 | View dashboard | ✅ | ✅ | ✅ |
-| View samples (own brand / own maker) | ✅ | ✅ | ✅ |
+| View samples (own brand / own assignment) | ✅ | ✅ | ✅ |
 | View all samples | ❌ | ❌ | ✅ |
-| Create / edit / delete samples | ❌ | ✅ | ✅ |
+| Create / edit samples | ❌ | ✅ | ✅ |
+| Delete samples | ❌ | ❌ | ✅ |
 | Export samples (PDF / Excel) | ✅ | ✅ | ✅ |
-| View buyer list | ❌ | ❌ | ✅ |
+| Update own profile picture & contact info | ❌ | ✅ | ✅ |
+| View buyer / maker list and detail pages | ❌ | ❌ | ✅ |
 | Create / edit / delete buyers | ❌ | ❌ | ✅ |
-| View staff list | ❌ | ❌ | ✅ |
 | Create / edit / delete staff | ❌ | ❌ | ✅ |
+| View stored credentials (username + password) | ❌ | ❌ | ✅ |
 | Manage brands / categories / GG | ❌ | ❌ | ✅ |
 | Access Django admin (`/admin/`) | ❌ | ❌ | ✅ |
 
@@ -192,17 +202,21 @@ sample_tracking_system/          ← project root
 | `user` | OneToOneField → User | Login credentials |
 | `buyer_name` | CharField(100) | Display name |
 | `brand` | ManyToManyField → Brand | Brands the buyer can view |
+| `password_plain` | CharField(128) | Plain-text password stored for admin reference |
 
 ### `StaffProfile` (Maker)
 | Field | Type | Notes |
 |-------|------|-------|
 | `user` | OneToOneField → User | Login credentials, `is_staff=True` |
+| `maker_name` | CharField(100) | Display name (optional) |
 | `emp_id` | CharField(50) | Unique employee ID |
 | `role` | CharField(100) | e.g. "QC Inspector" |
 | `designation` | CharField(100) | e.g. "Senior Officer" |
 | `address` | TextField | |
 | `nid` | CharField(30) | National ID number |
-| `phone_number` | CharField(20) | |
+| `phone_number` | CharField(11) | |
+| `profile_picture` | ImageField | Uploaded to `staff/profiles/` |
+| `password_plain` | CharField(128) | Plain-text password stored for admin reference |
 
 ### `Sample`
 | Field | Type | Notes |
@@ -316,7 +330,7 @@ Navigate to `/` — the split-panel login page.
 | Account type | How to create |
 |---|---|
 | Superadmin | `python manage.py createsuperuser` |
-| Maker (Staff) | Superadmin → Sidebar → Staff → Add Staff |
+| Maker (Staff) | Superadmin → Sidebar → Maker → Add Member |
 | Buyer | Superadmin → Sidebar → Buyers → Add Buyer |
 
 ---
@@ -325,7 +339,7 @@ Navigate to `/` — the split-panel login page.
 
 1. Click **Samples** in the sidebar
 2. Use the search bar or status filter pills to narrow results
-3. Click **Add Sample** (superadmin / staff only) to open the form
+3. Click **Add Sample** (superadmin / maker only) to open the form
 4. Fill in specs; upload front/back images and challenge images
 5. Select Brand, Category, GG using the searchable Tom Select dropdowns
 6. Click **Save** — redirected to the sample detail page
@@ -345,15 +359,25 @@ Navigate to `/` — the split-panel login page.
 
 1. Click **Buyers** in the sidebar (superadmin only)
 2. Click **Add Buyer** — enter buyer name, username, password, and select one or more brands
-3. The buyer logs in and sees only samples tagged with their assigned brands
+3. Click the **eye** icon on a buyer's detail page to reveal their stored password
+4. The buyer logs in and sees only samples tagged with their assigned brands
 
 ---
 
 ### Managing Staff (Makers)
 
-1. Click **Staff** in the sidebar (superadmin only)
-2. Click **Add Staff** — fill in employee details, username, and password
-3. The staff member logs in and sees only samples they are assigned to as a maker
+1. Click **Maker** in the sidebar (superadmin only)
+2. Click **Add Member** — fill in employee details, optionally upload a profile picture, enter username and password
+3. Click the **eye** icon on a maker's detail page to reveal their stored password
+4. The maker logs in, sees only their assigned samples, and can update their profile from **My Profile** in the sidebar
+
+---
+
+### My Profile (Makers)
+
+Makers can click **My Profile** in the sidebar to:
+- Upload or change their profile picture
+- Update their phone number and address
 
 ---
 
@@ -371,6 +395,8 @@ Navigate to `/` — the split-panel login page.
 | SQL injection | ✅ Protected | Django ORM used throughout |
 | XSS | ✅ Protected | Django auto-escaping on all templates |
 | File uploads | ✅ Validated | `ImageField` validates image headers via Pillow |
+| Username uniqueness | ✅ Enforced | Duplicate username check in forms prevents 500 errors |
+| Stored passwords | ⚠️ Plain text | `password_plain` is stored unencrypted — admin-only visibility; suitable for internal systems only |
 
 ---
 
