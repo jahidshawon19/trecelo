@@ -1,8 +1,8 @@
-# Trecelo — Production Sample Tracking System
+# Trecelo — Sample Tracking System
 
-A full-featured, role-based web application built with **Django 6** for managing textile production samples, buyers, and staff. Designed for garment and knitwear manufacturers who need a centralised system to track sample submissions from creation to delivery.
+A full-featured, role-based web application built with **Django 6** for managing textile production samples, buyers, brands, and staff. Designed for garment and knitwear manufacturers who need a centralised system to track sample submissions from creation through approval.
 
-## live link: https://sample-tracking-qzpe.onrender.com/
+**🔗 Live demo:** [https://sample-tracking-qzpe.onrender.com](https://sample-tracking-qzpe.onrender.com)
 
 ---
 
@@ -14,10 +14,8 @@ A full-featured, role-based web application built with **Django 6** for managing
 - [User Roles & Permissions](#user-roles--permissions)
 - [Data Models](#data-models)
 - [Getting Started](#getting-started)
-- [Environment Setup](#environment-setup)
-- [Running the Project](#running-the-project)
+- [Environment Variables](#environment-variables)
 - [Usage Guide](#usage-guide)
-- [Screenshots](#screenshots)
 - [Security Notes](#security-notes)
 - [Production Deployment](#production-deployment)
 
@@ -25,41 +23,85 @@ A full-featured, role-based web application built with **Django 6** for managing
 
 ## Features
 
-### Core
-- **Product Sample Management** — Create, view, edit, and delete product samples with full technical specifications
-- **Multiple Image Upload** — Attach unlimited images per product with a live-preview uploader and lightbox gallery
-- **Document Attachment** — Upload PDF/DOCX specification documents per product
-- **Buyer Management** — Create and manage buyer accounts with linked login credentials
-- **Staff Management** — Register staff members with employee ID, role, designation, and contact info
+### Sample Management
+- Create, view, edit, and delete production samples with full technical specs
+- Fields: Style Number, Sample Type, Color, Season, Size, Weight, Yarn Composition, GG, Status, Submission Date
+- Attach front-part and back-part images per sample
+- Upload unlimited **Challenge Part** images per sample with live preview
+- Attach PDF / DOCX specification documents
+- Lightbox gallery for full-size image viewing
+- **Export** the current page to **PDF** or **Excel** with one click
+- Rich-text description field powered by CKEditor 4
 
-### Access Control
-- **Three-tier role system** — Superadmin, Staff, and Buyer with strictly enforced view-level permissions
-- **Buyers see only their own products** — filtered automatically at the query level
-- **Staff can manage products and buyers** — but cannot manage other staff members
-- **Superadmin has full access** — including staff creation and deletion
+### Status Workflow
+Samples move through four statuses with colour-coded badges:
+
+| Status | Badge colour |
+|--------|-------------|
+| Draft | Grey |
+| Pending | Amber |
+| Approved | Green |
+| Rejected | Red |
+
+### Brand Management
+- Create and manage brands with **Origin Country** (searchable select with 🏳️ emoji flags)
+- Upload a **Brand Logo** per brand
+- Brand logos are displayed as a live **auto-scrolling carousel** on the dashboard
+- Brand list shows logo thumbnail, flag, and style count
+
+### Buyer Management
+- Create buyers with linked login credentials (username + password)
+- Assign one or more brands to each buyer
+- Buyers can only view samples that belong to their assigned brands
+
+### Staff (Maker) Management
+- Register staff members with employee ID, role, designation, NID, phone number
+- Makers can only view samples they are assigned to
+
+### Dashboard
+- Stat cards: Total Samples, Buyers, Makers, Approved, Pending, Rejected, Draft
+- **Doughnut** chart — Status distribution
+- **Bar** chart — Samples by buyer
+- **Line** chart — Monthly submission trend
+- **Pie** chart — Samples by type
+- **Brand logo carousel** — auto-sliding showcase of all brands with logos
+
+### Admin Panel
+- Powered by **django-unfold** (light theme)
+- Full CRUD for all models via `/admin/`
+- Custom sidebar navigation with Material icons
 
 ### UI & UX
-- **Sidebar dashboard layout** — fixed 260px dark-navy sidebar, sticky topbar with role badge and logout
-- **Split-panel login page** — branded left panel with feature list, clean right-panel form
-- **Client-side product search** — instant filter on the product list without page reload
-- **Lightbox image viewer** — click any gallery thumbnail to open full-size in a modal
-- **Django flash messages** — success and error alerts on every create / update / delete action
-- **Responsive design** — collapsible sidebar with hamburger toggle on mobile
-- **Empty states** — contextual prompts when lists have no data
+- Tailwind CSS (Play CDN) — utility-first responsive design
+- Fixed dark-navy sidebar with role badge and logout
+- **Tom Select** — searchable single-select dropdowns for Brand, Category, GG, and Origin Country
+- Custom multi-select dropdown (MSD) for Maker and Challenge In fields
+- Status filter pills on the sample list
+- Instant client-side search with 400 ms debounce
+- Django flash messages on every create / update / delete action
+- Empty-state prompts when lists have no data
 
 ---
 
 ## Tech Stack
 
 | Layer | Technology |
-|---|---|
+|-------|-----------|
 | Backend | Django 6.0.4 |
 | Language | Python 3.14 |
-| Database | SQLite (dev) / PostgreSQL (prod) |
+| Database | SQLite (dev) · PostgreSQL (prod via `dj-database-url`) |
+| ORM | Django ORM |
 | Image processing | Pillow 12.2 |
-| Frontend | Bootstrap 5.3.2 + FontAwesome 6.4.0 (CDN) |
+| Frontend | Tailwind CSS (Play CDN) · Font Awesome 6 (CDN) |
+| Dropdowns | Tom Select 2.3.1 (CDN) |
+| Rich text | CKEditor 4 (CDN) |
+| Charts | Chart.js 4.4.2 (CDN) |
+| Admin theme | django-unfold 0.97.0 |
 | Static files | WhiteNoise 6.12 |
+| PDF export | ReportLab |
+| Excel export | openpyxl |
 | Auth | Django built-in `django.contrib.auth` |
+| Hosting | Render |
 
 ---
 
@@ -69,41 +111,46 @@ A full-featured, role-based web application built with **Django 6** for managing
 sample_tracking_system/          ← project root
 │
 ├── sample/                      ← main Django app
-│   ├── migrations/
-│   │   ├── 0001_initial.py
-│   │   └── 0002_remove_product_back_part_image_and_more.py
-│   ├── admin.py                 ← ProductImage TabularInline, ProductAdmin
+│   ├── migrations/              ← 22 migration files
+│   ├── admin.py                 ← Unfold-themed admin with inlines
 │   ├── apps.py
-│   ├── forms.py                 ← BuyerForm, StaffForm, ProductForm, MultipleImageField
-│   ├── models.py                ← Buyer, StaffProfile, Product, ProductImage
-│   ├── tests.py
+│   ├── context_processors.py    ← injects is_maker / is_buyer into all templates
+│   ├── forms.py                 ← BuyerForm, StaffForm, SampleForm, BrandForm, …
+│   ├── models.py                ← Brand, Buyer, StaffProfile, Sample, Category, GG, …
 │   ├── urls.py                  ← all app URL patterns
-│   └── views.py                 ← all views with messages & select_related
+│   └── views.py                 ← all views with role enforcement
 │
 ├── sample_tracking_system/      ← Django project config
-│   ├── settings.py
-│   ├── urls.py                  ← root URLconf + media serving
+│   ├── settings.py              ← Unfold config, WhiteNoise, dj-database-url
+│   ├── urls.py
 │   ├── asgi.py
 │   └── wsgi.py
 │
 ├── templates/                   ← all HTML templates
-│   ├── base.html                ← sidebar layout, topbar, messages
-│   ├── login.html               ← standalone split-panel login
-│   ├── product_list.html        ← stats card, search, table
-│   ├── product_detail.html      ← gallery, lightbox, upload modal, specs
+│   ├── base.html                ← sidebar layout, topbar, Tailwind CDN
+│   ├── login.html               ← split-panel login page
+│   ├── dashboard.html           ← stat cards, charts, brand carousel
+│   ├── sample_list.html         ← search, status filters, pagination, export
+│   ├── sample_detail.html       ← images, lightbox, specs, challenge images
+│   ├── form.html                ← shared create/edit form (Tom Select, CKEditor)
+│   ├── brand_list.html          ← brand table with logo thumbnails and flag emojis
+│   ├── buyer_list.html          ← buyer table with assigned brands
 │   ├── staff_list.html
-│   ├── buyer_list.html
-│   ├── form.html                ← shared create/edit form
-│   └── confirm_delete.html      ← delete confirmation card
+│   ├── lookup_list.html         ← shared table for Category, GG, Challenge In
+│   └── confirm_delete.html
 │
-├── media/                       ← uploaded files (git-ignored)
-│   └── products/
-│       ├── images/
+├── media/                       ← uploaded files (git-ignored on prod)
+│   ├── brands/logos/
+│   └── samples/
+│       ├── front/
+│       ├── back/
+│       ├── challenge/
 │       └── documents/
 │
 ├── manage.py
 ├── requirements.txt
-├── .gitignore
+├── build.sh                     ← Render build script
+├── render.yaml                  ← Render deployment config
 └── README.md
 ```
 
@@ -111,31 +158,44 @@ sample_tracking_system/          ← project root
 
 ## User Roles & Permissions
 
-| Action | Buyer | Staff | Superadmin |
-|---|:---:|:---:|:---:|
-| View own products | ✅ | ✅ | ✅ |
-| View all products | ❌ | ✅ | ✅ |
-| Create / edit / delete products | ❌ | ✅ | ✅ |
-| Upload / delete product images | ❌ | ✅ | ✅ |
-| View buyer list | ❌ | ✅ | ✅ |
-| Create / edit / delete buyers | ❌ | ✅ | ✅ |
+| Action | Buyer | Maker (Staff) | Superadmin |
+|--------|:-----:|:-------------:|:----------:|
+| View dashboard | ✅ | ✅ | ✅ |
+| View samples (own brand / own maker) | ✅ | ✅ | ✅ |
+| View all samples | ❌ | ❌ | ✅ |
+| Create / edit / delete samples | ❌ | ✅ | ✅ |
+| Export samples (PDF / Excel) | ✅ | ✅ | ✅ |
+| View buyer list | ❌ | ❌ | ✅ |
+| Create / edit / delete buyers | ❌ | ❌ | ✅ |
 | View staff list | ❌ | ❌ | ✅ |
 | Create / edit / delete staff | ❌ | ❌ | ✅ |
-| Access Django admin | ❌ | ❌ | ✅ |
+| Manage brands / categories / GG | ❌ | ❌ | ✅ |
+| Access Django admin (`/admin/`) | ❌ | ❌ | ✅ |
+
+> **Buyer access** is filtered at the query level — buyers only see samples whose brand matches one of their assigned brands.  
+> **Maker access** is filtered at the query level — makers only see samples they are explicitly assigned to.
 
 ---
 
 ## Data Models
 
+### `Brand`
+| Field | Type | Notes |
+|-------|------|-------|
+| `name` | CharField(100) | Brand name |
+| `origin` | CharField(100) | Country choice with 🏳️ emoji flag |
+| `logo` | ImageField | Uploaded to `brands/logos/` |
+
 ### `Buyer`
 | Field | Type | Notes |
-|---|---|---|
+|-------|------|-------|
 | `user` | OneToOneField → User | Login credentials |
 | `buyer_name` | CharField(100) | Display name |
+| `brand` | ManyToManyField → Brand | Brands the buyer can view |
 
-### `StaffProfile`
+### `StaffProfile` (Maker)
 | Field | Type | Notes |
-|---|---|---|
+|-------|------|-------|
 | `user` | OneToOneField → User | Login credentials, `is_staff=True` |
 | `emp_id` | CharField(50) | Unique employee ID |
 | `role` | CharField(100) | e.g. "QC Inspector" |
@@ -144,30 +204,37 @@ sample_tracking_system/          ← project root
 | `nid` | CharField(30) | National ID number |
 | `phone_number` | CharField(20) | |
 
-### `Product`
+### `Sample`
 | Field | Type | Notes |
-|---|---|---|
-| `product_name` | CharField(100) | |
+|-------|------|-------|
+| `style_number` | CharField(100) | |
+| `sample_type` | CharField(100) | |
+| `color` | CharField(100) | |
+| `season` | IntegerField | nullable |
+| `status` | CharField | draft / pending / approved / rejected |
+| `category` | ManyToManyField → Category | |
+| `brand` | ManyToManyField → Brand | |
 | `buyer` | ForeignKey → Buyer | nullable |
-| `maker` | ForeignKey → StaffProfile | nullable, `SET_NULL` |
-| `documents` | FileField | upload to `products/documents/` |
-| `gg` | TextField | Gauge specification |
-| `end_ply` | IntegerField | |
-| `weight` | FloatField | |
-| `yarn_composition` | TextField | |
-| `description` | TextField | |
-| `challenge_in` | TextField | Production challenges |
+| `maker` | ManyToManyField → StaffProfile | |
+| `front_part_image` | ImageField | upload to `samples/front/` |
+| `back_part_image` | ImageField | upload to `samples/back/` |
+| `documents` | FileField | upload to `samples/documents/` |
+| `gg` | ManyToManyField → GG | Gauge specification |
+| `size` | CharField(100) | |
+| `weight` | CharField(100) | |
+| `yarn_composition` | CharField(255) | |
+| `description` | TextField | Rich text (CKEditor) |
+| `challenge_in` | ManyToManyField → ChallengeIn | |
 | `submission_date` | DateField | nullable |
-| `knitting_smv` | IntegerField | Standard minute value |
-| `linking_smv` | IntegerField | Standard minute value |
 
-### `ProductImage`
+### `ChallengeImage`
 | Field | Type | Notes |
-|---|---|---|
-| `product` | ForeignKey → Product | `related_name='images'`, CASCADE |
-| `image` | ImageField | upload to `products/images/` |
-| `caption` | CharField(120) | optional |
-| `uploaded_at` | DateTimeField | auto |
+|-------|------|-------|
+| `sample` | ForeignKey → Sample | CASCADE, `related_name='challenge_images'` |
+| `image` | ImageField | upload to `samples/challenge/` |
+
+### `Category`, `GG`, `ChallengeIn`
+Simple lookup models with a single `name` / `title` CharField.
 
 ---
 
@@ -175,15 +242,15 @@ sample_tracking_system/          ← project root
 
 ### Prerequisites
 
-- Python 3.10 or higher
+- Python 3.10+
 - pip
 - Git
 
 ### 1 — Clone the repository
 
 ```bash
-git clone https://github.com/jahidshawon19/sample-tracking-system.git
-cd sample-tracking-system
+git clone https://github.com/jahidshawon19/trecelo.git
+cd trecelo
 ```
 
 ### 2 — Create and activate a virtual environment
@@ -222,60 +289,21 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser and log in with your superuser credentials.
 
 ---
 
-## Environment Setup
+## Environment Variables
 
-For development the defaults in `settings.py` work out of the box. For any shared or production environment, move sensitive values into environment variables.
-
-Create a `.env` file in the project root (it is git-ignored):
+Create a `.env` file in the project root (already git-ignored):
 
 ```env
-DJANGO_SECRET_KEY=your-very-secret-key-here
-DJANGO_DEBUG=False
-DJANGO_ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+SECRET_KEY=your-very-secret-key-here
+DEBUG=False
+DATABASE_URL=postgres://user:password@host:5432/dbname
 ```
 
-Then update `settings.py`:
-
-```python
-import os
-
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'fallback-dev-only-key')
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')
-```
-
----
-
-## Running the Project
-
-### Development server
-
-```bash
-python manage.py runserver
-```
-
-### Create staff member via Django admin
-
-1. Go to [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
-2. Log in with your superuser credentials
-3. Or use the **Staff** section in the app sidebar (superadmin only)
-
-### Run system checks
-
-```bash
-python manage.py check
-```
-
-### Create new migrations after model changes
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
+`settings.py` reads these automatically via `python-decouple` and `dj-database-url`. In development, all three have safe defaults so the `.env` file is optional.
 
 ---
 
@@ -283,47 +311,49 @@ python manage.py migrate
 
 ### Login
 
-Navigate to `/` — you will see the split-panel login page.
+Navigate to `/` — the split-panel login page.
 
-| Account type | Created by |
+| Account type | How to create |
 |---|---|
 | Superadmin | `python manage.py createsuperuser` |
-| Staff | Superadmin via the Staff section |
-| Buyer | Staff or Superadmin via the Buyers section |
+| Maker (Staff) | Superadmin → Sidebar → Staff → Add Staff |
+| Buyer | Superadmin → Sidebar → Buyers → Add Buyer |
 
 ---
 
-### Managing Products (Staff / Superadmin)
+### Managing Samples
 
-1. Click **Products** in the sidebar
-2. Click **Add Product** to open the product form
-3. Fill in product details, technical specifications, and attach a document if needed
-4. Select one or more images using the **Product Images** file picker (hold `Ctrl`/`Cmd` to select multiple)
-5. Click **Save** — you are redirected to the product detail page
-
-**To add more images later:**
-- Open the product detail page
-- Click **Add Images** (top-right of the Images card)
-- Select images in the modal and click **Upload & Save**
-
-**To remove an image:**
-- On the product detail page, click the **×** button on any thumbnail
+1. Click **Samples** in the sidebar
+2. Use the search bar or status filter pills to narrow results
+3. Click **Add Sample** (superadmin / staff only) to open the form
+4. Fill in specs; upload front/back images and challenge images
+5. Select Brand, Category, GG using the searchable Tom Select dropdowns
+6. Click **Save** — redirected to the sample detail page
+7. Use **PDF** or **Excel** buttons to export the current page
 
 ---
 
-### Managing Buyers (Staff / Superadmin)
+### Managing Brands
 
-1. Click **Buyers** in the sidebar
-2. Click **Add Buyer** — enter a buyer name, username, and password
-3. The buyer can then log in and view only the products assigned to them
+1. Click **Brands** in the sidebar (superadmin only)
+2. Click **Add Brand** — enter name, select origin country with flag emoji, optionally upload a logo
+3. Brands with logos appear in the **carousel on the dashboard**
 
 ---
 
-### Managing Staff (Superadmin only)
+### Managing Buyers
 
-1. Click **Staff** in the sidebar
+1. Click **Buyers** in the sidebar (superadmin only)
+2. Click **Add Buyer** — enter buyer name, username, password, and select one or more brands
+3. The buyer logs in and sees only samples tagged with their assigned brands
+
+---
+
+### Managing Staff (Makers)
+
+1. Click **Staff** in the sidebar (superadmin only)
 2. Click **Add Staff** — fill in employee details, username, and password
-3. The staff member gets `is_staff = True` automatically, granting access to product and buyer management
+3. The staff member logs in and sees only samples they are assigned to as a maker
 
 ---
 
@@ -331,53 +361,46 @@ Navigate to `/` — you will see the split-panel login page.
 
 | Item | Status | Recommendation |
 |---|---|---|
-| `SECRET_KEY` hardcoded | ⚠️ Dev only | Move to environment variable before deploying |
-| `DEBUG = True` | ⚠️ Dev only | Set `DEBUG = False` in production |
-| `ALLOWED_HOSTS = []` | ⚠️ Dev only | Set to your domain(s) in production |
-| CSRF protection | ✅ Enabled | All forms use `{% csrf_token %}` |
-| Login required | ✅ Enforced | All views except login use `@login_required` |
-| Role enforcement | ✅ Enforced | `@user_passes_test` on every sensitive view |
+| `SECRET_KEY` | ⚠️ Default in dev | Move to `.env` / environment variable before deploying |
+| `DEBUG` | ⚠️ `True` in dev | Set `DEBUG=False` in production |
+| `ALLOWED_HOSTS` | ✅ Set for Render | Update if deploying elsewhere |
+| CSRF protection | ✅ Enabled | All forms include `{% csrf_token %}` |
+| Login required | ✅ Enforced | All views except `/` use `@login_required` |
+| Role enforcement | ✅ Enforced | `@user_passes_test` on every privileged view |
+| Query-level filtering | ✅ Enforced | Buyers and makers can only query their own data |
 | SQL injection | ✅ Protected | Django ORM used throughout |
-| XSS | ✅ Protected | Django auto-escaping enabled |
-| File uploads | ✅ Pillow validated | `ImageField` validates image headers |
+| XSS | ✅ Protected | Django auto-escaping on all templates |
+| File uploads | ✅ Validated | `ImageField` validates image headers via Pillow |
 
 ---
 
 ## Production Deployment
 
-### Checklist
+This project is configured for **Render** out of the box via `render.yaml` and `build.sh`.
+
+### Manual checklist
 
 ```bash
-# 1. Set environment variables (SECRET_KEY, DEBUG=False, ALLOWED_HOSTS)
+# 1. Set environment variables: SECRET_KEY, DEBUG=False, DATABASE_URL
 
 # 2. Collect static files
-python manage.py collectstatic
+python manage.py collectstatic --no-input
 
-# 3. Use a production database (PostgreSQL recommended)
-# Add to settings.py:
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get('DB_NAME'),
-#         'USER': os.environ.get('DB_USER'),
-#         'PASSWORD': os.environ.get('DB_PASSWORD'),
-#         'HOST': os.environ.get('DB_HOST', 'localhost'),
-#         'PORT': os.environ.get('DB_PORT', '5432'),
-#     }
-# }
-
-# 4. Run migrations on production database
+# 3. Apply migrations
 python manage.py migrate
 
-# 5. Serve with Gunicorn + Nginx
-pip install gunicorn
-gunicorn sample_tracking_system.wsgi:application --bind 0.0.0.0:8000
+# 4. Start the server
+gunicorn sample_tracking_system.wsgi:application
 ```
 
-### Recommended packages for production
+### Recommended production packages (already in requirements.txt)
 
-```bash
-pip install gunicorn psycopg2-binary python-decouple
+```
+gunicorn
+psycopg2-binary
+dj-database-url
+python-decouple
+whitenoise
 ```
 
 ---
@@ -388,4 +411,4 @@ This project is for internal use. All rights reserved.
 
 ---
 
-*Built with Django 6 · Bootstrap 5 · Python 3.14*
+*Built with Django 6 · Tailwind CSS · Python 3.14 · Deployed on Render*
