@@ -38,8 +38,10 @@
           <tr>
             <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
             <td>
-              <div class="flex items-center gap-3">
+              <div class="flex items-center {% if title != 'GGs' %}gap-3{% endif %}">
+                {% if title != 'GGs' %}
                 <div class="av av-blue">{{ item|stringformat:"s"|slice:"0:1"|upper }}</div>
+                {% endif %}
                 <span class="font-semibold text-slate-800">{{ item }}</span>
               </div>
             </td>
