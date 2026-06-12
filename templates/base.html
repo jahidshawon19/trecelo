@@ -262,6 +262,103 @@
     /* Count pill */
     .count-pill { background:#eff6ff; color:#2563eb; font-size:.72rem; font-weight:700; padding:2px 10px; border-radius:20px; }
 
+    /* ── Toast notifications ─────────────────────────────────── */
+    #toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: all;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      min-width: 320px;
+      max-width: 420px;
+      padding: 16px 18px 20px;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.14), 0 2px 8px rgba(0,0,0,.08);
+      position: relative;
+      overflow: hidden;
+      animation: toastIn .38s cubic-bezier(.21,1.02,.73,1) forwards;
+      border: 1px solid transparent;
+    }
+    .toast.hiding {
+      animation: toastOut .3s ease forwards;
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(110%) scale(.96); }
+      to   { opacity: 1; transform: translateX(0)   scale(1);    }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateX(0)   scale(1);    }
+      to   { opacity: 0; transform: translateX(110%) scale(.94); }
+    }
+
+    /* colour themes */
+    .toast-success { background: #f0fdf4; border-color: #bbf7d0; }
+    .toast-error   { background: #fef2f2; border-color: #fecaca; }
+    .toast-warning { background: #fffbeb; border-color: #fde68a; }
+    .toast-info    { background: #eff6ff; border-color: #bfdbfe; }
+
+    .toast-icon {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0; margin-top: 1px;
+    }
+    .toast-success .toast-icon { background: #dcfce7; color: #16a34a; }
+    .toast-error   .toast-icon { background: #fee2e2; color: #dc2626; }
+    .toast-warning .toast-icon { background: #fef3c7; color: #d97706; }
+    .toast-info    .toast-icon { background: #dbeafe; color: #2563eb; }
+
+    .toast-body { flex: 1; min-width: 0; }
+    .toast-title {
+      font-size: .82rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .6px; margin-bottom: 3px;
+    }
+    .toast-success .toast-title { color: #15803d; }
+    .toast-error   .toast-title { color: #b91c1c; }
+    .toast-warning .toast-title { color: #b45309; }
+    .toast-info    .toast-title { color: #1d4ed8; }
+
+    .toast-msg { font-size: .875rem; color: #334155; line-height: 1.45; }
+
+    .toast-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 1rem; line-height: 1; padding: 2px 4px;
+      color: #94a3b8; border-radius: 4px; flex-shrink: 0;
+      transition: color .15s, background .15s;
+    }
+    .toast-close:hover { color: #475569; background: rgba(0,0,0,.06); }
+
+    /* progress bar */
+    .toast-progress {
+      position: absolute; bottom: 0; left: 0; height: 4px;
+      border-radius: 0 0 14px 14px;
+      animation: toastProgress linear forwards;
+    }
+    .toast-success .toast-progress { background: #22c55e; }
+    .toast-error   .toast-progress { background: #ef4444; }
+    .toast-warning .toast-progress { background: #f59e0b; }
+    .toast-info    .toast-progress { background: #3b82f6; }
+
+    @keyframes toastProgress {
+      from { width: 100%; }
+      to   { width: 0%;   }
+    }
+
+    @media (max-width: 600px) {
+      #toast-container { top: 16px; right: 12px; left: 12px; }
+      .toast { min-width: unset; max-width: 100%; }
+    }
+
     /* ── Sidebar overlay (mobile) ─────────────────────────────── */
     #sidebar-overlay {
       display: none;
@@ -295,6 +392,18 @@
   </style>
 </head>
 <body>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- Django messages (hidden, read by JS) -->
+{% if messages %}
+<div id="django-messages" style="display:none;">
+  {% for message in messages %}
+  <span data-tags="{{ message.tags }}" data-msg="{{ message|escapejs }}"></span>
+  {% endfor %}
+</div>
+{% endif %}
 
 <!-- Sidebar overlay (mobile) -->
 <div id="sidebar-overlay"></div>
@@ -408,38 +517,87 @@
   <!-- Content -->
   <div id="content">
 
-    <!-- Django messages -->
-    {% if messages %}
-      {% for message in messages %}
-        {% if message.tags == 'error' %}
-          <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 mb-4 flex items-center gap-2 relative" role="alert">
-            <i class="fa fa-triangle-exclamation mr-2"></i>{{ message }}
-            <button type="button" onclick="this.parentElement.remove()" class="absolute right-3 top-3 text-red-400 hover:text-red-600 bg-transparent border-0 cursor-pointer" aria-label="Close">&times;</button>
-          </div>
-        {% elif message.tags == 'success' %}
-          <div class="bg-green-50 border border-green-200 text-green-700 rounded-lg p-3 mb-4 flex items-center gap-2 relative" role="alert">
-            <i class="fa fa-circle-check mr-2"></i>{{ message }}
-            <button type="button" onclick="this.parentElement.remove()" class="absolute right-3 top-3 text-green-400 hover:text-green-600 bg-transparent border-0 cursor-pointer" aria-label="Close">&times;</button>
-          </div>
-        {% elif message.tags == 'warning' %}
-          <div class="bg-amber-50 border border-amber-200 text-amber-700 rounded-lg p-3 mb-4 flex items-center gap-2 relative" role="alert">
-            <i class="fa fa-exclamation mr-2"></i>{{ message }}
-            <button type="button" onclick="this.parentElement.remove()" class="absolute right-3 top-3 text-amber-400 hover:text-amber-600 bg-transparent border-0 cursor-pointer" aria-label="Close">&times;</button>
-          </div>
-        {% else %}
-          <div class="bg-cyan-50 border border-cyan-200 text-cyan-700 rounded-lg p-3 mb-4 flex items-center gap-2 relative" role="alert">
-            <i class="fa fa-circle-info mr-2"></i>{{ message }}
-            <button type="button" onclick="this.parentElement.remove()" class="absolute right-3 top-3 text-cyan-400 hover:text-cyan-600 bg-transparent border-0 cursor-pointer" aria-label="Close">&times;</button>
-          </div>
-        {% endif %}
-      {% endfor %}
-    {% endif %}
-
     {% block content %}{% endblock %}
   </div>
 </div>
 
 <script>
+  /* ── Toast system ─────────────────────────────────────────────── */
+  (function () {
+    var DURATION = 4500; // ms before auto-dismiss
+
+    var CONFIG = {
+      success: { icon: 'fa-circle-check',       title: 'Success',     cls: 'toast-success' },
+      error:   { icon: 'fa-circle-xmark',        title: 'Error',       cls: 'toast-error'   },
+      warning: { icon: 'fa-triangle-exclamation',title: 'Warning',     cls: 'toast-warning'  },
+      info:    { icon: 'fa-circle-info',          title: 'Info',        cls: 'toast-info'     },
+    };
+
+    function showToast(type, message) {
+      var cfg = CONFIG[type] || CONFIG.info;
+      var container = document.getElementById('toast-container');
+
+      var toast = document.createElement('div');
+      toast.className = 'toast ' + cfg.cls;
+      toast.setAttribute('role', 'alert');
+      toast.innerHTML =
+        '<div class="toast-icon"><i class="fa ' + cfg.icon + '"></i></div>' +
+        '<div class="toast-body">' +
+          '<div class="toast-title">' + cfg.title + '</div>' +
+          '<div class="toast-msg">' + message + '</div>' +
+        '</div>' +
+        '<button class="toast-close" aria-label="Close">&times;</button>' +
+        '<div class="toast-progress" style="animation-duration:' + DURATION + 'ms;"></div>';
+
+      container.appendChild(toast);
+
+      // Close button
+      toast.querySelector('.toast-close').addEventListener('click', function () {
+        dismissToast(toast);
+      });
+
+      // Auto-dismiss
+      var timer = setTimeout(function () { dismissToast(toast); }, DURATION);
+
+      // Pause on hover
+      toast.addEventListener('mouseenter', function () {
+        clearTimeout(timer);
+        var bar = toast.querySelector('.toast-progress');
+        if (bar) bar.style.animationPlayState = 'paused';
+      });
+      toast.addEventListener('mouseleave', function () {
+        var bar = toast.querySelector('.toast-progress');
+        if (bar) bar.style.animationPlayState = 'running';
+        timer = setTimeout(function () { dismissToast(toast); }, 1200);
+      });
+    }
+
+    function dismissToast(toast) {
+      toast.classList.add('hiding');
+      toast.addEventListener('animationend', function () { toast.remove(); }, { once: true });
+    }
+
+    // Read Django messages from hidden DOM elements
+    document.addEventListener('DOMContentLoaded', function () {
+      var container = document.getElementById('django-messages');
+      if (!container) return;
+      var spans = container.querySelectorAll('span[data-msg]');
+      spans.forEach(function (span, i) {
+        var tags = span.getAttribute('data-tags') || '';
+        var msg  = span.getAttribute('data-msg')  || '';
+        var type = 'info';
+        if (tags.includes('success')) type = 'success';
+        else if (tags.includes('error'))   type = 'error';
+        else if (tags.includes('warning')) type = 'warning';
+        // Stagger multiple toasts
+        setTimeout(function () { showToast(type, msg); }, i * 180);
+      });
+    });
+
+    // Expose globally so other pages can trigger toasts programmatically
+    window.showToast = showToast;
+  })();
+
   // Sidebar toggle (mobile)
   const toggle   = document.getElementById('sidebarToggle');
   const sidebar  = document.getElementById('sidebar');
