@@ -517,11 +517,12 @@
     renderControl();
   }
 
-  // Tom Select for brand, category, gg (single-select with search)
+  // Tom Select for brand, category, gg, and origin (single-select with search)
   [
-    { id: 'id_brand',    placeholder: 'Select brand…'     },
-    { id: 'id_category', placeholder: 'Select category…'  },
-    { id: 'id_gg',       placeholder: 'Select GG…'        },
+    { id: 'id_brand',    placeholder: 'Select brand…'          },
+    { id: 'id_category', placeholder: 'Select category…'       },
+    { id: 'id_gg',       placeholder: 'Select GG…'             },
+    { id: 'id_origin',   placeholder: 'Select origin country…' },
   ].forEach(function(cfg) {
     var el = document.getElementById(cfg.id);
     if (!el) return;
@@ -539,7 +540,7 @@
   buildMultiDropdown('id_maker',       'Select makers…');
 
   // Tailwind classes on inputs (skip Tom Select targets — they handle their own styling)
-  var tomSelectIds = ['id_brand', 'id_category', 'id_gg'];
+  var tomSelectIds = ['id_brand', 'id_category', 'id_gg', 'id_origin'];
   var twInputClass = 'w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500';
   document.querySelectorAll(
     'input:not([type=submit]):not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea'
