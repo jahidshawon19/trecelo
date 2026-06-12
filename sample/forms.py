@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from .models import Brand, Buyer, Category, ChallengeIn, GG, Sample, StaffProfile
 
 
@@ -17,8 +18,11 @@ class BuyerForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if not self.instance.pk:
-            if not cleaned_data.get('username'):
+            username = cleaned_data.get('username')
+            if not username:
                 self.add_error('username', 'Username is required.')
+            elif User.objects.filter(username=username).exists():
+                self.add_error('username', 'A user with that username already exists. Please choose a different username.')
             if not cleaned_data.get('password'):
                 self.add_error('password', 'Password is required.')
         return cleaned_data
@@ -55,8 +59,11 @@ class StaffForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if not self.instance.pk:
-            if not cleaned_data.get('username'):
+            username = cleaned_data.get('username')
+            if not username:
                 self.add_error('username', 'Username is required.')
+            elif User.objects.filter(username=username).exists():
+                self.add_error('username', 'A user with that username already exists. Please choose a different username.')
             if not cleaned_data.get('password'):
                 self.add_error('password', 'Password is required.')
         return cleaned_data
