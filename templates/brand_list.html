@@ -49,7 +49,7 @@
               {% if brand.origin %}
               <div class="flex items-center gap-2">
                 <i class="fa fa-globe" style="color:#94a3b8;font-size:.8rem;"></i>
-                <span style="font-size:.875rem;color:#475569;">{{ brand.origin }}</span>
+                <span style="font-size:.875rem;color:#475569;">{{ brand.get_origin_display }}</span>
               </div>
               {% else %}
               <span class="text-slate-400">—</span>
