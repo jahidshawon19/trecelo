@@ -127,6 +127,8 @@ def dashboard(request):
         'data':   [t['count'] for t in by_type],
     })
 
+    brand_logos = Brand.objects.filter(logo__isnull=False).exclude(logo='')
+
     return render(request, 'dashboard.html', {
         'total_samples':  total_samples,
         'total_buyers':   total_buyers,
@@ -139,6 +141,7 @@ def dashboard(request):
         'buyer_chart':    buyer_chart,
         'monthly_chart':  monthly_chart,
         'type_chart':     type_chart,
+        'brand_logos':    brand_logos,
     })
 
 
@@ -289,7 +292,7 @@ def brand_list(request):
 @login_required
 @user_passes_test(is_superadmin)
 def brand_create(request):
-    form = BrandForm(request.POST or None)
+    form = BrandForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         form.save()
         messages.success(request, 'Brand created successfully.')
@@ -301,7 +304,7 @@ def brand_create(request):
 @user_passes_test(is_superadmin)
 def brand_update(request, pk):
     brand = get_object_or_404(Brand, pk=pk)
-    form = BrandForm(request.POST or None, instance=brand)
+    form = BrandForm(request.POST or None, request.FILES or None, instance=brand)
     if form.is_valid():
         form.save()
         messages.success(request, f'Brand "{brand.name}" updated successfully.')

@@ -123,7 +123,10 @@ class CategoryForm(forms.ModelForm):
 class BrandForm(forms.ModelForm):
     class Meta:
         model = Brand
-        fields = ['name', 'origin']
+        fields = ['name', 'origin', 'logo']
+        widgets = {
+            'logo': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+        }
 
 
 class GGForm(forms.ModelForm):

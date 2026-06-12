@@ -108,6 +108,7 @@ class Brand(models.Model):
 
     name   = models.CharField(max_length=100)
     origin = models.CharField(max_length=100, blank=True, choices=COUNTRY_CHOICES, verbose_name='Origin Country')
+    logo   = models.ImageField(upload_to='brands/logos/', blank=True, null=True, verbose_name='Brand Logo')
 
     def __str__(self):
         return self.name
