@@ -17,7 +17,7 @@
           <input type="text" id="lookupSearch" placeholder="Search {{ title|lower }}…" style="min-width:200px;">
         </div>
         <a href="{% url create_url %}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
-          <i class="fa fa-plus"></i> Add {{ title|slice:":-1" }}
+          <i class="fa fa-plus"></i> Add {{ title }}
         </a>
       </div>
     </div>
@@ -29,7 +29,7 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>{{ title|slice:":-1" }}</th>
+            <th style="text-align:left;">{{ title }}</th>
             <th class="text-center">Actions</th>
           </tr>
         </thead>
