@@ -153,7 +153,7 @@ class StaffProfile(models.Model):
     designation = models.CharField(max_length=100)
     address = models.TextField()
     nid = models.CharField(max_length=30)
-    phone_number = models.CharField(max_length=20)
+    phone_number = models.CharField(max_length=11)
 
     def __str__(self):
         return self.user.username

@@ -34,7 +34,7 @@
             <th>Member</th>
             <th>Emp ID</th>
             <th>Role</th>
-            <th>Designation</th>
+            
             <th>Phone</th>
             {% if user.is_superuser %}<th class="text-center">Actions</th>{% endif %}
           </tr>
@@ -62,7 +62,7 @@
                 {{ s.role }}
               </span>
             </td>
-            <td style="font-size:.875rem;color:#475569;">{{ s.designation }}</td>
+            
             <td>
               <span style="display:inline-flex;align-items:center;gap:5px;font-size:.82rem;color:#475569;">
                 <i class="fa fa-phone text-slate-400" style="font-size:.7rem;"></i>{{ s.phone_number }}
