@@ -35,6 +35,11 @@ class BuyerForm(forms.ModelForm):
                 password=self.cleaned_data['password'],
             )
             buyer.user = user
+            buyer.password_plain = self.cleaned_data['password']
+        elif self.cleaned_data.get('password'):
+            buyer.user.set_password(self.cleaned_data['password'])
+            buyer.user.save()
+            buyer.password_plain = self.cleaned_data['password']
         if commit:
             buyer.save()
             self.save_m2m()   # saves brand M2M assignments
@@ -55,7 +60,11 @@ class StaffForm(forms.ModelForm):
             'address',
             'nid',
             'phone_number',
+            'profile_picture',
         ]
+        widgets = {
+            'profile_picture': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -79,8 +88,13 @@ class StaffForm(forms.ModelForm):
             user.save()
             staff = super().save(commit=False)
             staff.user = user
+            staff.password_plain = self.cleaned_data['password']
         else:
             staff = super().save(commit=False)
+            if self.cleaned_data.get('password'):
+                staff.user.set_password(self.cleaned_data['password'])
+                staff.user.save()
+                staff.password_plain = self.cleaned_data['password']
         if commit:
             staff.save()
         return staff

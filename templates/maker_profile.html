@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}My Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+
+  <!-- Profile picture card -->
+  <div class="bg-white rounded-xl shadow-sm p-6 mb-4 flex flex-col items-center gap-4">
+    {% if staff.profile_picture %}
+      <img src="{{ staff.profile_picture.url }}"
+           alt="Profile picture"
+           style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #e2e8f0;">
+    {% else %}
+      <div style="width:100px;height:100px;border-radius:50%;background:#dcfce7;color:#15803d;font-size:2.4rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:3px solid #e2e8f0;">
+        {{ staff.user.username|first|upper }}
+      </div>
+    {% endif %}
+    <div class="text-center">
+      <div class="font-bold text-slate-800 text-lg">{% if staff.maker_name %}{{ staff.maker_name }}{% else %}{{ staff.user.username }}{% endif %}</div>
+      <div class="text-slate-400 text-xs mt-1"><i class="fa fa-user mr-1"></i>{{ staff.user.username }}</div>
+      <div class="mt-2">
+        <span style="background:#ede9fe;color:#7c3aed;font-size:.76rem;font-weight:600;padding:4px 14px;border-radius:20px;">{{ staff.role }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit form card -->
+  <div class="bg-white rounded-xl shadow-sm">
+    <div class="px-5 py-4 border-b border-slate-100 font-semibold text-sm">
+      <i class="fa fa-pen mr-2 text-blue-500"></i>Edit Profile
+    </div>
+    <div class="p-5">
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        <div class="grid grid-cols-1 gap-4">
+
+          <!-- Profile Picture field only — makers update just their picture and basic info -->
+          {% for field in form %}
+            {% if field.name == 'profile_picture' or field.name == 'phone_number' or field.name == 'address' %}
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">
+                {{ field.label }}
+                {% if field.field.required %}<span class="text-red-500 ml-0.5">*</span>{% endif %}
+              </label>
+              {{ field }}
+              {% if field.errors %}
+                {% for e in field.errors %}
+                  <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                {% endfor %}
+              {% endif %}
+              {% if field.help_text %}
+                <p class="text-slate-400 text-xs mt-1">{{ field.help_text }}</p>
+              {% endif %}
+            </div>
+            {% endif %}
+          {% endfor %}
+
+        </div>
+
+        <div class="flex gap-2 mt-6 justify-end">
+          <a href="{% url 'dashboard' %}" class="border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold px-4 py-2 rounded-lg transition-colors no-underline">
+            Cancel
+          </a>
+          <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors">
+            <i class="fa fa-save mr-1"></i>Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

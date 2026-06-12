@@ -433,6 +433,19 @@
     </li>
   </ul>
 
+  {% if is_maker %}
+  <span class="sidebar-section-label">Account</span>
+  <ul class="sidebar-nav">
+    <li>
+      <a href="{% url 'maker_profile' %}"
+         class="{% if request.resolver_match.url_name == 'maker_profile' %}active{% endif %}">
+        <span class="nav-icon"><i class="fa fa-circle-user"></i></span>
+        My Profile
+      </a>
+    </li>
+  </ul>
+  {% endif %}
+
   {% if user.is_superuser %}
   <span class="sidebar-section-label">Management</span>
   <ul class="sidebar-nav">

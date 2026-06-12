@@ -140,6 +140,7 @@ class Buyer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     buyer_name = models.CharField(max_length=100)
     brand = models.ManyToManyField('Brand', blank=True, verbose_name='Brands')
+    password_plain = models.CharField(max_length=128, blank=True, verbose_name='Password')
 
     def __str__(self):
         return self.buyer_name
@@ -154,6 +155,8 @@ class StaffProfile(models.Model):
     address = models.TextField()
     nid = models.CharField(max_length=30)
     phone_number = models.CharField(max_length=11)
+    profile_picture = models.ImageField(upload_to='staff/profiles/', blank=True, null=True, verbose_name='Profile Picture')
+    password_plain = models.CharField(max_length=128, blank=True, verbose_name='Password')
 
     def __str__(self):
         return self.user.username

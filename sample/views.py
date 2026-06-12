@@ -164,7 +164,7 @@ def staff_detail(request, pk):
 @login_required
 @user_passes_test(is_superadmin)
 def staff_create(request):
-    form = StaffForm(request.POST or None)
+    form = StaffForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         form.save()
         messages.success(request, 'Staff member created successfully.')
@@ -176,12 +176,25 @@ def staff_create(request):
 @user_passes_test(is_superadmin)
 def staff_update(request, pk):
     staff = get_object_or_404(StaffProfile, pk=pk)
-    form = StaffForm(request.POST or None, instance=staff)
+    form = StaffForm(request.POST or None, request.FILES or None, instance=staff)
     if form.is_valid():
         form.save()
         messages.success(request, f'Staff member "{staff.user.username}" updated successfully.')
         return redirect('staff_list')
     return render(request, 'form.html', {'form': form, 'title': 'Edit Staff'})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff and not u.is_superuser)
+def maker_profile(request):
+    """Makers can update their own profile picture."""
+    staff = get_object_or_404(StaffProfile, user=request.user)
+    form = StaffForm(request.POST or None, request.FILES or None, instance=staff)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Profile updated successfully.')
+        return redirect('maker_profile')
+    return render(request, 'maker_profile.html', {'form': form, 'staff': staff})
 
 
 @login_required

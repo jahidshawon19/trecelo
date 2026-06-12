@@ -29,9 +29,15 @@
 
   <!-- Avatar card -->
   <div class="bg-white rounded-xl shadow-sm flex flex-col items-center justify-center py-8 px-6 gap-3">
-    <div style="width:80px;height:80px;border-radius:50%;background:#dcfce7;color:#15803d;font-size:2rem;font-weight:800;display:flex;align-items:center;justify-content:center;">
-      {{ staff.user.username|first|upper }}
-    </div>
+    {% if staff.profile_picture %}
+      <img src="{{ staff.profile_picture.url }}"
+           alt="{{ staff.user.username }}"
+           style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #e2e8f0;">
+    {% else %}
+      <div style="width:80px;height:80px;border-radius:50%;background:#dcfce7;color:#15803d;font-size:2rem;font-weight:800;display:flex;align-items:center;justify-content:center;">
+        {{ staff.user.username|first|upper }}
+      </div>
+    {% endif %}
     <div class="text-center">
       <div class="font-bold text-slate-800" style="font-size:1.15rem;">{% if staff.maker_name %}{{ staff.maker_name }}{% else %}{{ staff.user.username }}{% endif %}</div>
       <div class="text-slate-400 text-xs mt-1"><i class="fa fa-user mr-1"></i>{{ staff.user.username }}</div>
@@ -91,6 +97,23 @@
           <tr class="border-b border-slate-100">
             <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Address</th>
             <td class="px-4 py-3 text-slate-700">{{ staff.address }}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Password</th>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span id="staffPwd" style="font-family:monospace;font-size:.85rem;color:#475569;letter-spacing:.05em;">
+                  {% if staff.password_plain %}{{ staff.password_plain }}{% else %}<span class="text-slate-400 italic">Not stored</span>{% endif %}
+                </span>
+                {% if staff.password_plain %}
+                <button onclick="togglePwd('staffPwd', this)"
+                        style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:.8rem;padding:2px 6px;"
+                        title="Show / Hide">
+                  <i class="fa fa-eye"></i>
+                </button>
+                {% endif %}
+              </div>
+            </td>
           </tr>
           <tr>
             <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Assigned Samples</th>
@@ -192,4 +215,27 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePwd(spanId, btn) {
+  const span = document.getElementById(spanId);
+  if (span.textContent.includes('•')) {
+    span.textContent = span.getAttribute('data-plain');
+    btn.innerHTML = '<i class="fa fa-eye-slash"></i>';
+  } else {
+    span.textContent = '•'.repeat(span.getAttribute('data-plain').length);
+    btn.innerHTML = '<i class="fa fa-eye"></i>';
+  }
+}
+document.addEventListener('DOMContentLoaded', function () {
+  const span = document.getElementById('staffPwd');
+  if (span && span.getAttribute('data-plain') === null && span.textContent.trim() && !span.querySelector('span')) {
+    const txt = span.textContent.trim();
+    span.setAttribute('data-plain', txt);
+    span.textContent = '•'.repeat(txt.length);
+  }
+});
+</script>
 {% endblock %}

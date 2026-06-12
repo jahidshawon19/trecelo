@@ -60,6 +60,23 @@
             </td>
           </tr>
           <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Password</th>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span id="buyerPwd" style="font-family:monospace;font-size:.85rem;color:#475569;letter-spacing:.05em;">
+                  {% if buyer.password_plain %}{{ buyer.password_plain }}{% else %}<span class="text-slate-400 italic">Not stored</span>{% endif %}
+                </span>
+                {% if buyer.password_plain %}
+                <button onclick="togglePwd('buyerPwd', this)"
+                        style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:.8rem;padding:2px 6px;"
+                        title="Show / Hide">
+                  <i class="fa fa-eye"></i>
+                </button>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          <tr class="border-b border-slate-100">
             <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Total Samples</th>
             <td class="px-4 py-3">
               <span style="background:#e0f2fe;color:#0369a1;font-size:.82rem;font-weight:700;padding:3px 12px;border-radius:20px;">
@@ -169,4 +186,27 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePwd(spanId, btn) {
+  const span = document.getElementById(spanId);
+  if (span.textContent.includes('•')) {
+    span.textContent = span.getAttribute('data-plain');
+    btn.innerHTML = '<i class="fa fa-eye-slash"></i>';
+  } else {
+    span.textContent = '•'.repeat(span.getAttribute('data-plain').length);
+    btn.innerHTML = '<i class="fa fa-eye"></i>';
+  }
+}
+document.addEventListener('DOMContentLoaded', function () {
+  const span = document.getElementById('buyerPwd');
+  if (span && span.getAttribute('data-plain') === null && span.textContent.trim() && !span.querySelector('span')) {
+    const txt = span.textContent.trim();
+    span.setAttribute('data-plain', txt);
+    span.textContent = '•'.repeat(txt.length);
+  }
+});
+</script>
 {% endblock %}
