@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from .models import Brand, Buyer, Category, ChallengeIn, GG, Sample, StaffProfile
 
 
-class NoPathFileInput(NoPathFileInput):
+class NoPathFileInput(forms.ClearableFileInput):
     """ClearableFileInput that hides the 'Currently: <path>' text on edit forms."""
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
