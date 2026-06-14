@@ -4,73 +4,611 @@
 
 {% block content %}
 
-<div class="max-w-2xl mx-auto">
+<div class="mp-page">
 
-  <!-- Profile picture card -->
-  <div class="bg-white rounded-xl shadow-sm p-6 mb-4 flex flex-col items-center gap-4">
-    {% if staff.profile_picture %}
-      <img src="{{ staff.profile_picture.url }}"
-           alt="Profile picture"
-           style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #e2e8f0;">
-    {% else %}
-      <div style="width:100px;height:100px;border-radius:50%;background:#dcfce7;color:#15803d;font-size:2.4rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:3px solid #e2e8f0;">
-        {{ staff.user.username|first|upper }}
+  <!-- ── Hero / Profile Card ──────────────────────────────────────── -->
+  <div class="mp-hero-card">
+
+    <!-- Gradient banner -->
+    <div class="mp-banner"></div>
+
+    <!-- Avatar ring -->
+    <div class="mp-avatar-wrap">
+      {% if staff.profile_picture %}
+        <img src="{{ staff.profile_picture.url }}" alt="Profile picture" class="mp-avatar-img">
+      {% else %}
+        <div class="mp-avatar-initials">{{ staff.user.username|first|upper }}</div>
+      {% endif %}
+      <!-- Status dot -->
+      <span class="mp-status-dot" title="Active"></span>
+    </div>
+
+    <!-- Identity -->
+    <div class="mp-identity">
+      <h2 class="mp-name">{% if staff.maker_name %}{{ staff.maker_name }}{% else %}{{ staff.user.username }}{% endif %}</h2>
+      <p class="mp-username"><i class="fa fa-at"></i>{{ staff.user.username }}</p>
+      <span class="mp-role-badge">{{ staff.role }}</span>
+    </div>
+
+    <!-- Info strip -->
+    <div class="mp-info-strip">
+      <div class="mp-info-item">
+        <i class="fa fa-id-badge mp-info-icon"></i>
+        <div>
+          <div class="mp-info-label">Employee ID</div>
+          <div class="mp-info-value">{{ staff.emp_id }}</div>
+        </div>
       </div>
-    {% endif %}
-    <div class="text-center">
-      <div class="font-bold text-slate-800 text-lg">{% if staff.maker_name %}{{ staff.maker_name }}{% else %}{{ staff.user.username }}{% endif %}</div>
-      <div class="text-slate-400 text-xs mt-1"><i class="fa fa-user mr-1"></i>{{ staff.user.username }}</div>
-      <div class="mt-2">
-        <span style="background:#ede9fe;color:#7c3aed;font-size:.76rem;font-weight:600;padding:4px 14px;border-radius:20px;">{{ staff.role }}</span>
+      <div class="mp-strip-divider"></div>
+      <div class="mp-info-item">
+        <i class="fa fa-briefcase mp-info-icon"></i>
+        <div>
+          <div class="mp-info-label">Designation</div>
+          <div class="mp-info-value">{{ staff.designation }}</div>
+        </div>
+      </div>
+      <div class="mp-strip-divider"></div>
+      <div class="mp-info-item">
+        <i class="fa fa-phone mp-info-icon"></i>
+        <div>
+          <div class="mp-info-label">Phone</div>
+          <div class="mp-info-value">{{ staff.phone_number|default:"—" }}</div>
+        </div>
       </div>
     </div>
+
   </div>
 
-  <!-- Edit form card -->
-  <div class="bg-white rounded-xl shadow-sm">
-    <div class="px-5 py-4 border-b border-slate-100 font-semibold text-sm">
-      <i class="fa fa-pen mr-2 text-blue-500"></i>Edit Profile
+  <!-- ── Edit Form Card ──────────────────────────────────────────── -->
+  <div class="mp-form-card">
+
+    <div class="mp-form-header">
+      <div class="mp-form-header-icon"><i class="fa fa-pen-to-square"></i></div>
+      <div>
+        <div class="mp-form-title">Edit Profile</div>
+        <div class="mp-form-subtitle">Update your photo, phone number and address</div>
+      </div>
     </div>
-    <div class="p-5">
-      <form method="post" enctype="multipart/form-data" novalidate>
+
+    <div class="mp-form-body">
+      <form method="post" enctype="multipart/form-data" novalidate id="profileForm">
         {% csrf_token %}
-        <div class="grid grid-cols-1 gap-4">
 
-          <!-- Profile Picture field only — makers update just their picture and basic info -->
-          {% for field in form %}
-            {% if field.name == 'profile_picture' or field.name == 'phone_number' or field.name == 'address' %}
-            <div>
-              <label class="block text-sm font-semibold text-slate-700 mb-1">
-                {{ field.label }}
-                {% if field.field.required %}<span class="text-red-500 ml-0.5">*</span>{% endif %}
-              </label>
+        {% for field in form %}
+          {% if field.name == 'profile_picture' %}
+
+          <!-- ── Profile Picture upload ── -->
+          <div class="mp-field-group mp-field-full">
+            <label class="mp-label">
+              <i class="fa fa-camera mp-label-icon"></i>
+              {{ field.label }}
+              {% if field.field.required %}<span class="mp-required">*</span>{% endif %}
+            </label>
+
+            <div class="mp-upload-area" id="uploadArea">
+              <!-- current/preview image -->
+              <div class="mp-upload-preview" id="uploadPreview">
+                {% if staff.profile_picture %}
+                  <img src="{{ staff.profile_picture.url }}" alt="Current photo" id="previewImg">
+                  <div class="mp-upload-overlay">
+                    <i class="fa fa-camera"></i>
+                    <span>Change Photo</span>
+                  </div>
+                {% else %}
+                  <div class="mp-upload-placeholder" id="uploadPlaceholder">
+                    <i class="fa fa-cloud-arrow-up"></i>
+                    <span class="mp-upload-title">Upload Profile Photo</span>
+                    <span class="mp-upload-hint">Click or drag & drop · PNG, JPG up to 5 MB</span>
+                  </div>
+                {% endif %}
+              </div>
               {{ field }}
-              {% if field.errors %}
-                {% for e in field.errors %}
-                  <p class="text-red-500 text-xs mt-1">{{ e }}</p>
-                {% endfor %}
-              {% endif %}
-              {% if field.help_text %}
-                <p class="text-slate-400 text-xs mt-1">{{ field.help_text }}</p>
-              {% endif %}
             </div>
+
+            {% if field.errors %}
+              {% for e in field.errors %}
+                <p class="mp-error"><i class="fa fa-circle-exclamation mr-1"></i>{{ e }}</p>
+              {% endfor %}
             {% endif %}
-          {% endfor %}
+          </div>
 
-        </div>
+          {% elif field.name == 'phone_number' %}
 
-        <div class="flex gap-2 mt-6 justify-end">
-          <a href="{% url 'dashboard' %}" class="border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold px-4 py-2 rounded-lg transition-colors no-underline">
-            Cancel
+          <!-- ── Phone ── -->
+          <div class="mp-field-group">
+            <label class="mp-label" for="{{ field.id_for_label }}">
+              <i class="fa fa-phone mp-label-icon"></i>
+              {{ field.label }}
+              {% if field.field.required %}<span class="mp-required">*</span>{% endif %}
+            </label>
+            <div class="mp-input-wrap">
+              <span class="mp-input-prefix"><i class="fa fa-phone"></i></span>
+              {{ field }}
+            </div>
+            {% if field.errors %}
+              {% for e in field.errors %}
+                <p class="mp-error"><i class="fa fa-circle-exclamation mr-1"></i>{{ e }}</p>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          {% elif field.name == 'address' %}
+
+          <!-- ── Address ── -->
+          <div class="mp-field-group mp-field-full">
+            <label class="mp-label" for="{{ field.id_for_label }}">
+              <i class="fa fa-location-dot mp-label-icon"></i>
+              {{ field.label }}
+              {% if field.field.required %}<span class="mp-required">*</span>{% endif %}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+              {% for e in field.errors %}
+                <p class="mp-error"><i class="fa fa-circle-exclamation mr-1"></i>{{ e }}</p>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          {% endif %}
+        {% endfor %}
+
+        <!-- ── Actions ── -->
+        <div class="mp-actions">
+          <a href="{% url 'dashboard' %}" class="mp-btn-cancel">
+            <i class="fa fa-xmark mr-1.5"></i>Cancel
           </a>
-          <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors">
-            <i class="fa fa-save mr-1"></i>Save Changes
+          <button type="submit" class="mp-btn-save">
+            <i class="fa fa-floppy-disk mr-1.5"></i>Save Changes
           </button>
         </div>
+
       </form>
     </div>
   </div>
 
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<style>
+/* ── Page wrapper ──────────────────────────────────────────────────── */
+.mp-page {
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Hero Card ─────────────────────────────────────────────────────── */
+.mp-hero-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 8px 32px rgba(0,0,0,.07);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 28px;
+}
+
+/* gradient banner */
+.mp-banner {
+  width: 100%;
+  height: 110px;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%);
+  position: relative;
+}
+.mp-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* avatar ring */
+.mp-avatar-wrap {
+  position: relative;
+  margin-top: -52px;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  box-shadow: 0 4px 20px rgba(59,130,246,.35);
+  flex-shrink: 0;
+}
+.mp-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  display: block;
+}
+.mp-avatar-initials {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  color: #15803d;
+  font-size: 2.2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #fff;
+}
+.mp-status-dot {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 14px;
+  height: 14px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 2px rgba(34,197,94,.25);
+}
+
+/* identity */
+.mp-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 14px;
+  padding: 0 24px;
+  text-align: center;
+}
+.mp-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -.01em;
+}
+.mp-username {
+  font-size: .8rem;
+  color: #94a3b8;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.mp-role-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #6d28d9;
+  font-size: .73rem;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1px solid #c4b5fd;
+  letter-spacing: .02em;
+  margin-top: 2px;
+}
+
+/* info strip */
+.mp-info-strip {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-top: 22px;
+  width: calc(100% - 48px);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.mp-info-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  transition: background .15s;
+}
+.mp-info-item:hover { background: #f0f7ff; }
+.mp-info-icon {
+  font-size: .95rem;
+  color: #3b82f6;
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
+}
+.mp-info-label {
+  font-size: .68rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  line-height: 1;
+}
+.mp-info-value {
+  font-size: .82rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mp-strip-divider {
+  width: 1px;
+  background: #e2e8f0;
+  margin: 10px 0;
+}
+
+/* ── Form Card ─────────────────────────────────────────────────────── */
+.mp-form-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 8px 32px rgba(0,0,0,.07);
+  overflow: hidden;
+}
+
+.mp-form-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f5f9;
+  background: linear-gradient(to right, #fafbff, #fff);
+}
+.mp-form-header-icon {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+  font-size: .95rem;
+  flex-shrink: 0;
+  border: 1px solid #bfdbfe;
+}
+.mp-form-title {
+  font-size: .95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+.mp-form-subtitle {
+  font-size: .76rem;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.mp-form-body { padding: 24px; }
+
+/* field grid */
+.mp-form-body form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.mp-field-group { display: flex; flex-direction: column; gap: 6px; }
+.mp-field-full  { grid-column: 1 / -1; }
+
+/* label */
+.mp-label {
+  font-size: .82rem;
+  font-weight: 700;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mp-label-icon { color: #3b82f6; font-size: .78rem; }
+.mp-required { color: #ef4444; margin-left: 2px; }
+
+/* input with prefix icon */
+.mp-input-wrap { position: relative; }
+.mp-input-prefix {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: .8rem;
+  pointer-events: none;
+  z-index: 1;
+}
+.mp-input-wrap input {
+  padding-left: 36px !important;
+}
+
+/* Django-rendered inputs styling */
+.mp-form-body input[type=text],
+.mp-form-body input[type=tel],
+.mp-form-body textarea {
+  width: 100%;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: .875rem;
+  color: #1e293b;
+  background: #fff;
+  outline: none;
+  transition: border-color .18s, box-shadow .18s;
+  box-sizing: border-box;
+  resize: vertical;
+}
+.mp-form-body input[type=text]:focus,
+.mp-form-body input[type=tel]:focus,
+.mp-form-body textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+}
+
+/* ── Profile photo upload zone ─────────────────────────────────────── */
+.mp-upload-area {
+  position: relative;
+  cursor: pointer;
+}
+.mp-upload-area input[type=file] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+.mp-upload-preview {
+  width: 100%;
+  height: 160px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+}
+.mp-upload-area:hover .mp-upload-preview,
+.mp-upload-area.drag-over .mp-upload-preview {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.1);
+}
+.mp-upload-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.mp-upload-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15,23,42,.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.mp-upload-overlay i { font-size: 1.3rem; }
+.mp-upload-area:hover .mp-upload-overlay { opacity: 1; }
+.mp-upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+}
+.mp-upload-placeholder i { font-size: 2rem; color: #cbd5e1; }
+.mp-upload-title { font-size: .85rem; font-weight: 600; color: #64748b; }
+.mp-upload-hint  { font-size: .73rem; color: #94a3b8; text-align: center; }
+
+/* error */
+.mp-error {
+  font-size: .76rem;
+  color: #ef4444;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Actions ───────────────────────────────────────────────────────── */
+.mp-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 4px;
+}
+.mp-btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  color: #64748b;
+  font-size: .875rem;
+  font-weight: 600;
+  text-decoration: none;
+  background: #fff;
+  transition: all .18s;
+}
+.mp-btn-cancel:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+  transform: translateY(-1px);
+}
+.mp-btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 22px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
+  font-size: .875rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(59,130,246,.35);
+  transition: all .18s;
+}
+.mp-btn-save:hover {
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  box-shadow: 0 6px 20px rgba(59,130,246,.45);
+  transform: translateY(-1px);
+}
+.mp-btn-save:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(59,130,246,.3); }
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .mp-form-body form { grid-template-columns: 1fr; }
+  .mp-field-full     { grid-column: 1; }
+  .mp-actions        { grid-column: 1; }
+  .mp-info-strip     { flex-direction: column; width: calc(100% - 32px); }
+  .mp-strip-divider  { width: auto; height: 1px; margin: 0 10px; }
+  .mp-info-item      { padding: 12px 14px; }
+  .mp-form-header    { padding: 16px 18px; }
+  .mp-form-body      { padding: 18px; }
+  .mp-banner         { height: 80px; }
+  .mp-avatar-wrap    { margin-top: -42px; width: 88px; height: 88px; }
+}
+</style>
+
+<script>
+// Live preview when a new photo is picked
+document.querySelector('input[name="profile_picture"]')?.addEventListener('change', function () {
+  var file = this.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    var preview = document.getElementById('uploadPreview');
+    preview.innerHTML =
+      '<img src="' + e.target.result + '" alt="Preview" style="width:100%;height:100%;object-fit:cover;display:block;">' +
+      '<div class="mp-upload-overlay"><i class="fa fa-camera"></i><span>Change Photo</span></div>';
+  };
+  reader.readAsDataURL(file);
+});
+
+// Drag-over highlight
+var area = document.getElementById('uploadArea');
+if (area) {
+  area.addEventListener('dragover',  function(e){ e.preventDefault(); this.classList.add('drag-over'); });
+  area.addEventListener('dragleave', function()  { this.classList.remove('drag-over'); });
+  area.addEventListener('drop',      function()  { this.classList.remove('drag-over'); });
+}
+</script>
 {% endblock %}
