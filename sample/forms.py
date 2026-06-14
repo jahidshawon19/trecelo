@@ -4,6 +4,14 @@ from django.core.exceptions import ValidationError
 from .models import Brand, Buyer, Category, ChallengeIn, GG, Sample, StaffProfile
 
 
+class NoPathFileInput(NoPathFileInput):
+    """ClearableFileInput that hides the 'Currently: <path>' text on edit forms."""
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context['widget']['is_initial'] = False
+        return context
+
+
 class BuyerForm(forms.ModelForm):
     username = forms.CharField(required=False)
     password = forms.CharField(widget=forms.PasswordInput, required=False)
@@ -63,7 +71,7 @@ class StaffForm(forms.ModelForm):
             'profile_picture',
         ]
         widgets = {
-            'profile_picture': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'profile_picture': NoPathFileInput(attrs={'accept': 'image/*'}),
         }
 
     def clean(self):
@@ -126,8 +134,8 @@ class SampleForm(forms.ModelForm):
         ]
         widgets = {
             'submission_date': forms.DateInput(attrs={'type': 'date'}),
-            'front_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
-            'back_part_image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'front_part_image': NoPathFileInput(attrs={'accept': 'image/*'}),
+            'back_part_image': NoPathFileInput(attrs={'accept': 'image/*'}),
             'category': forms.SelectMultiple(),
             'brand': forms.SelectMultiple(),
             'gg': forms.SelectMultiple(),
@@ -147,7 +155,7 @@ class BrandForm(forms.ModelForm):
         model = Brand
         fields = ['name', 'origin', 'logo']
         widgets = {
-            'logo': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'logo': NoPathFileInput(attrs={'accept': 'image/*'}),
         }
 
 
