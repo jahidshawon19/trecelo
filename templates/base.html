@@ -7,6 +7,11 @@
   <title>{% block title %}Trecelo{% endblock %} | Trecelo</title>
   <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
 
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <!-- Tailwind CSS Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6'}}}}</script>
@@ -14,20 +19,26 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
   <style>
-    /* ── Layout ───────────────────────────────────────────────── */
+    /* ── Root Variables ──────────────────────────────────────── */
     :root {
-      --sidebar-width: 260px;
-      --sidebar-bg: #1a2332;
-      --sidebar-active: #3b82f6;
-      --sidebar-hover: rgba(255,255,255,0.08);
+      --sidebar-width: 264px;
+      --sidebar-bg: #0c1524;
+      --sidebar-border: rgba(255,255,255,0.06);
+      --sidebar-hover: rgba(255,255,255,0.05);
+      --sidebar-active-bg: rgba(59,130,246,0.14);
+      --sidebar-active-color: #60a5fa;
+      --sidebar-active-border: #3b82f6;
       --primary: #3b82f6;
-      --topbar-height: 60px;
+      --topbar-height: 64px;
     }
 
+    *, *::before, *::after { box-sizing: border-box; }
+
     body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: #f1f5f9;
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: #f0f4f8;
       margin: 0;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ── Sidebar ──────────────────────────────────────────────── */
@@ -42,91 +53,175 @@
       display: flex;
       flex-direction: column;
       z-index: 1040;
-      transition: transform 0.25s ease;
+      transition: transform 0.28s cubic-bezier(.4,0,.2,1);
       overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.08) transparent;
     }
+    #sidebar::-webkit-scrollbar { width: 4px; }
+    #sidebar::-webkit-scrollbar-track { background: transparent; }
+    #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
 
+    /* Brand area */
     .sidebar-brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 20px 22px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      gap: 12px;
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid var(--sidebar-border);
       text-decoration: none;
       color: #fff;
-    }
-
-    .sidebar-brand .brand-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--primary);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
       flex-shrink: 0;
     }
 
-    .sidebar-brand .brand-text {
-      font-size: 1.15rem;
+    .sidebar-brand .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(59,130,246,0.4);
+    }
+
+    .sidebar-brand .brand-name {
+      font-size: 1.05rem;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      color: #fff;
+      letter-spacing: 0.2px;
+      line-height: 1.1;
     }
 
-    .sidebar-section-label {
-      font-size: 0.68rem;
+    .sidebar-brand .brand-sub {
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.38);
       text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: rgba(255,255,255,0.4);
-      padding: 20px 22px 6px;
-      font-weight: 600;
+      letter-spacing: 0.8px;
+      margin-top: 2px;
     }
 
+    /* Section label */
+    .sidebar-section-label {
+      font-size: 0.63rem;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: rgba(255,255,255,0.28);
+      padding: 22px 20px 6px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    /* Nav list */
     .sidebar-nav {
       list-style: none;
       padding: 0 10px;
       margin: 0;
+      flex-shrink: 0;
     }
+
+    .sidebar-nav li { margin-bottom: 1px; }
 
     .sidebar-nav li a {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
+      gap: 11px;
+      padding: 9px 12px 9px 14px;
       border-radius: 8px;
-      color: rgba(255,255,255,0.75);
+      color: rgba(255,255,255,0.55);
       text-decoration: none;
-      font-size: 0.92rem;
+      font-size: 0.875rem;
       font-weight: 500;
-      transition: background 0.15s, color 0.15s;
-      margin-bottom: 2px;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      border-left: 2.5px solid transparent;
+      position: relative;
     }
 
     .sidebar-nav li a:hover {
       background: var(--sidebar-hover);
-      color: #fff;
+      color: rgba(255,255,255,0.85);
     }
 
     .sidebar-nav li a.active {
-      background: var(--sidebar-active);
-      color: #fff;
+      background: var(--sidebar-active-bg);
+      color: var(--sidebar-active-color);
+      border-left-color: var(--sidebar-active-border);
+      font-weight: 600;
     }
 
     .sidebar-nav li a .nav-icon {
-      width: 20px;
+      width: 18px;
       text-align: center;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
+      flex-shrink: 0;
+      opacity: 0.75;
+      transition: opacity 0.15s;
+    }
+
+    .sidebar-nav li a:hover .nav-icon,
+    .sidebar-nav li a.active .nav-icon {
+      opacity: 1;
+    }
+
+    /* Sidebar footer / user card */
+    .sidebar-footer {
+      margin-top: auto;
       flex-shrink: 0;
     }
 
-    .sidebar-footer {
-      margin-top: auto;
-      padding: 16px 20px;
-      border-top: 1px solid rgba(255,255,255,0.08);
+    .sidebar-user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 14px;
+      border-top: 1px solid var(--sidebar-border);
+      margin: 0;
+    }
+
+    .sidebar-user-av {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      letter-spacing: 0;
+    }
+
+    .sidebar-user-info { min-width: 0; flex: 1; }
+
+    .sidebar-user-name {
       font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.88);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-user-role {
+      font-size: 0.66rem;
+      font-weight: 500;
       color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-top: 1px;
+    }
+
+    .sidebar-copyright {
       text-align: center;
+      padding: 6px 16px 10px;
+      font-size: 0.67rem;
+      color: rgba(255,255,255,0.18);
     }
 
     /* ── Main area ────────────────────────────────────────────── */
@@ -135,89 +230,127 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      transition: margin-left 0.25s ease;
+      transition: margin-left 0.28s cubic-bezier(.4,0,.2,1);
     }
 
     /* ── Top bar ──────────────────────────────────────────────── */
     #topbar {
       height: var(--topbar-height);
       background: #fff;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e8edf3;
       display: flex;
       align-items: center;
       padding: 0 24px;
-      gap: 16px;
+      gap: 14px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      box-shadow: 0 1px 4px rgba(15,23,42,0.06);
     }
 
     #topbar .sidebar-toggle {
       display: none;
       background: none;
       border: none;
-      font-size: 1.3rem;
+      font-size: 1.15rem;
       color: #64748b;
       cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 6px;
-      transition: background 0.15s;
+      padding: 6px 8px;
+      border-radius: 8px;
+      transition: background 0.15s, color 0.15s;
+      line-height: 1;
     }
     #topbar .sidebar-toggle:hover {
       background: #f1f5f9;
+      color: #1e293b;
     }
 
     #topbar .page-title {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
       color: #1e293b;
       flex: 1;
+      letter-spacing: -0.1px;
     }
 
     #topbar .topbar-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+    }
+
+    #topbar .user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #topbar .user-av {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
     }
 
     #topbar .user-name {
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       font-weight: 600;
-      color: #334155;
+      color: #1e293b;
+      line-height: 1;
+    }
+
+    #topbar .user-role-text {
+      font-size: 0.68rem;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-top: 1px;
     }
 
     #topbar .role-badge {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 600;
-      padding: 2px 9px;
+      padding: 3px 10px;
       border-radius: 20px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
     }
 
-    /* ── Buyer brand logo in navbar ──────────────────────────── */
+    .topbar-divider {
+      width: 1px;
+      height: 26px;
+      background: #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    /* Buyer brand logo in navbar */
     .nav-brand-logo {
-      height: 32px;
-      max-width: 90px;
+      height: 30px;
+      max-width: 88px;
       object-fit: contain;
       flex-shrink: 0;
     }
     @media (max-width: 400px) {
-      .nav-brand-logo { height: 26px; max-width: 70px; }
+      .nav-brand-logo { height: 24px; max-width: 66px; }
     }
 
     /* ── Content ──────────────────────────────────────────────── */
     #content {
       flex: 1;
-      padding: 28px 28px 40px;
+      padding: 28px 28px 48px;
     }
 
     /* ── Cards ────────────────────────────────────────────────── */
     .card {
       border: none;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(15,23,42,0.07);
     }
 
     /* ── Beautiful Tables ────────────────────────────────────────── */
@@ -316,7 +449,6 @@
       to   { opacity: 0; transform: translateX(110%) scale(.94); }
     }
 
-    /* colour themes */
     .toast-success { background: #f0fdf4; border-color: #bbf7d0; }
     .toast-error   { background: #fef2f2; border-color: #fecaca; }
     .toast-warning { background: #fffbeb; border-color: #fde68a; }
@@ -352,7 +484,6 @@
     }
     .toast-close:hover { color: #475569; background: rgba(0,0,0,.06); }
 
-    /* progress bar */
     .toast-progress {
       position: absolute; bottom: 0; left: 0; height: 4px;
       border-radius: 0 0 14px 14px;
@@ -380,6 +511,7 @@
       inset: 0;
       background: rgba(0,0,0,0.5);
       z-index: 1039;
+      backdrop-filter: blur(2px);
     }
 
     /* ── Responsive ───────────────────────────────────────────── */
@@ -397,10 +529,12 @@
         margin-left: 0;
       }
       #topbar .sidebar-toggle {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       #content {
-        padding: 20px 16px 40px;
+        padding: 20px 16px 48px;
       }
     }
   </style>
@@ -424,11 +558,17 @@
 
 <!-- ── Sidebar ─────────────────────────────────────────────────── -->
 <div id="sidebar">
+
+  <!-- Brand -->
   <a href="{% url 'sample_list' %}" class="sidebar-brand">
     <div class="brand-icon"><i class="fa fa-layer-group"></i></div>
-    <span class="brand-text">Trecelo</span>
+    <div>
+      <div class="brand-name">Trecelo</div>
+      <div class="brand-sub">Sample Tracking</div>
+    </div>
   </a>
 
+  <!-- Main nav -->
   <span class="sidebar-section-label">Main</span>
   <ul class="sidebar-nav">
     <li>
@@ -512,9 +652,20 @@
   </ul>
   {% endif %}
 
+  <!-- User card + copyright -->
   <div class="sidebar-footer">
-    Trecelo &copy; {% now "Y" %}
+    <div class="sidebar-user-card">
+      <div class="sidebar-user-av">{{ user.username|slice:":1"|upper }}</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name">{{ user.username }}</div>
+        <div class="sidebar-user-role">
+          {% if user.is_superuser %}Super Admin{% elif is_maker %}Maker{% else %}Buyer{% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-copyright">Trecelo &copy; {% now "Y" %}</div>
   </div>
+
 </div>
 
 <!-- ── Main wrapper ────────────────────────────────────────────── -->
@@ -532,27 +683,44 @@
           <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="nav-brand-logo">
         {% endif %}
       {% endfor %}
+      <div class="topbar-divider"></div>
     {% endif %}
 
     <div class="page-title"></div>
+
     <div class="topbar-right">
-      <span class="user-name"><i class="fa fa-user-circle mr-1 text-blue-500"></i>{{ user.username }}</span>
+      <div class="user-info">
+        <div class="user-av">{{ user.username|slice:":1"|upper }}</div>
+        <div class="hidden sm:block">
+          <div class="user-name">{{ user.username }}</div>
+          <div class="user-role-text">
+            {% if user.is_superuser %}Super Admin{% elif is_maker %}Maker{% else %}Buyer{% endif %}
+          </div>
+        </div>
+      </div>
+
       {% if user.is_superuser %}
-        <span class="role-badge" style="background:#fef2f2;color:#dc2626;">Super Admin</span>
+        <span class="role-badge" style="background:#fef2f2;color:#dc2626;">Admin</span>
       {% elif user.is_staff %}
         <span class="role-badge" style="background:#eff6ff;color:#2563eb;">Maker</span>
       {% else %}
-        <span class="role-badge" style="background:#f1f5f9;color:#475569;">Buyer</span>
+        <span class="role-badge" style="background:#f0fdf4;color:#15803d;">Buyer</span>
       {% endif %}
-      <a href="{% url 'logout' %}" class="border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 ml-1 no-underline">
-        <i class="fa fa-right-from-bracket mr-1"></i>Logout
+
+      <div class="topbar-divider"></div>
+
+      <a href="{% url 'logout' %}"
+         style="display:inline-flex;align-items:center;gap:6px;font-size:0.8rem;font-weight:600;color:#ef4444;background:#fef2f2;border:1.5px solid #fecaca;padding:6px 14px;border-radius:8px;text-decoration:none;transition:all 0.15s;"
+         onmouseover="this.style.background='#ef4444';this.style.color='#fff';this.style.borderColor='#ef4444';"
+         onmouseout="this.style.background='#fef2f2';this.style.color='#ef4444';this.style.borderColor='#fecaca';">
+        <i class="fa fa-right-from-bracket"></i>
+        <span class="hidden sm:inline">Logout</span>
       </a>
     </div>
   </div>
 
   <!-- Content -->
   <div id="content">
-
     {% block content %}{% endblock %}
   </div>
 </div>
@@ -560,7 +728,7 @@
 <script>
   /* ── Toast system ─────────────────────────────────────────────── */
   (function () {
-    var DURATION = 4500; // ms before auto-dismiss
+    var DURATION = 4500;
 
     var CONFIG = {
       success: { icon: 'fa-circle-check',       title: 'Success',     cls: 'toast-success' },
@@ -587,15 +755,12 @@
 
       container.appendChild(toast);
 
-      // Close button
       toast.querySelector('.toast-close').addEventListener('click', function () {
         dismissToast(toast);
       });
 
-      // Auto-dismiss
       var timer = setTimeout(function () { dismissToast(toast); }, DURATION);
 
-      // Pause on hover
       toast.addEventListener('mouseenter', function () {
         clearTimeout(timer);
         var bar = toast.querySelector('.toast-progress');
@@ -613,7 +778,6 @@
       toast.addEventListener('animationend', function () { toast.remove(); }, { once: true });
     }
 
-    // Read Django messages from hidden DOM elements
     document.addEventListener('DOMContentLoaded', function () {
       var container = document.getElementById('django-messages');
       if (!container) return;
@@ -625,16 +789,14 @@
         if (tags.includes('success')) type = 'success';
         else if (tags.includes('error'))   type = 'error';
         else if (tags.includes('warning')) type = 'warning';
-        // Stagger multiple toasts
         setTimeout(function () { showToast(type, msg); }, i * 180);
       });
     });
 
-    // Expose globally so other pages can trigger toasts programmatically
     window.showToast = showToast;
   })();
 
-  // Sidebar toggle (mobile)
+  /* ── Sidebar toggle (mobile) ───────────────────────────────────── */
   const toggle   = document.getElementById('sidebarToggle');
   const sidebar  = document.getElementById('sidebar');
   const overlay  = document.getElementById('sidebar-overlay');

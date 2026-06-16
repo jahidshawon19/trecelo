@@ -4,70 +4,319 @@
 
 {% block content %}
 
-<!-- ── Stat Cards Row 1: Main metrics ─────────────────────────────── -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-  <div class="stat-card" style="--accent:#3b82f6;--bg:#eff6ff;">
-    <div class="stat-icon"><i class="fa fa-boxes-stacked"></i></div>
-    <div class="stat-body">
-      <div class="stat-num">{{ total_samples }}</div>
-      <div class="stat-label">Total Samples</div>
-    </div>
-  </div>
-  <div class="stat-card" style="--accent:#9333ea;--bg:#fdf4ff;">
-    <div class="stat-icon"><i class="fa fa-building"></i></div>
-    <div class="stat-body">
-      <div class="stat-num">{{ total_buyers }}</div>
-      <div class="stat-label">Total Buyers</div>
-    </div>
-  </div>
-  <div class="stat-card" style="--accent:#16a34a;--bg:#f0fdf4;">
-    <div class="stat-icon"><i class="fa fa-users"></i></div>
-    <div class="stat-body">
-      <div class="stat-num">{{ total_makers }}</div>
-      <div class="stat-label">Total Makers</div>
-    </div>
-  </div>
-  <div class="stat-card" style="--accent:#22c55e;--bg:#f0fdf4;">
-    <div class="stat-icon"><i class="fa fa-circle-check"></i></div>
-    <div class="stat-body">
-      <div class="stat-num">{{ total_approved }}</div>
-      <div class="stat-label">Approved</div>
-    </div>
-  </div>
-  <div class="stat-card" style="--accent:#f59e0b;--bg:#fffbeb;">
-    <div class="stat-icon"><i class="fa fa-clock"></i></div>
-    <div class="stat-body">
-      <div class="stat-num">{{ total_pending }}</div>
-      <div class="stat-label">Pending</div>
-    </div>
-  </div>
-  <div class="stat-card" style="--accent:#ef4444;--bg:#fef2f2;">
-    <div class="stat-icon"><i class="fa fa-circle-xmark"></i></div>
-    <div class="stat-body">
-      <div class="stat-num">{{ total_rejected }}</div>
-      <div class="stat-label">Rejected</div>
-    </div>
-  </div>
-  <div class="stat-card" style="--accent:#64748b;--bg:#f1f5f9;">
-    <div class="stat-icon"><i class="fa fa-pen-to-square"></i></div>
-    <div class="stat-body">
-      <div class="stat-num">{{ total_draft }}</div>
-      <div class="stat-label">Draft</div>
-    </div>
-  </div>
+<style>
+  /* ── Page entrance animation ───────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.42s cubic-bezier(.4,0,.2,1) both; }
+  .delay-1 { animation-delay: 0.06s; }
+  .delay-2 { animation-delay: 0.12s; }
+  .delay-3 { animation-delay: 0.18s; }
+  .delay-4 { animation-delay: 0.24s; }
+  .delay-5 { animation-delay: 0.30s; }
+
+  /* ── Page header ───────────────────────────────────────────── */
+  .dash-header {
+    margin-bottom: 24px;
+  }
+  .dash-header h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.4px;
+    margin: 0 0 4px;
+  }
+  .dash-header p {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0;
+  }
+
+  /* ── Stat Cards ────────────────────────────────────────────── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 1100px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px)  { .stat-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
+
+  .stat-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.07), 0 0 0 1px rgba(15,23,42,0.04);
+    transition: transform 0.18s, box-shadow 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 14px 14px 0 0;
+  }
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(15,23,42,0.11), 0 0 0 1px rgba(15,23,42,0.04);
+  }
+
+  .stat-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .stat-icon-wrap {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    background: var(--bg);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+  }
+
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+    letter-spacing: -0.5px;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-top: 4px;
+    letter-spacing: 0.1px;
+  }
+
+  /* ── Section heading (charts) ──────────────────────────────── */
+  .section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #64748b;
+    margin: 0 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #f1f5f9;
+  }
+
+  /* ── Chart Cards ───────────────────────────────────────────── */
+  .chart-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.07), 0 0 0 1px rgba(15,23,42,0.04);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chart-card-header {
+    padding: 16px 20px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .chart-card-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .chart-card-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+
+  .chart-card-body {
+    padding: 20px;
+    flex: 1;
+  }
+
+  /* ── Brand Carousel ────────────────────────────────────────── */
+  .brands-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.07), 0 0 0 1px rgba(15,23,42,0.04);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .brands-card-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .carousel-btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid #e2e8f0; background: #fff;
+    color: #64748b; font-size: 1.2rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 10; transition: all .15s;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+  }
+  .carousel-btn:hover { background: #3b82f6; color: #fff; border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59,130,246,.3); }
+  .carousel-prev { left: 8px; }
+  .carousel-next { right: 8px; }
+
+  .brand-carousel-track {
+    display: flex; gap: 14px;
+    transition: transform .45s cubic-bezier(.4,0,.2,1);
+  }
+
+  .brand-slide { flex: 0 0 auto; }
+
+  .brand-slide-inner {
+    width: 120px; text-align: center;
+    padding: 14px 10px 12px; border-radius: 12px;
+    border: 1.5px solid #f1f5f9; background: #fafafa;
+    transition: border-color .2s, box-shadow .2s, transform .2s;
+  }
+  .brand-slide-inner:hover {
+    border-color: #bfdbfe;
+    box-shadow: 0 6px 20px rgba(59,130,246,.1);
+    transform: translateY(-3px);
+    background: #fff;
+  }
+
+  .brand-logo-wrap {
+    width: 64px; height: 64px; margin: 0 auto 10px;
+    border-radius: 10px; overflow: hidden;
+    border: 1.5px solid #e2e8f0; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand-logo-wrap img {
+    width: 100%; height: 100%; object-fit: contain; padding: 4px;
+  }
+
+  .brand-slide-name {
+    font-size: .78rem; font-weight: 700; color: #1e293b;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .brand-slide-origin {
+    font-size: .68rem; color: #94a3b8; margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+</style>
+
+<!-- ── Page header ──────────────────────────────────────────────── -->
+<div class="dash-header fade-up">
+  <h1>Dashboard</h1>
+  <p>Welcome back, {{ user.username }} — here's what's happening today.</p>
 </div>
 
-<!-- ── Brand Logo Carousel ─────────────────────────────────────────── -->
-{% if brand_logos %}
-<div class="bg-white rounded-xl shadow-sm mb-3 overflow-hidden">
-  <div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between">
-    <span class="font-semibold text-sm text-slate-700"><i class="fa fa-copyright mr-2 text-blue-500"></i>Our Brands</span>
-    <span class="text-xs text-slate-400">{{ brand_logos|length }} brand{% if brand_logos|length != 1 %}s{% endif %}</span>
-  </div>
-  <div class="brand-carousel-outer" style="position:relative;overflow:hidden;padding:20px 48px;">
-    <!-- Prev button -->
-    <button class="carousel-btn carousel-prev" aria-label="Previous">&#8249;</button>
+<!-- ── Stat Cards ───────────────────────────────────────────────── -->
+<div class="stat-grid fade-up delay-1">
 
+  <div class="stat-card" style="--accent:#3b82f6;--bg:#eff6ff;">
+    <div class="stat-top">
+      <div class="stat-icon-wrap"><i class="fa fa-boxes-stacked"></i></div>
+    </div>
+    <div class="stat-num">{{ total_samples }}</div>
+    <div class="stat-label">Total Samples</div>
+  </div>
+
+  <div class="stat-card" style="--accent:#8b5cf6;--bg:#f5f3ff;">
+    <div class="stat-top">
+      <div class="stat-icon-wrap"><i class="fa fa-building"></i></div>
+    </div>
+    <div class="stat-num">{{ total_buyers }}</div>
+    <div class="stat-label">Total Buyers</div>
+  </div>
+
+  <div class="stat-card" style="--accent:#0ea5e9;--bg:#f0f9ff;">
+    <div class="stat-top">
+      <div class="stat-icon-wrap"><i class="fa fa-users"></i></div>
+    </div>
+    <div class="stat-num">{{ total_makers }}</div>
+    <div class="stat-label">Total Makers</div>
+  </div>
+
+  <div class="stat-card" style="--accent:#22c55e;--bg:#f0fdf4;">
+    <div class="stat-top">
+      <div class="stat-icon-wrap"><i class="fa fa-circle-check"></i></div>
+    </div>
+    <div class="stat-num">{{ total_approved }}</div>
+    <div class="stat-label">Approved</div>
+  </div>
+
+  <div class="stat-card" style="--accent:#f59e0b;--bg:#fffbeb;">
+    <div class="stat-top">
+      <div class="stat-icon-wrap"><i class="fa fa-clock"></i></div>
+    </div>
+    <div class="stat-num">{{ total_pending }}</div>
+    <div class="stat-label">Pending</div>
+  </div>
+
+  <div class="stat-card" style="--accent:#ef4444;--bg:#fef2f2;">
+    <div class="stat-top">
+      <div class="stat-icon-wrap"><i class="fa fa-circle-xmark"></i></div>
+    </div>
+    <div class="stat-num">{{ total_rejected }}</div>
+    <div class="stat-label">Rejected</div>
+  </div>
+
+  <div class="stat-card" style="--accent:#64748b;--bg:#f8fafc;">
+    <div class="stat-top">
+      <div class="stat-icon-wrap"><i class="fa fa-pen-to-square"></i></div>
+    </div>
+    <div class="stat-num">{{ total_draft }}</div>
+    <div class="stat-label">Draft</div>
+  </div>
+
+</div>
+
+<!-- ── Brand Logo Carousel ──────────────────────────────────────── -->
+{% if brand_logos %}
+<div class="brands-card fade-up delay-2">
+  <div class="brands-card-header">
+    <div style="font-size:.875rem;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:8px;">
+      <div style="width:28px;height:28px;border-radius:7px;background:#eff6ff;color:#3b82f6;display:flex;align-items:center;justify-content:center;font-size:.75rem;">
+        <i class="fa fa-copyright"></i>
+      </div>
+      Our Brands
+    </div>
+    <span style="font-size:.72rem;color:#94a3b8;font-weight:500;">{{ brand_logos|length }} brand{% if brand_logos|length != 1 %}s{% endif %}</span>
+  </div>
+  <div style="position:relative;overflow:hidden;padding:18px 48px;">
+    <button class="carousel-btn carousel-prev" aria-label="Previous">&#8249;</button>
     <div class="brand-carousel-track" id="brandTrack">
       {% for brand in brand_logos %}
       <div class="brand-slide">
@@ -83,24 +332,31 @@
       </div>
       {% endfor %}
     </div>
-
-    <!-- Next button -->
     <button class="carousel-btn carousel-next" aria-label="Next">&#8250;</button>
   </div>
 </div>
 {% endif %}
 
-<!-- ── Charts Row 1 ───────────────────────────────────────────────── -->
-<div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
+<!-- ── Charts Row 1 ─────────────────────────────────────────────── -->
+<div class="fade-up delay-3">
+  <div class="section-title">Analytics Overview</div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4 fade-up delay-3">
 
   <!-- Doughnut — Status Distribution -->
   <div class="md:col-span-5 lg:col-span-4">
-    <div class="bg-white rounded-xl shadow-sm h-full">
-      <div class="px-5 py-4 border-b border-slate-100 font-semibold bg-white rounded-t-xl text-sm">
-        <i class="fa fa-chart-pie mr-2 text-blue-500"></i>Status Distribution
+    <div class="chart-card" style="height:100%;">
+      <div class="chart-card-header">
+        <div class="chart-card-title">
+          <div class="chart-card-icon" style="background:#eff6ff;color:#3b82f6;">
+            <i class="fa fa-chart-pie"></i>
+          </div>
+          Status Distribution
+        </div>
       </div>
-      <div class="p-5 flex items-center justify-center" style="min-height:260px;">
-        <div style="max-width:260px;width:100%;">
+      <div class="chart-card-body" style="display:flex;align-items:center;justify-content:center;min-height:240px;">
+        <div style="max-width:240px;width:100%;">
           <canvas id="statusChart"></canvas>
         </div>
       </div>
@@ -109,11 +365,16 @@
 
   <!-- Bar — Top Buyers -->
   <div class="md:col-span-7 lg:col-span-8">
-    <div class="bg-white rounded-xl shadow-sm h-full">
-      <div class="px-5 py-4 border-b border-slate-100 font-semibold bg-white rounded-t-xl text-sm">
-        <i class="fa fa-building mr-2 text-blue-500"></i>Samples by Buyer
+    <div class="chart-card" style="height:100%;">
+      <div class="chart-card-header">
+        <div class="chart-card-title">
+          <div class="chart-card-icon" style="background:#f5f3ff;color:#8b5cf6;">
+            <i class="fa fa-building"></i>
+          </div>
+          Samples by Buyer
+        </div>
       </div>
-      <div class="p-5" style="min-height:260px;">
+      <div class="chart-card-body" style="min-height:240px;">
         <canvas id="buyerChart"></canvas>
       </div>
     </div>
@@ -121,16 +382,21 @@
 
 </div>
 
-<!-- ── Charts Row 2 ───────────────────────────────────────────────── -->
-<div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+<!-- ── Charts Row 2 ─────────────────────────────────────────────── -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 fade-up delay-4">
 
   <!-- Line — Monthly Trend -->
   <div class="md:col-span-7 lg:col-span-8">
-    <div class="bg-white rounded-xl shadow-sm h-full">
-      <div class="px-5 py-4 border-b border-slate-100 font-semibold bg-white rounded-t-xl text-sm">
-        <i class="fa fa-chart-line mr-2 text-blue-500"></i>Monthly Submission Trend
+    <div class="chart-card" style="height:100%;">
+      <div class="chart-card-header">
+        <div class="chart-card-title">
+          <div class="chart-card-icon" style="background:#f0fdf4;color:#22c55e;">
+            <i class="fa fa-chart-line"></i>
+          </div>
+          Monthly Submission Trend
+        </div>
       </div>
-      <div class="p-5" style="min-height:260px;">
+      <div class="chart-card-body" style="min-height:240px;">
         <canvas id="monthlyChart"></canvas>
       </div>
     </div>
@@ -138,12 +404,17 @@
 
   <!-- Pie — By Sample Type -->
   <div class="md:col-span-5 lg:col-span-4">
-    <div class="bg-white rounded-xl shadow-sm h-full">
-      <div class="px-5 py-4 border-b border-slate-100 font-semibold bg-white rounded-t-xl text-sm">
-        <i class="fa fa-chart-simple mr-2 text-blue-500"></i>Samples by Type
+    <div class="chart-card" style="height:100%;">
+      <div class="chart-card-header">
+        <div class="chart-card-title">
+          <div class="chart-card-icon" style="background:#fff7ed;color:#f97316;">
+            <i class="fa fa-chart-simple"></i>
+          </div>
+          Samples by Type
+        </div>
       </div>
-      <div class="p-5 flex items-center justify-center" style="min-height:260px;">
-        <div style="max-width:260px;width:100%;">
+      <div class="chart-card-body" style="display:flex;align-items:center;justify-content:center;min-height:240px;">
+        <div style="max-width:240px;width:100%;">
           <canvas id="typeChart"></canvas>
         </div>
       </div>
@@ -155,86 +426,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-
-<style>
-  /* ── Brand Carousel ──────────────────────────────────────────── */
-  .brand-carousel-outer { user-select: none; }
-
-  .carousel-btn {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    width: 34px; height: 34px; border-radius: 50%;
-    border: 1.5px solid #e2e8f0; background: #fff;
-    color: #64748b; font-size: 1.35rem; line-height: 1;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; z-index: 10; transition: all .15s;
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
-  }
-  .carousel-btn:hover { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-  .carousel-prev { left: 8px; }
-  .carousel-next { right: 8px; }
-
-  .brand-carousel-track {
-    display: flex; gap: 16px;
-    transition: transform .45s cubic-bezier(.4,0,.2,1);
-  }
-
-  .brand-slide { flex: 0 0 auto; }
-
-  .brand-slide-inner {
-    width: 130px; text-align: center;
-    padding: 12px 10px; border-radius: 12px;
-    border: 1.5px solid #f1f5f9; background: #fafafa;
-    transition: border-color .2s, box-shadow .2s, transform .2s;
-  }
-  .brand-slide-inner:hover {
-    border-color: #bfdbfe;
-    box-shadow: 0 4px 16px rgba(59,130,246,.12);
-    transform: translateY(-3px);
-  }
-
-  .brand-logo-wrap {
-    width: 72px; height: 72px; margin: 0 auto 10px;
-    border-radius: 12px; overflow: hidden;
-    border: 1.5px solid #e2e8f0; background: #fff;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .brand-logo-wrap img {
-    width: 100%; height: 100%; object-fit: contain; padding: 4px;
-  }
-
-  .brand-slide-name {
-    font-size: .8rem; font-weight: 700; color: #1e293b;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .brand-slide-origin {
-    font-size: .7rem; color: #94a3b8; margin-top: 2px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-
-  /* ── Stat Cards ───────────────────────────────────────────────── */
-  .stat-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 18px 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.08);
-    transition: transform .15s, box-shadow .15s;
-  }
-  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.1); }
-  .stat-icon {
-    width: 48px; height: 48px; border-radius: 12px;
-    background: var(--bg); color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.25rem; flex-shrink: 0;
-  }
-  .stat-num  { font-size: 1.75rem; font-weight: 800; color: #1e293b; line-height: 1; }
-  .stat-label { font-size: .75rem; color: #64748b; font-weight: 500; margin-top: 3px; }
-</style>
-
 <script>
   const statusData  = {{ status_chart|safe }};
   const buyerData   = {{ buyer_chart|safe }};
@@ -243,10 +435,10 @@
 
   const PIE_COLORS = [
     '#22c55e','#f59e0b','#94a3b8','#ef4444',
-    '#3b82f6','#9333ea','#f97316','#06b6d4'
+    '#3b82f6','#8b5cf6','#f97316','#06b6d4'
   ];
 
-  Chart.defaults.font.family = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+  Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";
   Chart.defaults.font.size   = 12;
 
   // ── Doughnut — status ──────────────────────────────────────────
@@ -259,13 +451,13 @@
         backgroundColor: statusData.colors,
         borderWidth:     2,
         borderColor:     '#fff',
-        hoverOffset:     6,
+        hoverOffset:     8,
       }]
     },
     options: {
-      cutout: '68%',
+      cutout: '70%',
       plugins: {
-        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
+        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 11, font: { size: 11 } } },
         tooltip: { callbacks: {
           label: ctx => ` ${ctx.label}: ${ctx.parsed} sample${ctx.parsed !== 1 ? 's' : ''}`
         }}
@@ -281,18 +473,27 @@
       datasets: [{
         label:           'Samples',
         data:            buyerData.data.length ? buyerData.data : [0],
-        backgroundColor: '#3b82f6',
+        backgroundColor: 'rgba(139,92,246,0.85)',
         borderRadius:    6,
         borderSkipped:   false,
-        maxBarThickness: 48,
+        maxBarThickness: 44,
       }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } },
-        x: { grid: { display: false } }
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1, color: '#94a3b8', font: { size: 11 } },
+          grid: { color: '#f1f5f9' },
+          border: { display: false }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: '#94a3b8', font: { size: 11 } },
+          border: { display: false }
+        }
       }
     }
   });
@@ -305,12 +506,14 @@
       datasets: [{
         label:           'Submissions',
         data:            monthlyData.data.length ? monthlyData.data : [0],
-        borderColor:     '#3b82f6',
-        backgroundColor: 'rgba(59,130,246,.1)',
+        borderColor:     '#22c55e',
+        backgroundColor: 'rgba(34,197,94,0.08)',
         borderWidth:     2.5,
-        pointBackgroundColor: '#3b82f6',
-        pointRadius:     4,
-        pointHoverRadius: 6,
+        pointBackgroundColor: '#22c55e',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius:     5,
+        pointHoverRadius: 7,
         fill:            true,
         tension:         0.4,
       }]
@@ -319,34 +522,41 @@
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } },
-        x: { grid: { display: false } }
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1, color: '#94a3b8', font: { size: 11 } },
+          grid: { color: '#f1f5f9' },
+          border: { display: false }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: '#94a3b8', font: { size: 11 } },
+          border: { display: false }
+        }
       }
     }
   });
 
   // ── Brand Logo Carousel ────────────────────────────────────────
   (function () {
-    var track    = document.getElementById('brandTrack');
+    var track   = document.getElementById('brandTrack');
     if (!track) return;
-    var slides   = track.querySelectorAll('.brand-slide');
+    var slides  = track.querySelectorAll('.brand-slide');
     if (slides.length === 0) return;
 
-    var current  = 0;
-    var visible  = 0;   // filled on resize
-    var slideW   = 0;
-    var gap      = 16;
+    var current = 0;
+    var visible = 0;
+    var slideW  = 0;
+    var gap     = 14;
     var autoTimer;
 
     function measure() {
-      slideW  = slides[0].offsetWidth;
-      var outerW = track.parentElement.offsetWidth - 96; // subtract btn padding
-      visible = Math.max(1, Math.floor((outerW + gap) / (slideW + gap)));
+      slideW   = slides[0].offsetWidth;
+      var outerW = track.parentElement.offsetWidth - 96;
+      visible  = Math.max(1, Math.floor((outerW + gap) / (slideW + gap)));
     }
 
-    function maxIndex() {
-      return Math.max(0, slides.length - visible);
-    }
+    function maxIndex() { return Math.max(0, slides.length - visible); }
 
     function goTo(idx) {
       current = Math.max(0, Math.min(idx, maxIndex()));
@@ -372,7 +582,6 @@
     if (btnPrev) btnPrev.addEventListener('click', function () { prev(); startAuto(); });
     if (btnNext) btnNext.addEventListener('click', function () { next(); startAuto(); });
 
-    // Pause on hover
     track.addEventListener('mouseenter', function () { clearInterval(autoTimer); });
     track.addEventListener('mouseleave', startAuto);
   })();
@@ -387,12 +596,12 @@
         backgroundColor: PIE_COLORS,
         borderWidth:     2,
         borderColor:     '#fff',
-        hoverOffset:     6,
+        hoverOffset:     8,
       }]
     },
     options: {
       plugins: {
-        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
+        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 11, font: { size: 11 } } },
         tooltip: { callbacks: {
           label: ctx => ` ${ctx.label}: ${ctx.parsed}`
         }}
