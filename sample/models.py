@@ -1,5 +1,55 @@
+import io
+import os
+
+from django.core.files.base import ContentFile
 from django.db import models
 from django.contrib.auth.models import User
+from PIL import Image as PilImage
+
+
+def _compress_image_field(instance, field_name, max_px, quality=82):
+    """
+    Resize + recompress an ImageField's file in-place on disk.
+
+    - Images larger than max_px on either dimension are scaled down
+      (aspect ratio preserved via thumbnail).
+    - Images with an alpha channel (logos/PNGs) are saved as optimised PNG.
+    - Everything else is converted to RGB and saved as JPEG at `quality`.
+    - Already-small files under 100 KB that don't need resizing are left alone.
+    """
+    field = getattr(instance, field_name)
+    if not field:
+        return
+    try:
+        path = field.path
+        img = PilImage.open(path)
+        orig_w, orig_h = img.size
+        needs_resize = orig_w > max_px or orig_h > max_px
+        file_size = os.path.getsize(path)
+        needs_compress = file_size > 100 * 1024  # > 100 KB
+
+        if not needs_resize and not needs_compress:
+            return  # already small enough, skip
+
+        if needs_resize:
+            img.thumbnail((max_px, max_px), PilImage.LANCZOS)
+
+        has_alpha = img.mode in ('RGBA', 'LA', 'P')
+        buf = io.BytesIO()
+        if has_alpha:
+            if img.mode == 'P':
+                img = img.convert('RGBA')
+            img.save(buf, format='PNG', optimize=True)
+        else:
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+            img.save(buf, format='JPEG', quality=quality, optimize=True)
+
+        buf.seek(0)
+        with open(path, 'wb') as f:
+            f.write(buf.read())
+    except Exception:
+        pass  # never break a save over image compression
 
 
 class Category(models.Model):
@@ -110,6 +160,10 @@ class Brand(models.Model):
     origin = models.CharField(max_length=100, blank=True, choices=COUNTRY_CHOICES, verbose_name='Origin Country')
     logo   = models.ImageField(upload_to='brands/logos/', blank=True, null=True, verbose_name='Brand Logo')
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        _compress_image_field(self, 'logo', max_px=400)
+
     def __str__(self):
         return self.name
 
@@ -158,6 +212,10 @@ class StaffProfile(models.Model):
     profile_picture = models.ImageField(upload_to='staff/profiles/', blank=True, null=True, verbose_name='Profile Picture')
     password_plain = models.CharField(max_length=128, blank=True, verbose_name='Password')
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        _compress_image_field(self, 'profile_picture', max_px=500)
+
     def __str__(self):
         return self.user.username
 
@@ -204,6 +262,11 @@ class Sample(models.Model):
     description = models.TextField(blank=True)
     challenge_in = models.ManyToManyField(ChallengeIn, blank=True, verbose_name="Challenge In")
     submission_date = models.DateField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        _compress_image_field(self, 'front_part_image', max_px=1200)
+        _compress_image_field(self, 'back_part_image',  max_px=1200)
 
     def __str__(self):
         return self.style_number or f"Sample #{self.pk}"
