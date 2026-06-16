@@ -4,26 +4,24 @@
 
 {% block content %}
 
-<div class="bg-white rounded-xl shadow-sm">
-  <div class="p-5 pb-0">
-    <div class="flex flex-wrap items-center gap-3">
-      <div>
-        <h5 class="mb-0 font-bold text-slate-800"><i class="fa fa-building mr-2 text-blue-500"></i>Buyers</h5>
-        <p class="mb-0 text-slate-400 text-xs mt-0.5">Manage buyer accounts</p>
+<div class="page-card">
+  <div class="page-card-header">
+    <div>
+      <div class="page-card-title"><i class="fa fa-building mr-2 text-blue-500"></i>Buyers</div>
+      <div class="page-card-sub">Manage buyer accounts</div>
+    </div>
+    <div class="ml-auto flex gap-2 flex-wrap items-center" style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <div class="tbl-search">
+        <i class="fa fa-magnifying-glass si"></i>
+        <input type="text" id="buyerSearch" placeholder="Search buyers…" style="min-width:200px;">
       </div>
-      <div class="ml-auto flex gap-2 flex-wrap items-center">
-        <div class="tbl-search">
-          <i class="fa fa-magnifying-glass si"></i>
-          <input type="text" id="buyerSearch" placeholder="Search buyers…" style="min-width:200px;">
-        </div>
-        <a href="{% url 'buyer_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
-          <i class="fa fa-plus"></i> Add Buyer
-        </a>
-      </div>
+      <a href="{% url 'buyer_create' %}" class="btn-primary">
+        <i class="fa fa-plus"></i> Add Buyer
+      </a>
     </div>
   </div>
 
-  <div class="p-5 pt-3">
+  <div class="page-card-body">
     <div class="overflow-x-auto">
       <table class="bt">
         <thead>
@@ -40,27 +38,25 @@
           <tr>
             <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
             <td>
-              <div class="flex items-center gap-3">
+              <div style="display:flex;align-items:center;gap:12px;">
                 <div class="av av-purple">{{ b.buyer_name|first|upper }}</div>
-                <span class="font-semibold text-slate-800">{{ b.buyer_name }}</span>
+                <span style="font-weight:600;color:var(--text);">{{ b.buyer_name }}</span>
               </div>
             </td>
             <td>
-              <div class="flex items-center gap-2">
-                <span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;font-size:.8rem;padding:3px 10px;border-radius:20px;">
-                  <i class="fa fa-user" style="font-size:.7rem;"></i>{{ b.user.username }}
-                </span>
-              </div>
+              <span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#475569;font-size:.8rem;padding:3px 10px;border-radius:20px;">
+                <i class="fa fa-user" style="font-size:.7rem;"></i>{{ b.user.username }}
+              </span>
             </td>
             <td>
               {% for brand in b.brand.all %}
                 <span style="display:inline-flex;align-items:center;background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:600;padding:2px 9px;border-radius:20px;white-space:nowrap;margin:1px;">{{ brand.name }}</span>
               {% empty %}
-                <span class="text-slate-400">—</span>
+                <span style="color:var(--text-3);">—</span>
               {% endfor %}
             </td>
             <td class="text-center">
-              <div class="flex gap-1 justify-center">
+              <div style="display:flex;gap:4px;justify-content:center;">
                 <a href="{% url 'buyer_detail' b.id %}" class="btn-act view" title="View"><i class="fa fa-eye"></i></a>
                 <a href="{% url 'buyer_update' b.id %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
                 <a href="{% url 'buyer_delete' b.id %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
@@ -69,12 +65,12 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan="5" class="text-center py-5">
-              <div style="color:#94a3b8;">
-                <i class="fa fa-building fa-2x mb-3 block"></i>
+            <td colspan="5" style="text-align:center;padding:40px 16px;">
+              <div style="color:var(--text-3);">
+                <i class="fa fa-building fa-2x" style="display:block;margin-bottom:12px;"></i>
                 <div style="font-size:.95rem;font-weight:500;">No buyers found.</div>
-                <a href="{% url 'buyer_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline mt-3">
-                  <i class="fa fa-plus mr-1"></i>Add first buyer
+                <a href="{% url 'buyer_create' %}" class="btn-primary" style="margin-top:12px;">
+                  <i class="fa fa-plus"></i>Add first buyer
                 </a>
               </div>
             </td>
@@ -84,9 +80,9 @@
       </table>
     </div>
 
-    <div id="noBuyerResult" class="text-center py-5" style="display:none!important;">
-      <i class="fa fa-magnifying-glass fa-2x text-slate-400 mb-3 block"></i>
-      <div class="text-slate-400" style="font-size:.9rem;">No buyers match your search.</div>
+    <div id="noBuyerResult" style="text-align:center;padding:40px 16px;display:none!important;">
+      <i class="fa fa-magnifying-glass fa-2x" style="color:var(--text-3);display:block;margin-bottom:12px;"></i>
+      <div style="color:var(--text-3);font-size:.9rem;">No buyers match your search.</div>
     </div>
   </div>
 </div>

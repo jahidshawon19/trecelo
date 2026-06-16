@@ -4,26 +4,24 @@
 
 {% block content %}
 
-<div class="bg-white rounded-xl shadow-sm">
-  <div class="p-5 pb-0">
-    <div class="flex flex-wrap items-center gap-3">
-      <div>
-        <h5 class="mb-0 font-bold text-slate-800"><i class="fa fa-copyright mr-2 text-blue-500"></i>Brands</h5>
-        <p class="mb-0 text-slate-400 text-xs mt-0.5">Manage brands</p>
+<div class="page-card">
+  <div class="page-card-header">
+    <div>
+      <div class="page-card-title"><i class="fa fa-copyright mr-2 text-blue-500"></i>Brands</div>
+      <div class="page-card-sub">Manage brands</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <div class="tbl-search">
+        <i class="fa fa-magnifying-glass si"></i>
+        <input type="text" id="brandSearch" placeholder="Search brands…" style="min-width:200px;">
       </div>
-      <div class="ml-auto flex gap-2 flex-wrap items-center">
-        <div class="tbl-search">
-          <i class="fa fa-magnifying-glass si"></i>
-          <input type="text" id="brandSearch" placeholder="Search brands…" style="min-width:200px;">
-        </div>
-        <a href="{% url 'brand_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
-          <i class="fa fa-plus"></i> Add Brand
-        </a>
-      </div>
+      <a href="{% url 'brand_create' %}" class="btn-primary">
+        <i class="fa fa-plus"></i> Add Brand
+      </a>
     </div>
   </div>
 
-  <div class="p-5 pt-3">
+  <div class="page-card-body">
     <div class="overflow-x-auto">
       <table class="bt">
         <thead>
@@ -40,30 +38,27 @@
           <tr>
             <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
             <td>
-              <div class="flex items-center gap-3">
+              <div style="display:flex;align-items:center;gap:12px;">
                 {% if brand.logo %}
-                  <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="width:34px;height:34px;border-radius:8px;object-fit:cover;border:1px solid #e2e8f0;flex-shrink:0;">
+                  <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="width:34px;height:34px;border-radius:8px;object-fit:cover;border:1px solid var(--border);flex-shrink:0;">
                 {% else %}
                   <div class="av av-orange">{{ brand.name|first|upper }}</div>
                 {% endif %}
-                <span class="font-semibold text-slate-800">{{ brand.name }}</span>
+                <span style="font-weight:600;color:var(--text);">{{ brand.name }}</span>
               </div>
             </td>
             <td>
               {% if brand.origin %}
-              <div class="flex items-center gap-2">
-               
-                <span style="font-size:.875rem;color:#475569;">{{ brand.get_origin_display }}</span>
-              </div>
+              <span style="font-size:.875rem;color:#475569;">{{ brand.get_origin_display }}</span>
               {% else %}
-              <span class="text-slate-400">—</span>
+              <span style="color:var(--text-3);">—</span>
               {% endif %}
             </td>
             <td class="text-center">
               <span style="background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;">{{ brand.style_count }}</span>
             </td>
             <td class="text-center">
-              <div class="flex gap-1 justify-center">
+              <div style="display:flex;gap:4px;justify-content:center;">
                 <a href="{% url 'brand_update' brand.pk %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
                 <a href="{% url 'brand_delete' brand.pk %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
               </div>
@@ -71,12 +66,12 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan="5" class="text-center py-5">
-              <div style="color:#94a3b8;">
-                <i class="fa fa-copyright fa-2x mb-3 block"></i>
+            <td colspan="5" style="text-align:center;padding:40px 16px;">
+              <div style="color:var(--text-3);">
+                <i class="fa fa-copyright fa-2x" style="display:block;margin-bottom:12px;"></i>
                 <div style="font-size:.95rem;font-weight:500;">No brands found.</div>
-                <a href="{% url 'brand_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline mt-3">
-                  <i class="fa fa-plus mr-1"></i>Add first brand
+                <a href="{% url 'brand_create' %}" class="btn-primary" style="margin-top:12px;">
+                  <i class="fa fa-plus"></i>Add first brand
                 </a>
               </div>
             </td>
@@ -86,9 +81,9 @@
       </table>
     </div>
 
-    <div id="noBrandResult" class="text-center py-5" style="display:none!important;">
-      <i class="fa fa-magnifying-glass fa-2x text-slate-400 mb-3 block"></i>
-      <div class="text-slate-400" style="font-size:.9rem;">No brands match your search.</div>
+    <div id="noBrandResult" style="text-align:center;padding:40px 16px;display:none!important;">
+      <i class="fa fa-magnifying-glass fa-2x" style="color:var(--text-3);display:block;margin-bottom:12px;"></i>
+      <div style="color:var(--text-3);font-size:.9rem;">No brands match your search.</div>
     </div>
   </div>
 </div>
