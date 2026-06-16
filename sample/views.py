@@ -60,6 +60,7 @@ def user_logout(request):
 # ---------- DASHBOARD ----------
 @login_required
 def dashboard(request):
+    buyer_brands_qs = None  # queryset of Brand objects, only for buyer users
     if request.user.is_superuser:
         sample_qs    = Sample.objects.all()
         total_buyers = Buyer.objects.count()
@@ -71,6 +72,7 @@ def dashboard(request):
             sample_qs = Sample.objects.filter(maker=maker).distinct()
         elif buyer:
             buyer_brands = buyer.brand.all()
+            buyer_brands_qs = buyer_brands
             sample_qs = Sample.objects.filter(brand__in=buyer_brands).distinct()
         else:
             sample_qs = Sample.objects.none()
@@ -142,6 +144,7 @@ def dashboard(request):
         'monthly_chart':  monthly_chart,
         'type_chart':     type_chart,
         'brand_logos':    brand_logos,
+        'buyer_brands_qs': buyer_brands_qs,
     })
 
 

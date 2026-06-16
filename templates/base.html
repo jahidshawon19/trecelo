@@ -194,6 +194,17 @@
       letter-spacing: 0.5px;
     }
 
+    /* ── Buyer brand logo in navbar ──────────────────────────── */
+    .nav-brand-logo {
+      height: 32px;
+      max-width: 90px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    @media (max-width: 400px) {
+      .nav-brand-logo { height: 26px; max-width: 70px; }
+    }
+
     /* ── Content ──────────────────────────────────────────────── */
     #content {
       flex: 1;
@@ -512,6 +523,15 @@
     <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
       <i class="fa fa-bars"></i>
     </button>
+
+    {% if is_buyer and buyer_nav_brands %}
+      {% for brand in buyer_nav_brands %}
+        {% if brand.logo %}
+          <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="nav-brand-logo">
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
     <div class="page-title"></div>
     <div class="topbar-right">
       <span class="user-name"><i class="fa fa-user-circle mr-1 text-blue-500"></i>{{ user.username }}</span>
