@@ -6,35 +6,38 @@
 
 {% block content %}
 
-<div style="display:flex;justify-content:center;align-items:flex-start;padding-top:40px;">
-  <div class="page-card" style="max-width:480px;width:100%;border-top:3px solid #ef4444;">
-    <div style="padding:36px 32px;text-align:center;">
+<div class="flex justify-center">
+  <div class="w-full md:w-1/2 lg:w-5/12">
+    <div class="bg-white rounded-xl shadow-sm text-center" style="border-top:4px solid #ef4444;">
+      <div class="p-10">
 
-      <!-- Danger icon -->
-      <div style="width:72px;height:72px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;border:2px solid #fecaca;">
-        <i class="fa fa-trash fa-xl" style="color:#ef4444;font-size:1.5rem;"></i>
-      </div>
-
-      <h4 style="font-size:1.15rem;font-weight:700;color:var(--text);margin:0 0 8px;">Delete "{{ object }}"?</h4>
-      <p style="color:var(--text-3);font-size:.875rem;margin:0 0 20px;">This action cannot be undone. All associated data will be permanently removed.</p>
-
-      <div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:10px;padding:10px 14px;margin-bottom:24px;font-size:.82rem;text-align:left;">
-        <i class="fa fa-circle-exclamation" style="margin-right:6px;"></i>
-        Deleting <strong>"{{ object }}"</strong> is permanent and <strong>cannot be reversed</strong>.
-      </div>
-
-      <form method="post">
-        {% csrf_token %}
-        <div style="display:flex;gap:10px;justify-content:center;">
-          <a href="javascript:history.back()" class="btn-outline">
-            <i class="fa fa-arrow-left"></i> Cancel
-          </a>
-          <button type="submit" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:.875rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:inherit;transition:opacity .15s;">
-            <i class="fa fa-trash"></i> Yes, Delete
-          </button>
+        <!-- Danger icon -->
+        <div style="width:72px;height:72px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+          <i class="fa fa-triangle-exclamation fa-2x" style="color:#ef4444;"></i>
         </div>
-      </form>
 
+        <h4 class="font-bold mb-2 text-slate-800 text-xl">Delete Confirmation</h4>
+        <p class="text-slate-400 mb-1">You are about to permanently delete:</p>
+        <p class="font-semibold text-lg mb-4 text-slate-800">"{{ object }}"</p>
+
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg py-2 px-3 mb-4 text-left" style="font-size:.875rem;">
+          <i class="fa fa-circle-exclamation mr-2"></i>
+          This action <strong>cannot be undone</strong>. All associated data will be permanently removed.
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+          <div class="flex gap-3 justify-center">
+            <a href="javascript:history.back()" class="border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold px-6 py-2 rounded-lg transition-colors inline-flex items-center gap-1 no-underline">
+              <i class="fa fa-arrow-left mr-1"></i>Cancel
+            </a>
+            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded-lg transition-colors inline-flex items-center gap-1 border-0 cursor-pointer">
+              <i class="fa fa-trash mr-1"></i>Yes, Delete
+            </button>
+          </div>
+        </form>
+
+      </div>
     </div>
   </div>
 </div>

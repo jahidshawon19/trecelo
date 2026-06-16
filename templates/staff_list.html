@@ -4,26 +4,28 @@
 
 {% block content %}
 
-<div class="page-card">
-  <div class="page-card-header">
-    <div>
-      <div class="page-card-title"><i class="fa fa-users mr-2 text-blue-500"></i>R&D Team Members</div>
-      <div class="page-card-sub">Manage staff accounts</div>
-    </div>
-    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <div class="tbl-search">
-        <i class="fa fa-magnifying-glass si"></i>
-        <input type="text" id="staffSearch" placeholder="Search members…" style="min-width:200px;">
+<div class="bg-white rounded-xl shadow-sm">
+  <div class="p-5 pb-0">
+    <div class="flex flex-wrap items-center gap-3">
+      <div>
+        <h5 class="mb-0 font-bold text-slate-800"><i class="fa fa-users mr-2 text-blue-500"></i>R&D Team Members</h5>
+        <p class="mb-0 text-slate-400 text-xs mt-0.5">Manage staff accounts</p>
       </div>
-      {% if user.is_superuser %}
-      <a href="{% url 'staff_create' %}" class="btn-primary">
-        <i class="fa fa-plus"></i> Add Member
-      </a>
-      {% endif %}
+      <div class="ml-auto flex gap-2 flex-wrap items-center">
+        <div class="tbl-search">
+          <i class="fa fa-magnifying-glass si"></i>
+          <input type="text" id="staffSearch" placeholder="Search members…" style="min-width:200px;">
+        </div>
+        {% if user.is_superuser %}
+        <a href="{% url 'staff_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
+          <i class="fa fa-plus"></i> Add Member
+        </a>
+        {% endif %}
+      </div>
     </div>
   </div>
 
-  <div class="page-card-body">
+  <div class="p-5 pt-3">
     <div class="overflow-x-auto">
       <table class="bt">
         <thead>
@@ -32,6 +34,7 @@
             <th>Member</th>
             <th>Emp ID</th>
             <th>Role</th>
+            
             <th>Phone</th>
             {% if user.is_superuser %}<th class="text-center">Actions</th>{% endif %}
           </tr>
@@ -41,17 +44,17 @@
           <tr>
             <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
             <td>
-              <div style="display:flex;align-items:center;gap:12px;">
+              <div class="flex items-center gap-3">
                 {% if s.profile_picture %}
                   <img src="{{ s.profile_picture.url }}"
                        alt="{{ s.user.username }}"
-                       style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--border);">
+                       style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #e2e8f0;">
                 {% else %}
                   <div class="av av-green">{{ s.user.username|first|upper }}</div>
                 {% endif %}
                 <div>
-                  <div style="font-weight:600;color:var(--text);">{% if s.maker_name %}{{ s.maker_name }}{% else %}{{ s.user.username }}{% endif %}</div>
-                  <div style="font-size:.75rem;color:var(--text-3);"><i class="fa fa-user" style="margin-right:3px;"></i>{{ s.user.username }}</div>
+                  <div class="font-semibold text-slate-800">{% if s.maker_name %}{{ s.maker_name }}{% else %}{{ s.user.username }}{% endif %}</div>
+                  <div style="font-size:.75rem;color:#94a3b8;"><i class="fa fa-user mr-1"></i>{{ s.user.username }}</div>
                 </div>
               </div>
             </td>
@@ -65,14 +68,15 @@
                 {{ s.role }}
               </span>
             </td>
+            
             <td>
               <span style="display:inline-flex;align-items:center;gap:5px;font-size:.82rem;color:#475569;">
-                <i class="fa fa-phone" style="color:var(--text-3);font-size:.7rem;"></i>{{ s.phone_number }}
+                <i class="fa fa-phone text-slate-400" style="font-size:.7rem;"></i>{{ s.phone_number }}
               </span>
             </td>
             {% if user.is_superuser %}
             <td class="text-center">
-              <div style="display:flex;gap:4px;justify-content:center;">
+              <div class="flex gap-1 justify-center">
                 <a href="{% url 'staff_detail' s.id %}" class="btn-act view" title="View"><i class="fa fa-eye"></i></a>
                 <a href="{% url 'staff_update' s.id %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
                 <a href="{% url 'staff_delete' s.id %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
@@ -82,13 +86,13 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan="7" style="text-align:center;padding:40px 16px;">
-              <div style="color:var(--text-3);">
-                <i class="fa fa-users fa-2x" style="display:block;margin-bottom:12px;"></i>
+            <td colspan="7" class="text-center py-5">
+              <div style="color:#94a3b8;">
+                <i class="fa fa-users fa-2x mb-3 block"></i>
                 <div style="font-size:.95rem;font-weight:500;">No staff members found.</div>
                 {% if user.is_superuser %}
-                <a href="{% url 'staff_create' %}" class="btn-primary" style="margin-top:12px;">
-                  <i class="fa fa-plus"></i>Add first member
+                <a href="{% url 'staff_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline mt-3">
+                  <i class="fa fa-plus mr-1"></i>Add first member
                 </a>
                 {% endif %}
               </div>
@@ -99,9 +103,9 @@
       </table>
     </div>
 
-    <div id="noStaffResult" style="text-align:center;padding:40px 16px;display:none!important;">
-      <i class="fa fa-magnifying-glass fa-2x" style="color:var(--text-3);display:block;margin-bottom:12px;"></i>
-      <div style="color:var(--text-3);font-size:.9rem;">No members match your search.</div>
+    <div id="noStaffResult" class="text-center py-5" style="display:none!important;">
+      <i class="fa fa-magnifying-glass fa-2x text-slate-400 mb-3 block"></i>
+      <div class="text-slate-400" style="font-size:.9rem;">No members match your search.</div>
     </div>
   </div>
 </div>

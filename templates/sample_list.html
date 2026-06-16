@@ -4,58 +4,62 @@
 
 {% block content %}
 
-<div class="page-card">
+<div class="bg-white rounded-xl shadow-sm">
   <!-- Toolbar -->
-  <div class="page-card-header">
-    <div>
-      <div class="page-card-title">Sample List</div>
-      <div class="page-card-sub">All registered samples</div>
-    </div>
-    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <form method="get" id="filterForm" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-        {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
-        <div class="tbl-search">
-          <i class="fa fa-magnifying-glass si"></i>
-          <input type="text" name="q" id="sampleSearch" value="{{ q }}" placeholder="Search samples…" style="min-width:200px;">
-        </div>
-        {% if q %}
-        <a href="?{% if status %}status={{ status }}{% endif %}" class="btn-outline" title="Clear search">
-          <i class="fa fa-xmark"></i>
+  <div class="p-5 pb-0">
+    <div class="flex flex-wrap items-center gap-3">
+      <div>
+        <h5 class="mb-0 font-bold text-slate-800">Sample List</h5>
+        <p class="mb-0 text-slate-400 text-xs mt-0.5">All registered samples</p>
+      </div>
+      <div class="ml-auto flex gap-2 flex-wrap items-center">
+        <form method="get" id="filterForm" class="flex gap-2 flex-wrap items-center">
+          {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+          <div class="tbl-search">
+            <i class="fa fa-magnifying-glass si"></i>
+            <input type="text" name="q" id="sampleSearch" value="{{ q }}" placeholder="Search samples…" style="min-width:200px;">
+          </div>
+          {% if q %}
+          <a href="?{% if status %}status={{ status }}{% endif %}" class="border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors no-underline" title="Clear search">
+            <i class="fa fa-xmark"></i>
+          </a>
+          {% endif %}
+        </form>
+
+        <!-- Export buttons -->
+        <a href="{% url 'sample_export_pdf' %}?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.number }}"
+           class="no-underline inline-flex items-center gap-1.5 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+           style="background:#ef4444;">
+          <i class="fa fa-file-pdf"></i> PDF
+        </a>
+        <a href="{% url 'sample_export_excel' %}?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.number }}"
+           class="no-underline inline-flex items-center gap-1.5 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+           style="background:#16a34a;">
+          <i class="fa fa-file-excel"></i> Excel
+        </a>
+
+        {% if user.is_superuser or is_maker %}
+        <a href="{% url 'sample_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
+          <i class="fa fa-plus"></i> Add Sample
         </a>
         {% endif %}
-      </form>
+      </div>
+    </div>
 
-      <!-- Export buttons -->
-      <a href="{% url 'sample_export_pdf' %}?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.number }}"
-         class="btn-danger-sm">
-        <i class="fa fa-file-pdf"></i> PDF
-      </a>
-      <a href="{% url 'sample_export_excel' %}?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.number }}"
-         class="btn-success-sm">
-        <i class="fa fa-file-excel"></i> Excel
-      </a>
-
-      {% if user.is_superuser or is_maker %}
-      <a href="{% url 'sample_create' %}" class="btn-primary">
-        <i class="fa fa-plus"></i> Add Sample
-      </a>
-      {% endif %}
+    <!-- Status filter pills -->
+    <div class="flex flex-wrap gap-2 mt-3">
+      <a href="?{% if q %}q={{ q }}&{% endif %}"
+         class="filter-pill {% if not status %}active{% endif %}">All</a>
+      <a href="?{% if q %}q={{ q }}&{% endif %}status=draft"
+         class="filter-pill {% if status == 'draft' %}active{% endif %}">Draft</a>
+      <a href="?{% if q %}q={{ q }}&{% endif %}status=pending"
+         class="filter-pill {% if status == 'pending' %}active{% endif %}">Pending</a>
+      <a href="?{% if q %}q={{ q }}&{% endif %}status=approved"
+         class="filter-pill {% if status == 'approved' %}active{% endif %}">Approved</a>
     </div>
   </div>
 
-  <!-- Status filter pills -->
-  <div style="padding:12px 24px 0;display:flex;flex-wrap:wrap;gap:6px;">
-    <a href="?{% if q %}q={{ q }}&{% endif %}"
-       class="filter-pill {% if not status %}active{% endif %}">All</a>
-    <a href="?{% if q %}q={{ q }}&{% endif %}status=draft"
-       class="filter-pill {% if status == 'draft' %}active{% endif %}">Draft</a>
-    <a href="?{% if q %}q={{ q }}&{% endif %}status=pending"
-       class="filter-pill {% if status == 'pending' %}active{% endif %}">Pending</a>
-    <a href="?{% if q %}q={{ q }}&{% endif %}status=approved"
-       class="filter-pill {% if status == 'approved' %}active{% endif %}">Approved</a>
-  </div>
-
-  <div class="page-card-body">
+  <div class="p-5 pt-3">
     <div class="overflow-x-auto">
       <table class="bt">
         <thead>
@@ -78,9 +82,9 @@
           <tr>
             <td style="color:#94a3b8;font-size:.8rem;width:36px;">{{ page_obj.start_index|add:forloop.counter0 }}</td>
             <td>
-              <div style="display:flex;align-items:center;gap:8px;">
+              <div class="flex items-center gap-2">
                 <div class="av av-blue" style="width:30px;height:30px;font-size:.7rem;flex-shrink:0;">{{ s.style_number|default:"S"|first|upper }}</div>
-                <span style="font-weight:600;color:var(--text);font-size:.875rem;">{{ s.style_number|default:"—" }}</span>
+                <span class="font-semibold" style="color:#1e293b;font-size:.875rem;">{{ s.style_number|default:"—" }}</span>
               </div>
             </td>
             <td style="width:60px;">
@@ -88,7 +92,7 @@
                 <a href="{{ s.front_part_image.url }}" target="_blank" title="View front image">
                   <img src="{{ s.front_part_image.url }}"
                        alt="Front"
-                       style="width:46px;height:46px;object-fit:cover;border-radius:8px;border:1.5px solid var(--border);display:block;">
+                       style="width:46px;height:46px;object-fit:cover;border-radius:8px;border:1.5px solid #e2e8f0;display:block;">
                 </a>
               {% else %}
                 <div style="width:46px;height:46px;border-radius:8px;border:1.5px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;background:#f8fafc;">
@@ -98,26 +102,26 @@
             </td>
             <td>
               {% if s.buyer %}
-              <div style="display:flex;align-items:center;gap:8px;">
+              <div class="flex items-center gap-2">
                 <div class="av av-purple" style="width:28px;height:28px;font-size:.68rem;flex-shrink:0;">{{ s.buyer.buyer_name|first|upper }}</div>
                 <span style="font-size:.82rem;">{{ s.buyer.buyer_name }}</span>
               </div>
-              {% else %}<span style="color:var(--text-3);">—</span>{% endif %}
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
             </td>
-            <td style="font-size:.82rem;color:var(--text-2);">{{ s.sample_type|default:"—" }}</td>
+            <td style="font-size:.82rem;color:#475569;">{{ s.sample_type|default:"—" }}</td>
             <td>
               {% for g in s.gg.all %}
                 <span style="background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;">{{ g.title }}</span>
-              {% empty %}<span style="color:var(--text-3);">—</span>{% endfor %}
+              {% empty %}<span class="text-slate-400">—</span>{% endfor %}
             </td>
-            <td style="font-size:.82rem;color:var(--text-2);">{{ s.color|default:"—" }}</td>
-            <td style="font-size:.82rem;color:var(--text-2);">{{ s.season|default:"—" }}</td>
+            <td style="font-size:.82rem;color:#475569;">{{ s.color|default:"—" }}</td>
+            <td style="font-size:.82rem;color:#475569;">{{ s.season|default:"—" }}</td>
             <td>
               {% if s.submission_date %}
                 <span style="display:inline-flex;align-items:center;gap:4px;background:#f0fdf4;color:#15803d;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #bbf7d0;white-space:nowrap;">
                   <i class="fa fa-calendar" style="font-size:.66rem;"></i>{{ s.submission_date }}
                 </span>
-              {% else %}<span style="color:var(--text-3);">—</span>{% endif %}
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
             </td>
             <td>
               {% if s.status == 'approved' %}
@@ -127,11 +131,11 @@
               {% elif s.status == 'rejected' %}
                 <span style="background:#fef2f2;color:#dc2626;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #fecaca;white-space:nowrap;">Rejected</span>
               {% else %}
-                <span style="background:#f1f5f9;color:#64748b;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid var(--border);white-space:nowrap;">Draft</span>
+                <span style="background:#f1f5f9;color:#64748b;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #e2e8f0;white-space:nowrap;">Draft</span>
               {% endif %}
             </td>
             <td class="text-center">
-              <div style="display:flex;gap:4px;justify-content:center;">
+              <div class="flex gap-1 justify-center">
                 <a href="{% url 'sample_detail' s.id %}" class="btn-act view" title="View"><i class="fa fa-eye"></i></a>
                 {% if user.is_superuser or is_maker %}
                 <a href="{% url 'sample_update' s.id %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
@@ -144,15 +148,15 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan="11" style="text-align:center;padding:40px 16px;">
-              <div style="color:var(--text-3);">
-                <i class="fa fa-box-open fa-2x" style="display:block;margin-bottom:12px;"></i>
+            <td colspan="11" class="text-center py-5">
+              <div style="color:#94a3b8;">
+                <i class="fa fa-box-open fa-2x mb-3 block"></i>
                 <div style="font-size:.95rem;font-weight:500;">
                   {% if q or status %}No samples match the current filters.{% else %}No samples found.{% endif %}
                 </div>
                 {% if not q and not status and user.is_staff or user.is_superuser %}
-                <a href="{% url 'sample_create' %}" class="btn-primary" style="margin-top:12px;">
-                  <i class="fa fa-plus"></i>Add your first sample
+                <a href="{% url 'sample_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline mt-3">
+                  <i class="fa fa-plus mr-1"></i>Add your first sample
                 </a>
                 {% endif %}
               </div>
@@ -165,22 +169,22 @@
 
     <!-- Pagination -->
     {% if page_obj.paginator.num_pages > 1 %}
-    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding-top:12px;border-top:1px solid #f0f4f8;">
+    <div class="flex flex-wrap items-center justify-between gap-3 mt-4 pt-3 border-t border-slate-100">
       <div style="font-size:.82rem;color:#64748b;">
         Showing <strong>{{ page_obj.start_index }}–{{ page_obj.end_index }}</strong> of <strong>{{ total_count }}</strong> samples
       </div>
       <nav>
-        <ul style="display:flex;gap:4px;margin:0;padding:0;list-style:none;">
+        <ul class="flex gap-1 mb-0 list-none p-0">
           {% if page_obj.has_previous %}
           <li>
-            <a style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);color:var(--text-2);font-size:.7rem;text-decoration:none;" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.previous_page_number }}">
-              <i class="fa fa-chevron-left"></i>
+            <a class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs no-underline" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.previous_page_number }}">
+              <i class="fa fa-chevron-left" style="font-size:.7rem;"></i>
             </a>
           </li>
           {% else %}
           <li>
-            <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;border:1.5px solid #f0f4f8;color:var(--text-3);font-size:.7rem;cursor:not-allowed;">
-              <i class="fa fa-chevron-left"></i>
+            <span class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-100 text-slate-300 text-xs cursor-not-allowed">
+              <i class="fa fa-chevron-left" style="font-size:.7rem;"></i>
             </span>
           </li>
           {% endif %}
@@ -188,25 +192,25 @@
           {% for num in page_obj.paginator.page_range %}
             {% if page_obj.number == num %}
             <li>
-              <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--primary);color:#fff;font-size:.82rem;font-weight:600;">{{ num }}</span>
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-md text-white text-xs font-semibold" style="background:#3b82f6;">{{ num }}</span>
             </li>
             {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
             <li>
-              <a style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);color:var(--text-2);font-size:.82rem;text-decoration:none;" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ num }}">{{ num }}</a>
+              <a class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs no-underline" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ num }}">{{ num }}</a>
             </li>
             {% endif %}
           {% endfor %}
 
           {% if page_obj.has_next %}
           <li>
-            <a style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);color:var(--text-2);font-size:.7rem;text-decoration:none;" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.next_page_number }}">
-              <i class="fa fa-chevron-right"></i>
+            <a class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs no-underline" href="?{% if q %}q={{ q }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.next_page_number }}">
+              <i class="fa fa-chevron-right" style="font-size:.7rem;"></i>
             </a>
           </li>
           {% else %}
           <li>
-            <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;border:1.5px solid #f0f4f8;color:var(--text-3);font-size:.7rem;cursor:not-allowed;">
-              <i class="fa fa-chevron-right"></i>
+            <span class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-slate-100 text-slate-300 text-xs cursor-not-allowed">
+              <i class="fa fa-chevron-right" style="font-size:.7rem;"></i>
             </span>
           </li>
           {% endif %}
@@ -224,12 +228,12 @@
 <style>
   .filter-pill {
     display: inline-flex; align-items: center;
-    padding: 5px 14px; border-radius: 8px; font-size: .78rem; font-weight: 600;
-    border: 1.5px solid var(--border); background: #fafbfc; color: var(--text-3);
+    padding: 4px 14px; border-radius: 20px; font-size: .78rem; font-weight: 600;
+    border: 1.5px solid #e2e8f0; background: #f8fafc; color: #64748b;
     text-decoration: none; transition: all .15s;
   }
-  .filter-pill:hover { border-color: #93c5fd; color: #2563eb; background: var(--primary-light); }
-  .filter-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .filter-pill:hover { border-color: #93c5fd; color: #2563eb; background: #eff6ff; }
+  .filter-pill.active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
 </style>
 <script>
   const si = document.getElementById('sampleSearch');
