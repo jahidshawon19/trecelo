@@ -91,6 +91,31 @@
         </div>
       </div>
 
+      <!-- Tech Pack -->
+      <div style="min-width:130px;max-width:160px;">
+        <div class="text-center">
+          <div class="mb-2 flex items-center justify-center gap-2">
+            <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">3</span>
+            <span style="font-weight:600;font-size:.9rem;color:#374151;">Tech Pack</span>
+          </div>
+          {% if sample.tech_pack %}
+            <a href="{{ sample.tech_pack.url }}"
+               class="lightbox-trigger"
+               data-img="{{ sample.tech_pack.url }}" data-caption="Tech Pack">
+              <div class="img-slot filled">
+                <img src="{{ sample.tech_pack.url }}" alt="Tech Pack">
+                <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
+              </div>
+            </a>
+          {% else %}
+            <div class="img-slot empty">
+              <i class="fa fa-image fa-2x text-slate-400 mb-2 block"></i>
+              <span class="text-slate-400 text-sm">Not uploaded</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -217,9 +242,17 @@
             <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Weight</th>
             <td class="px-4 py-3 text-slate-700">{{ sample.weight|default:"—" }}</td>
           </tr>
-          <tr>
+          <tr class="border-b border-slate-100">
             <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Yarn Composition</th>
             <td class="px-4 py-3 text-slate-700">{{ sample.yarn_composition|default:"—" }}</td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Yarn Consumption</th>
+            <td class="px-4 py-3 text-slate-700">{{ sample.yarn_consumption|default:"—" }}</td>
+          </tr>
+          <tr>
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Moisture Level</th>
+            <td class="px-4 py-3 text-slate-700">{{ sample.moisture_level|default:"—" }}</td>
           </tr>
         </tbody>
       </table>
