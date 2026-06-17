@@ -91,24 +91,24 @@
         </div>
       </div>
 
-      <!-- Tech Pack — far right, larger -->
-      <div style="margin-left:auto;min-width:180px;max-width:220px;">
+      <!-- Tech Pack — far right -->
+      <div style="margin-left:auto;min-width:130px;max-width:160px;">
         <div class="text-center">
           <div class="mb-2 flex items-center justify-center gap-2">
-            <span class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2 py-0.5 rounded-full">3</span>
+            <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">3</span>
             <span style="font-weight:600;font-size:.9rem;color:#374151;">Tech Pack</span>
           </div>
           {% if sample.tech_pack %}
             <a href="{{ sample.tech_pack.url }}"
                class="lightbox-trigger"
                data-img="{{ sample.tech_pack.url }}" data-caption="Tech Pack">
-              <div class="img-slot filled" style="height:150px;">
+              <div class="img-slot filled">
                 <img src="{{ sample.tech_pack.url }}" alt="Tech Pack">
                 <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
               </div>
             </a>
           {% else %}
-            <div class="img-slot empty" style="height:150px;">
+            <div class="img-slot empty">
               <i class="fa fa-image fa-2x text-slate-400 mb-2 block"></i>
               <span class="text-slate-400 text-sm">Not uploaded</span>
             </div>
