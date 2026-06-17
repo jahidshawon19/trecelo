@@ -79,6 +79,30 @@
               </div>
             </div>
 
+            <!-- Tech Pack -->
+            <div class="w-1/2 sm:w-1/4 md:w-1/6" style="min-width:130px;max-width:160px;">
+              <div class="image-slot">
+                <div class="slot-label">
+                  <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full mr-1">3</span>Tech Pack
+                </div>
+                <div class="slot-preview" id="preview_tech_pack">
+                  {% if form.instance.tech_pack %}
+                    <img src="{{ form.instance.tech_pack.url }}" alt="Tech Pack">
+                    <div class="slot-current">Current</div>
+                  {% else %}
+                    <div class="slot-placeholder">
+                      <i class="fa fa-image text-slate-400 block mb-1"></i>
+                      <span class="text-slate-400" style="font-size:.72rem;">No image</span>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="mt-2">{{ form.tech_pack }}</div>
+                {% for error in form.tech_pack.errors %}
+                  <div class="text-red-500 mt-1" style="font-size:.78rem;"><i class="fa fa-circle-exclamation mr-1"></i>{{ error }}</div>
+                {% endfor %}
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -130,7 +154,7 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="formFieldsGrid">
           {% for field in form %}
-            {% if field.name == 'front_part_image' or field.name == 'back_part_image' %}
+            {% if field.name == 'front_part_image' or field.name == 'back_part_image' or field.name == 'tech_pack' %}
               {# Already rendered in the image section above #}
             {% else %}
             <div class="field-col">
@@ -562,8 +586,8 @@
     }
   });
 
-  // Live preview for front/back slots
-  ['front_part_image', 'back_part_image'].forEach(function (name) {
+  // Live preview for front/back/tech_pack slots
+  ['front_part_image', 'back_part_image', 'tech_pack'].forEach(function (name) {
     var input   = document.getElementById('id_' + name);
     var preview = document.getElementById('preview_' + name);
     if (!input || !preview) return;
