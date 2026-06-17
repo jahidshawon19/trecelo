@@ -260,7 +260,7 @@ class Sample(models.Model):
     size = models.CharField(max_length=100, blank=True, verbose_name="Size")
     weight = models.CharField(max_length=100, blank=True, verbose_name="Weight")
     yarn_composition = models.CharField(max_length=255, blank=True, verbose_name="Yarn Composition")
-    yarn_consumption = models.TextField(blank=True, verbose_name="Yarn Consumption")
+    yarn_consumption = models.CharField(max_length=255, blank=True, verbose_name="Yarn Consumption")
     moisture_level = models.CharField(max_length=100, blank=True, verbose_name="Moisture Level")
     description = models.TextField(blank=True)
     challenge_in = models.ManyToManyField(ChallengeIn, blank=True, verbose_name="Challenge In")
