@@ -39,7 +39,7 @@
     <i class="fa fa-images mr-2 text-blue-500"></i>Sample Images
   </div>
   <div class="p-5">
-    <div class="flex flex-wrap gap-3">
+    <div class="flex flex-wrap items-start gap-3">
 
       <!-- Front Part -->
       <div style="min-width:130px;max-width:160px;">
@@ -91,24 +91,24 @@
         </div>
       </div>
 
-      <!-- Tech Pack -->
-      <div style="min-width:130px;max-width:160px;">
+      <!-- Tech Pack — far right, larger -->
+      <div style="margin-left:auto;min-width:180px;max-width:220px;">
         <div class="text-center">
           <div class="mb-2 flex items-center justify-center gap-2">
-            <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">3</span>
+            <span class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2 py-0.5 rounded-full">3</span>
             <span style="font-weight:600;font-size:.9rem;color:#374151;">Tech Pack</span>
           </div>
           {% if sample.tech_pack %}
             <a href="{{ sample.tech_pack.url }}"
                class="lightbox-trigger"
                data-img="{{ sample.tech_pack.url }}" data-caption="Tech Pack">
-              <div class="img-slot filled">
+              <div class="img-slot filled" style="height:150px;">
                 <img src="{{ sample.tech_pack.url }}" alt="Tech Pack">
                 <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
               </div>
             </a>
           {% else %}
-            <div class="img-slot empty">
+            <div class="img-slot empty" style="height:150px;">
               <i class="fa fa-image fa-2x text-slate-400 mb-2 block"></i>
               <span class="text-slate-400 text-sm">Not uploaded</span>
             </div>
