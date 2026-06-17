@@ -26,10 +26,10 @@ class SampleAdmin(ModelAdmin):
             'fields': ('buyer', 'maker', 'brand', 'category'),
         }),
         ('Technical Specs', {
-            'fields': ('gg', 'weight', 'yarn_composition', 'description', 'challenge_in'),
+            'fields': ('gg', 'weight', 'yarn_composition', 'yarn_consumption', 'moisture_level', 'description', 'challenge_in'),
         }),
         ('Images & Files', {
-            'fields': ('front_part_image', 'back_part_image', 'documents'),
+            'fields': ('front_part_image', 'back_part_image', 'tech_pack', 'documents'),
         }),
     )
 

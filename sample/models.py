@@ -250,6 +250,7 @@ class Sample(models.Model):
     # Fixed image slots
     front_part_image = models.ImageField(upload_to='samples/front/', blank=True, null=True, verbose_name="Front Part Image")
     back_part_image = models.ImageField(upload_to='samples/back/', blank=True, null=True, verbose_name="Back Part Image")
+    tech_pack = models.ImageField(upload_to='samples/tech_pack/', blank=True, null=True, verbose_name="Tech Pack")
 
     # Document
     documents = models.FileField(upload_to='samples/documents/', blank=True, null=True)
@@ -259,6 +260,8 @@ class Sample(models.Model):
     size = models.CharField(max_length=100, blank=True, verbose_name="Size")
     weight = models.CharField(max_length=100, blank=True, verbose_name="Weight")
     yarn_composition = models.CharField(max_length=255, blank=True, verbose_name="Yarn Composition")
+    yarn_consumption = models.TextField(blank=True, verbose_name="Yarn Consumption")
+    moisture_level = models.CharField(max_length=100, blank=True, verbose_name="Moisture Level")
     description = models.TextField(blank=True)
     challenge_in = models.ManyToManyField(ChallengeIn, blank=True, verbose_name="Challenge In")
     submission_date = models.DateField(null=True, blank=True)
@@ -267,6 +270,7 @@ class Sample(models.Model):
         super().save(*args, **kwargs)
         _compress_image_field(self, 'front_part_image', max_px=1200)
         _compress_image_field(self, 'back_part_image',  max_px=1200)
+        _compress_image_field(self, 'tech_pack',        max_px=1200)
 
     def __str__(self):
         return self.style_number or f"Sample #{self.pk}"
