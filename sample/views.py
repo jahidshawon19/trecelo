@@ -459,7 +459,7 @@ def challengein_delete(request, pk):
 # ---------- helpers ----------
 def _sample_queryset(request):
     """Return the base Sample queryset filtered by the current user's role."""
-    base = Sample.objects.select_related('buyer').prefetch_related('gg', 'maker__user')
+    base = Sample.objects.select_related('buyer').prefetch_related('gg', 'maker__user').order_by('-id')
     if request.user.is_superuser:
         return base.all()
     maker = get_maker_user(request.user)
