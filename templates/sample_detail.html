@@ -39,18 +39,19 @@
     <i class="fa fa-images mr-2 text-blue-500"></i>Sample Images
   </div>
   <div class="p-5">
-    <div class="flex flex-wrap items-start gap-3">
+    <div class="si-layout">
 
-      <!-- Front Part -->
-      <div style="min-width:130px;max-width:160px;">
-        <div class="text-center">
-          <div class="mb-2 flex items-center justify-center gap-2">
+      <!-- ── Left: Front Part + Back Part ────────────────────────── -->
+      <div class="si-small-slots">
+
+        <!-- Front Part -->
+        <div>
+          <div class="si-slot-label">
             <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">1</span>
-            <span style="font-weight:600;font-size:.9rem;color:#374151;">Front Part</span>
+            Front Part
           </div>
           {% if sample.front_part_image %}
-            <a href="{{ sample.front_part_image.url }}"
-               class="lightbox-trigger"
+            <a href="{{ sample.front_part_image.url }}" class="lightbox-trigger"
                data-img="{{ sample.front_part_image.url }}" data-caption="Front Part">
               <div class="img-slot filled">
                 <img src="{{ sample.front_part_image.url }}" alt="Front Part">
@@ -64,18 +65,15 @@
             </div>
           {% endif %}
         </div>
-      </div>
 
-      <!-- Back Part -->
-      <div style="min-width:130px;max-width:160px;">
-        <div class="text-center">
-          <div class="mb-2 flex items-center justify-center gap-2">
+        <!-- Back Part -->
+        <div>
+          <div class="si-slot-label">
             <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">2</span>
-            <span style="font-weight:600;font-size:.9rem;color:#374151;">Back Part</span>
+            Back Part
           </div>
           {% if sample.back_part_image %}
-            <a href="{{ sample.back_part_image.url }}"
-               class="lightbox-trigger"
+            <a href="{{ sample.back_part_image.url }}" class="lightbox-trigger"
                data-img="{{ sample.back_part_image.url }}" data-caption="Back Part">
               <div class="img-slot filled">
                 <img src="{{ sample.back_part_image.url }}" alt="Back Part">
@@ -89,31 +87,37 @@
             </div>
           {% endif %}
         </div>
+
       </div>
 
-      <!-- Tech Pack -->
-      <div style="min-width:130px;max-width:160px;">
-        <div class="text-center">
-          <div class="mb-2 flex items-center justify-center gap-2">
-            <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">3</span>
-            <span style="font-weight:600;font-size:.9rem;color:#374151;">Tech Pack</span>
-          </div>
-          {% if sample.tech_pack %}
-            <a href="{{ sample.tech_pack.url }}"
-               class="lightbox-trigger"
-               data-img="{{ sample.tech_pack.url }}" data-caption="Tech Pack">
-              <div class="img-slot filled">
-                <img src="{{ sample.tech_pack.url }}" alt="Tech Pack">
-                <div class="img-slot-overlay"><i class="fa fa-magnifying-glass-plus fa-lg"></i></div>
-              </div>
-            </a>
-          {% else %}
-            <div class="img-slot empty">
-              <i class="fa fa-image fa-2x text-slate-400 mb-2 block"></i>
-              <span class="text-slate-400 text-sm">Not uploaded</span>
-            </div>
-          {% endif %}
+      <!-- ── Right: Tech Pack (featured) ─────────────────────────── -->
+      <div class="tp-wrap">
+        <div class="si-slot-label">
+          <span class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2 py-0.5 rounded-full">3</span>
+          Tech Pack
         </div>
+        {% if sample.tech_pack %}
+          <a href="{{ sample.tech_pack.url }}" class="lightbox-trigger tp-link"
+             data-img="{{ sample.tech_pack.url }}" data-caption="Tech Pack">
+            <div class="tp-card">
+              <img src="{{ sample.tech_pack.url }}" alt="Tech Pack">
+              <div class="tp-overlay">
+                <div class="tp-overlay-inner">
+                  <i class="fa fa-magnifying-glass-plus"></i>
+                  <span>View Full Size</span>
+                </div>
+              </div>
+              <div class="tp-badge">
+                <i class="fa fa-file-image mr-1"></i>Tech Pack
+              </div>
+            </div>
+          </a>
+        {% else %}
+          <div class="tp-card tp-empty">
+            <i class="fa fa-file-image"></i>
+            <span>Tech Pack not uploaded</span>
+          </div>
+        {% endif %}
       </div>
 
     </div>
@@ -328,6 +332,121 @@
 
 {% block extra_js %}
 <style>
+  /* ── Sample Images layout ──────────────────────────────── */
+  .si-layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .si-small-slots {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .si-small-slots > div { width: 140px; }
+  .si-slot-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+  }
+
+  /* ── Tech Pack featured card ───────────────────────────── */
+  .tp-wrap { flex: 1; min-width: 0; }
+  .tp-link { display: block; text-decoration: none; }
+
+  .tp-card {
+    width: 100%;
+    height: 220px;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    background: #f1f5f9;
+    border: 1.5px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform .22s ease, box-shadow .22s ease;
+    cursor: pointer;
+  }
+  .tp-card img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease;
+  }
+  .tp-link:hover .tp-card {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(99,102,241,.18), 0 4px 12px rgba(0,0,0,.1);
+    border-color: #a5b4fc;
+  }
+  .tp-link:hover .tp-card img { transform: scale(1.04); }
+
+  /* gradient overlay */
+  .tp-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15,23,42,.62) 0%, rgba(15,23,42,.1) 55%, transparent 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .22s;
+  }
+  .tp-link:hover .tp-overlay { opacity: 1; }
+  .tp-overlay-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-size: .875rem;
+    font-weight: 600;
+  }
+  .tp-overlay-inner i { font-size: 1.6rem; }
+
+  /* bottom badge label */
+  .tp-badge {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(8px);
+    color: #4338ca;
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: .02em;
+    border: 1px solid rgba(165,180,252,.6);
+  }
+
+  /* empty state */
+  .tp-empty {
+    color: #94a3b8;
+    font-size: .875rem;
+    cursor: default;
+    gap: 10px;
+  }
+  .tp-empty i { font-size: 2rem; color: #cbd5e1; }
+
+  /* ── Responsive ────────────────────────────────────────── */
+  @media (max-width: 640px) {
+    .si-layout { flex-direction: column; }
+    .si-small-slots { width: 100%; }
+    .si-small-slots > div { flex: 1; width: auto; min-width: 120px; }
+    .tp-wrap { width: 100%; }
+    .tp-card { height: 180px; }
+  }
+
   .img-slot {
     width: 100%;
     height: 110px;
