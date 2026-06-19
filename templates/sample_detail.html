@@ -157,7 +157,7 @@
 </div>
 
 <!-- ── Info Cards ─────────────────────────────────────────────────── -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
 
   <!-- Basic Info -->
   <div class="bg-white rounded-xl shadow-sm h-full">
@@ -254,33 +254,26 @@
             <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Yarn Consumption</th>
             <td class="px-4 py-3 text-slate-700">{{ sample.yarn_consumption|default:"—" }}</td>
           </tr>
-          <tr>
+          <tr class="border-b border-slate-100">
             <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Moisture Level</th>
             <td class="px-4 py-3 text-slate-700">{{ sample.moisture_level|default:"—" }}</td>
           </tr>
+          <tr>
+            <th class="bg-slate-50 text-left px-4 py-3 font-semibold text-slate-600" style="font-size:.85rem;">Document</th>
+            <td class="px-4 py-3">
+              {% if sample.documents %}
+                <a href="{{ sample.documents.url }}"
+                   class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors no-underline"
+                   target="_blank" rel="noopener noreferrer">
+                  <i class="fa fa-file-arrow-down"></i>Download Document
+                </a>
+              {% else %}
+                <span class="text-slate-400">—</span>
+              {% endif %}
+            </td>
+          </tr>
         </tbody>
       </table>
-    </div>
-  </div>
-
-  <!-- Documents (far right, top) -->
-  <div class="bg-white rounded-xl shadow-sm h-full">
-    <div class="px-5 py-4 border-b border-slate-100 font-semibold bg-white rounded-t-xl">
-      <i class="fa fa-paperclip mr-2 text-blue-500"></i>Attached Document
-    </div>
-    <div class="p-5">
-      {% if sample.documents %}
-        <a href="{{ sample.documents.url }}"
-           class="border border-blue-300 text-blue-600 hover:bg-blue-50 text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-2 no-underline"
-           target="_blank" rel="noopener noreferrer">
-          <i class="fa fa-file-arrow-down mr-2"></i>Download Document
-        </a>
-      {% else %}
-        <div class="text-center py-6" style="color:#94a3b8;">
-          <i class="fa fa-file fa-2x mb-2 block"></i>
-          <span class="text-sm">No document attached</span>
-        </div>
-      {% endif %}
     </div>
   </div>
 
