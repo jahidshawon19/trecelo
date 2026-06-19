@@ -174,11 +174,12 @@
 <style>
 /* ── Page wrapper ──────────────────────────────────────────────────── */
 .mp-page {
-  max-width: 680px;
+  max-width: 1100px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
+  align-items: start;
 }
 
 /* ── Hero Card ─────────────────────────────────────────────────────── */
@@ -574,6 +575,9 @@
 .mp-btn-save:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(59,130,246,.3); }
 
 /* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .mp-page { grid-template-columns: 1fr; }
+}
 @media (max-width: 600px) {
   .mp-form-body form { grid-template-columns: 1fr; }
   .mp-field-full     { grid-column: 1; }
