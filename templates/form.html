@@ -541,9 +541,8 @@
     renderControl();
   }
 
-  // Tom Select for brand, category, gg, and origin (single-select with search)
+  // Tom Select for category, gg, origin (single-select with search)
   [
-    { id: 'id_brand',    placeholder: 'Select brand…'          },
     { id: 'id_category', placeholder: 'Select category…'       },
     { id: 'id_gg',       placeholder: 'Select GG…'             },
     { id: 'id_origin',   placeholder: 'Select origin country…' },
@@ -558,6 +557,69 @@
       placeholder: cfg.placeholder,
     });
   });
+
+  // ── Brand + Buyer dynamic filtering ─────────────────────────────────────────
+  var buyerEl = document.getElementById('id_buyer');
+  var buyerTS = null;
+  if (buyerEl) {
+    buyerTS = new TomSelect(buyerEl, {
+      plugins: ['clear_button'],
+      create: false,
+      maxItems: 1,
+      maxOptions: null,
+      placeholder: 'Select buyer…',
+    });
+  }
+
+  var brandEl = document.getElementById('id_brand');
+  var brandTS = null;
+  if (brandEl) {
+    brandTS = new TomSelect(brandEl, {
+      plugins: ['clear_button'],
+      create: false,
+      maxItems: 1,
+      maxOptions: null,
+      placeholder: 'Select brand…',
+      onChange: function(value) {
+        filterBuyersByBrand(value || '');
+      },
+    });
+  }
+
+  function filterBuyersByBrand(brandId) {
+    if (!buyerTS) return;
+    var currentBuyerId = buyerTS.getValue();
+    var url = '/api/buyers-by-brand/' + (brandId ? '?brand_ids=' + brandId : '');
+
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        buyerTS.clear(true);
+        buyerTS.clearOptions();
+        // blank option
+        buyerTS.addOption({ value: '', text: '---------' });
+        data.buyers.forEach(function(b) {
+          buyerTS.addOption({ value: String(b.id), text: b.name });
+        });
+        buyerTS.refreshOptions(false);
+        // Restore previous selection if still valid
+        var stillValid = data.buyers.some(function(b) {
+          return String(b.id) === String(currentBuyerId);
+        });
+        if (currentBuyerId && stillValid) {
+          buyerTS.setValue(currentBuyerId, true);
+        }
+      })
+      .catch(function(err) { console.error('buyers-by-brand error:', err); });
+  }
+
+  // On page load: if a brand is already selected (edit mode), filter buyers
+  if (brandTS) {
+    var initialBrand = brandTS.getValue();
+    if (initialBrand) {
+      filterBuyersByBrand(initialBrand);
+    }
+  }
 
   // MSD dropdown for challenge_in and maker (checkbox-based)
   buildMultiDropdown('id_challenge_in','Select challenge in…');

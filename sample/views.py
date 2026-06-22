@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.db.models.functions import TruncMonth
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, Sample, StaffProfile
 from .forms import BrandForm, BuyerForm, CategoryForm, ChallengeInForm, GGForm, SampleForm, StaffForm
 
@@ -650,6 +650,25 @@ def sample_detail(request, pk):
         except Buyer.DoesNotExist:
             return redirect('sample_list')
     return render(request, 'sample_detail.html', {'sample': sample})
+
+
+@login_required
+def buyers_by_brand(request):
+    """Return JSON list of buyers filtered by brand_ids query param."""
+    brand_ids = [
+        i.strip() for i in request.GET.get('brand_ids', '').split(',')
+        if i.strip().isdigit()
+    ]
+    if brand_ids:
+        buyers = (Buyer.objects
+                  .filter(brand__in=brand_ids)
+                  .distinct()
+                  .order_by('buyer_name'))
+    else:
+        buyers = Buyer.objects.order_by('buyer_name')
+    return JsonResponse({
+        'buyers': [{'id': b.pk, 'name': b.buyer_name} for b in buyers]
+    })
 
 
 @login_required

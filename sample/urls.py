@@ -39,6 +39,8 @@ urlpatterns = [
     path('challenges-in/update/<int:pk>/', views.challengein_update, name='challengein_update'),
     path('challenges-in/delete/<int:pk>/', views.challengein_delete, name='challengein_delete'),
 
+    path('api/buyers-by-brand/', views.buyers_by_brand, name='buyers_by_brand'),
+
     path('samples/', views.sample_list, name='sample_list'),
     path('samples/export/pdf/', views.sample_export_pdf, name='sample_export_pdf'),
     path('samples/export/excel/', views.sample_export_excel, name='sample_export_excel'),
