@@ -12,6 +12,23 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = ['sample-tracking-qzpe.onrender.com', '*']
 
+# ── CSRF & Proxy ───────────────────────────────────────────────────────────────
+# Required on Render (and any reverse-proxy host) so Django trusts the HTTPS
+# origin forwarded by the proxy. Without this, Django sees requests as http://
+# internally and rejects the CSRF token intermittently.
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='https://sample-tracking-qzpe.onrender.com',
+    cast=Csv(),
+)
+
+# Tell Django the real protocol when sitting behind Render's proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Keep the CSRF cookie alive for the full session (default is per-browser-session)
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 
 
 # ── Apps ──────────────────────────────────────────────────────────────────────
