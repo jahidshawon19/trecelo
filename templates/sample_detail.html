@@ -5,8 +5,45 @@
 
 {% block content %}
 
+<!-- Print-only header (hidden on screen) -->
+<div id="print-header">
+  <div class="ph-top">
+    <div class="ph-brand">
+      <svg width="28" height="28" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:8px;">
+        <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+        <rect width="32" height="32" rx="7" fill="url(#pg)"/>
+        <polygon points="16,5.5 27.5,11.5 16,17.5 4.5,11.5" fill="white"/>
+        <polyline points="4.5,16.5 16,22.5 27.5,16.5" fill="none" stroke="rgba(255,255,255,0.68)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+        <polyline points="4.5,21.5 16,27.5 27.5,21.5" fill="none" stroke="rgba(255,255,255,0.38)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+      Trecelo
+    </div>
+    <div class="ph-meta">
+      <span class="ph-date" id="phDate"></span>
+    </div>
+  </div>
+  <div class="ph-divider"></div>
+  <div class="ph-title-row">
+    <div>
+      <div class="ph-sample-label">Sample Details</div>
+      <div class="ph-style-num">{{ sample.style_number|default:"—" }}</div>
+    </div>
+    <div class="ph-status-wrap">
+      {% if sample.status == 'approved' %}
+        <span class="ph-status ph-approved">Approved</span>
+      {% elif sample.status == 'pending' %}
+        <span class="ph-status ph-pending">Pending</span>
+      {% elif sample.status == 'rejected' %}
+        <span class="ph-status ph-rejected">Rejected</span>
+      {% else %}
+        <span class="ph-status ph-draft">Draft</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
 <!-- Breadcrumb + actions -->
-<div class="flex flex-wrap items-center gap-2 mb-4">
+<div class="flex flex-wrap items-center gap-2 mb-4 no-print">
   <nav aria-label="breadcrumb" class="mr-auto">
     <ol class="flex items-center gap-1.5 text-sm mb-0">
       <li>
@@ -31,6 +68,9 @@
   <a href="{% url 'sample_list' %}" class="border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline">
     <i class="fa fa-arrow-left mr-1"></i>Back
   </a>
+  <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 border-0 cursor-pointer">
+    <i class="fa fa-print mr-1"></i>Print
+  </button>
 </div>
 
 <!-- ── Three Image Slots ──────────────────────────────────────────── -->
@@ -325,6 +365,143 @@
 
 {% block extra_js %}
 <style>
+  /* ── Print header (screen: hidden) ──────────────────────── */
+  #print-header { display: none; }
+
+  /* ── Hide on print ───────────────────────────────────────── */
+  .no-print { }
+
+  /* ══════════════════════════════════════════════════════════
+     PRINT STYLES
+  ══════════════════════════════════════════════════════════ */
+  @media print {
+    /* Reset page */
+    @page { margin: 14mm 12mm; size: A4; }
+
+    /* Hide all chrome */
+    #sidebar, #topbar, #sidebar-overlay,
+    .no-print, #lightboxModal,
+    .img-slot-overlay, .tp-overlay, .tp-badge,
+    .tp-link .tp-overlay { display: none !important; }
+
+    /* Remove main wrapper margin */
+    #main-wrapper { margin-left: 0 !important; }
+    #content { padding: 0 !important; }
+
+    body { background: #fff !important; font-family: 'Inter', sans-serif; color: #0f172a; }
+
+    /* Show print header */
+    #print-header { display: block !important; margin-bottom: 18px; }
+
+    .ph-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .ph-brand {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+    }
+    .ph-meta { font-size: .78rem; color: #64748b; text-align: right; }
+    .ph-date { display: block; }
+    .ph-divider { border: none; border-top: 2px solid #3b82f6; margin-bottom: 10px; }
+    .ph-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 4px;
+    }
+    .ph-sample-label { font-size: .72rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 600; }
+    .ph-style-num { font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -.02em; }
+    .ph-status { font-size: .72rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; border: 1.5px solid; }
+    .ph-approved { background: #dcfce7; color: #15803d; border-color: #86efac; }
+    .ph-pending  { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
+    .ph-rejected { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+    .ph-draft    { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+
+    /* Cards → clean boxes */
+    .bg-white {
+      background: #fff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 8px !important;
+      box-shadow: none !important;
+      break-inside: avoid;
+    }
+
+    /* Card headers */
+    .px-5.py-4.border-b {
+      background: #f8fafc !important;
+      padding: 8px 14px !important;
+      border-bottom: 1px solid #e2e8f0 !important;
+    }
+    .px-5.py-4.border-b.font-semibold {
+      font-size: .8rem !important;
+      color: #374151 !important;
+    }
+
+    /* Tables */
+    table { width: 100% !important; border-collapse: collapse !important; font-size: .8rem !important; }
+    th, td { padding: 7px 12px !important; border-bottom: 1px solid #f1f5f9 !important; }
+    th { background: #f8fafc !important; color: #475569 !important; font-weight: 600 !important; width: 40% !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    tr:last-child th, tr:last-child td { border-bottom: none !important; }
+
+    /* Status + tag badges */
+    span[class*="bg-"] {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      border-radius: 20px !important;
+      padding: 2px 8px !important;
+      font-size: .72rem !important;
+    }
+
+    /* Two-column info grid → side by side on print */
+    .grid.grid-cols-1.lg\\:grid-cols-2 {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 10px !important;
+    }
+
+    /* Images section */
+    .si-layout { display: flex !important; gap: 14px !important; align-items: flex-start !important; }
+    .si-small-slots { display: flex !important; gap: 10px !important; flex-shrink: 0 !important; }
+    .si-small-slots > div { width: 120px !important; }
+
+    .img-slot { height: 100px !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; }
+    .img-slot.empty { border: 1.5px dashed #cbd5e1 !important; }
+    .img-slot.filled img { width: 100% !important; height: 100% !important; object-fit: cover !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    .tp-card {
+      width: 340px !important;
+      max-width: 100% !important;
+      height: 220px !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 8px !important;
+    }
+    .tp-card img { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .tp-empty { border: 1.5px dashed #cbd5e1 !important; }
+
+    /* Challenge images grid */
+    .grid.grid-cols-2.md\\:grid-cols-4 {
+      display: grid !important;
+      grid-template-columns: repeat(4, 1fr) !important;
+      gap: 8px !important;
+    }
+
+    /* Spacing */
+    .mb-4 { margin-bottom: 10px !important; }
+    .p-5  { padding: 10px 14px !important; }
+
+    /* Description text */
+    td[style*="white-space:pre-line"] { white-space: pre-line !important; }
+
+    /* Document row — hide the styled button, show plain URL text */
+    .no-underline.inline-flex[href] { border: none !important; background: none !important; padding: 0 !important; color: #2563eb !important; font-size: .8rem !important; }
+  }
+
   /* ── Sample Images layout ──────────────────────────────── */
   .si-layout {
     display: flex;
@@ -468,6 +645,15 @@
   .img-slot.empty { background:#f8fafc; border:2px dashed #e2e8f0; cursor:default; }
 </style>
 <script>
+  // Inject print date
+  (function () {
+    var el = document.getElementById('phDate');
+    if (el) {
+      var d = new Date();
+      el.textContent = 'Printed: ' + d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    }
+  })();
+
   var modal      = document.getElementById('lightboxModal');
   var modalImg   = document.getElementById('lightboxImg');
   var modalCap   = document.getElementById('lightboxCaption');
