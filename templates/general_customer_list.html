@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}General Customers{% endblock %}
+{% block page_title %}General Customers{% endblock %}
+
+{% block content %}
+
+<div class="bg-white rounded-xl shadow-sm">
+  <div class="p-5 pb-0">
+    <div class="flex flex-wrap items-center gap-3">
+      <div>
+        <h5 class="mb-0 font-bold text-slate-800">
+          <i class="fa fa-user-check mr-2 text-teal-500"></i>General Customers
+        </h5>
+        <p class="mb-0 text-slate-400 text-xs mt-0.5">View-only customer accounts</p>
+      </div>
+      <div class="ml-auto flex gap-2 flex-wrap items-center">
+        <div class="tbl-search">
+          <i class="fa fa-magnifying-glass si"></i>
+          <input type="text" id="gcSearch" placeholder="Search customers…" style="min-width:200px;">
+        </div>
+        <a href="{% url 'general_customer_create' %}"
+           class="bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
+          <i class="fa fa-plus"></i> Add Customer
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-5 pt-3">
+
+    <!-- Info banner -->
+    <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px;">
+      <div style="width:34px;height:34px;background:#ccfbf1;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fa fa-shield-halved" style="color:#0d9488;font-size:.85rem;"></i>
+      </div>
+      <div>
+        <div style="font-size:.8rem;font-weight:700;color:#0f766e;">View-Only Access</div>
+        <div style="font-size:.75rem;color:#0d9488;margin-top:1px;">
+          General Customer accounts have full visibility across all pages but cannot create, edit, or delete any data.
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="bt">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="gcTableBody">
+          {% for customer in customers %}
+          <tr>
+            <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
+            <td>
+              <div class="flex items-center gap-3">
+                <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0d9488,#14b8a6);display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:#fff;flex-shrink:0;">
+                  {{ customer.user.username|first|upper }}
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-800">{{ customer.user.username }}</div>
+                  <div style="font-size:.72rem;margin-top:2px;">
+                    <span style="background:#f0fdfa;color:#0d9488;font-size:.68rem;font-weight:600;padding:1px 7px;border-radius:20px;">General Customer</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="flex gap-1 justify-center">
+                <a href="{% url 'general_customer_update' customer.id %}" class="btn-act edit" title="Edit">
+                  <i class="fa fa-pen"></i>
+                </a>
+                <a href="{% url 'general_customer_delete' customer.id %}" class="btn-act delete" title="Delete">
+                  <i class="fa fa-trash"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="3" class="text-center py-8">
+              <div style="color:#94a3b8;">
+                <i class="fa fa-user-check fa-2x mb-3 block" style="color:#99f6e4;"></i>
+                <div style="font-size:.95rem;font-weight:500;">No General Customer accounts yet.</div>
+                <a href="{% url 'general_customer_create' %}"
+                   class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline mt-3">
+                  <i class="fa fa-plus mr-1"></i>Add first account
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div id="noGcResult" class="text-center py-5" style="display:none!important;">
+      <i class="fa fa-magnifying-glass fa-2x text-slate-400 mb-3 block"></i>
+      <div class="text-slate-400" style="font-size:.9rem;">No customers match your search.</div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const s = document.getElementById('gcSearch');
+  const b = document.getElementById('gcTableBody');
+  const n = document.getElementById('noGcResult');
+  if (s && b) {
+    s.addEventListener('input', function () {
+      const q = this.value.toLowerCase().trim();
+      let v = 0;
+      b.querySelectorAll('tr').forEach(function (row) {
+        const show = !q || row.textContent.toLowerCase().includes(q);
+        row.style.display = show ? '' : 'none';
+        if (show) v++;
+      });
+      if (n) n.style.setProperty('display', v === 0 && q ? 'block' : 'none', 'important');
+    });
+  }
+</script>
+{% endblock %}

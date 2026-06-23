@@ -8,8 +8,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.db.models.functions import TruncMonth
 from django.http import HttpResponse, JsonResponse
-from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, Sample, StaffProfile
-from .forms import BrandForm, BuyerForm, CategoryForm, ChallengeInForm, GGForm, SampleForm, StaffForm
+from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, GeneralCustomer, Sample, StaffProfile, TopManagement
+from .forms import BrandForm, BuyerForm, CategoryForm, ChallengeInForm, GGForm, GeneralCustomerForm, SampleForm, StaffForm, TopManagementForm
 
 
 def is_staff_or_admin(user):
@@ -20,8 +20,16 @@ def is_superadmin(user):
     return user.is_superuser
 
 
+def is_superadmin_or_tm(user):
+    """Superadmin, Top Management, or General Customer — read-only list/detail views."""
+    return (
+        user.is_superuser
+        or TopManagement.objects.filter(user=user).exists()
+        or GeneralCustomer.objects.filter(user=user).exists()
+    )
+
+
 def get_maker_user(user):
-    """Return StaffProfile if the user is a maker account, else None."""
     try:
         return StaffProfile.objects.get(user=user)
     except StaffProfile.DoesNotExist:
@@ -29,10 +37,23 @@ def get_maker_user(user):
 
 
 def get_buyer_user(user):
-    """Return Buyer if the user is a buyer account, else None."""
     try:
         return Buyer.objects.get(user=user)
     except Buyer.DoesNotExist:
+        return None
+
+
+def get_top_management_user(user):
+    try:
+        return TopManagement.objects.get(user=user)
+    except TopManagement.DoesNotExist:
+        return None
+
+
+def get_general_customer_user(user):
+    try:
+        return GeneralCustomer.objects.get(user=user)
+    except GeneralCustomer.DoesNotExist:
         return None
 
 
@@ -61,7 +82,9 @@ def user_logout(request):
 @login_required
 def dashboard(request):
     buyer_brands_qs = None  # queryset of Brand objects, only for buyer users
-    if request.user.is_superuser:
+    tm = get_top_management_user(request.user)
+    gc = get_general_customer_user(request.user)
+    if request.user.is_superuser or tm or gc:
         sample_qs    = Sample.objects.all()
         total_buyers = Buyer.objects.count()
         total_makers = StaffProfile.objects.count()
@@ -148,16 +171,16 @@ def dashboard(request):
     })
 
 
-# ---------- STAFF CRUD (SUPERADMIN ONLY) ----------
+# ---------- STAFF CRUD ----------
 @login_required
-@user_passes_test(is_superadmin)
+@user_passes_test(is_superadmin_or_tm)
 def staff_list(request):
     staffs = StaffProfile.objects.select_related('user').all()
     return render(request, 'staff_list.html', {'staffs': staffs})
 
 
 @login_required
-@user_passes_test(is_superadmin)
+@user_passes_test(is_superadmin_or_tm)
 def staff_detail(request, pk):
     staff   = get_object_or_404(StaffProfile.objects.select_related('user'), pk=pk)
     samples = Sample.objects.filter(maker=staff).select_related('buyer').prefetch_related('brand', 'gg', 'category').order_by('-submission_date')
@@ -214,14 +237,14 @@ def staff_delete(request, pk):
 
 # ---------- BUYER CRUD ----------
 @login_required
-@user_passes_test(is_superadmin)
+@user_passes_test(is_superadmin_or_tm)
 def buyer_list(request):
     buyers = Buyer.objects.select_related('user').prefetch_related('brand').all()
     return render(request, 'buyer_list.html', {'buyers': buyers})
 
 
 @login_required
-@user_passes_test(is_superadmin)
+@user_passes_test(is_superadmin_or_tm)
 def buyer_detail(request, pk):
     buyer   = get_object_or_404(Buyer.objects.select_related('user').prefetch_related('brand'), pk=pk)
     samples = Sample.objects.filter(buyer=buyer).select_related('buyer').prefetch_related('brand', 'gg', 'category').order_by('-submission_date')
@@ -265,7 +288,7 @@ def buyer_delete(request, pk):
 
 # ---------- CATEGORY CRUD ----------
 @login_required
-@user_passes_test(is_superadmin)
+@user_passes_test(is_superadmin_or_tm)
 def category_list(request):
     categories = Category.objects.all()
     return render(request, 'lookup_list.html', {
@@ -315,7 +338,7 @@ def category_delete(request, pk):
 
 # ---------- BRAND CRUD ----------
 @login_required
-@user_passes_test(is_superadmin)
+@user_passes_test(is_superadmin_or_tm)
 def brand_list(request):
     brands = Brand.objects.annotate(style_count=Count('sample')).all()
     return render(request, 'brand_list.html', {'brands': brands})
@@ -358,7 +381,7 @@ def brand_delete(request, pk):
 
 # ---------- GG CRUD ----------
 @login_required
-@user_passes_test(is_superadmin)
+@user_passes_test(is_superadmin_or_tm)
 def gg_list(request):
     ggs = GG.objects.all()
     return render(request, 'lookup_list.html', {
@@ -408,7 +431,7 @@ def gg_delete(request, pk):
 
 # ---------- CHALLENGE IN CRUD ----------
 @login_required
-@user_passes_test(is_superadmin)
+@user_passes_test(is_superadmin_or_tm)
 def challengein_list(request):
     challenges = ChallengeIn.objects.all()
     return render(request, 'lookup_list.html', {
@@ -461,6 +484,12 @@ def _sample_queryset(request):
     """Return the base Sample queryset filtered by the current user's role."""
     base = Sample.objects.select_related('buyer').prefetch_related('gg', 'maker__user').order_by('-id')
     if request.user.is_superuser:
+        return base.all()
+    tm = get_top_management_user(request.user)
+    if tm:
+        return base.all()
+    gc = get_general_customer_user(request.user)
+    if gc:
         return base.all()
     maker = get_maker_user(request.user)
     if maker:
@@ -641,7 +670,9 @@ def sample_export_excel(request):
 @login_required
 def sample_detail(request, pk):
     sample = get_object_or_404(Sample.objects.select_related('buyer').prefetch_related('maker__user'), pk=pk)
-    if not (request.user.is_staff or request.user.is_superuser):
+    tm = get_top_management_user(request.user)
+    gc = get_general_customer_user(request.user)
+    if not (request.user.is_staff or request.user.is_superuser or tm or gc):
         try:
             buyer = Buyer.objects.get(user=request.user)
             if sample.buyer != buyer:
@@ -712,3 +743,90 @@ def sample_delete(request, pk):
         messages.success(request, 'Sample deleted successfully.')
         return redirect('sample_list')
     return render(request, 'confirm_delete.html', {'object': sample})
+
+
+# ---------- TOP MANAGEMENT CRUD (SUPERADMIN ONLY) ----------
+@login_required
+@user_passes_test(is_superadmin)
+def top_management_list(request):
+    members = TopManagement.objects.select_related('user').all()
+    return render(request, 'top_management_list.html', {'members': members})
+
+
+@login_required
+@user_passes_test(is_superadmin)
+def top_management_create(request):
+    form = TopManagementForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Top Management account created successfully.')
+        return redirect('top_management_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Add Top Management'})
+
+
+@login_required
+@user_passes_test(is_superadmin)
+def top_management_update(request, pk):
+    member = get_object_or_404(TopManagement, pk=pk)
+    form   = TopManagementForm(request.POST or None, instance=member)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f'Top Management account "{member.user.username}" updated successfully.')
+        return redirect('top_management_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Edit Top Management'})
+
+
+@login_required
+@user_passes_test(is_superadmin)
+def top_management_delete(request, pk):
+    member = get_object_or_404(TopManagement, pk=pk)
+    if request.method == 'POST':
+        username = member.user.username
+        member.user.delete()
+        messages.success(request, f'Top Management account "{username}" deleted successfully.')
+        return redirect('top_management_list')
+    return render(request, 'confirm_delete.html', {'object': member})
+
+
+# ---------- GENERAL CUSTOMER CRUD (SUPERADMIN ONLY) ----------
+@login_required
+@user_passes_test(is_superadmin)
+def general_customer_list(request):
+    customers = GeneralCustomer.objects.select_related('user').all()
+    return render(request, 'general_customer_list.html', {'customers': customers})
+
+
+@login_required
+@user_passes_test(is_superadmin)
+def general_customer_create(request):
+    form = GeneralCustomerForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'General Customer account created successfully.')
+        return redirect('general_customer_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Add General Customer'})
+
+
+@login_required
+@user_passes_test(is_superadmin)
+def general_customer_update(request, pk):
+    customer = get_object_or_404(GeneralCustomer, pk=pk)
+    form = GeneralCustomerForm(request.POST or None, instance=customer)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f'General Customer account "{customer.user.username}" updated successfully.')
+        return redirect('general_customer_list')
+    return render(request, 'form.html', {'form': form, 'title': 'Edit General Customer'})
+
+
+@login_required
+@user_passes_test(is_superadmin)
+def general_customer_delete(request, pk):
+    customer = get_object_or_404(GeneralCustomer, pk=pk)
+    if request.method == 'POST':
+        username = customer.user.username
+        customer.user.delete()
+        messages.success(request, f'General Customer account "{username}" deleted successfully.')
+        return redirect('general_customer_list')
+    return render(request, 'confirm_delete.html', {'object': customer})
+

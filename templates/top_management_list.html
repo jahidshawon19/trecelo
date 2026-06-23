@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}Top Management{% endblock %}
+{% block page_title %}Top Management{% endblock %}
+
+{% block content %}
+
+<div class="bg-white rounded-xl shadow-sm">
+  <div class="p-5 pb-0">
+    <div class="flex flex-wrap items-center gap-3">
+      <div>
+        <h5 class="mb-0 font-bold text-slate-800">
+          <i class="fa fa-user-tie mr-2 text-purple-500"></i>Top Management
+        </h5>
+        <p class="mb-0 text-slate-400 text-xs mt-0.5">View-only leadership accounts</p>
+      </div>
+      <div class="ml-auto flex gap-2 flex-wrap items-center">
+        <div class="tbl-search">
+          <i class="fa fa-magnifying-glass si"></i>
+          <input type="text" id="tmSearch" placeholder="Search members…" style="min-width:200px;">
+        </div>
+        <a href="{% url 'top_management_create' %}"
+           class="bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
+          <i class="fa fa-plus"></i> Add Member
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-5 pt-3">
+
+    <!-- Info banner -->
+    <div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:10px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px;">
+      <div style="width:34px;height:34px;background:#ede9fe;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fa fa-shield-halved" style="color:#7c3aed;font-size:.85rem;"></i>
+      </div>
+      <div>
+        <div style="font-size:.8rem;font-weight:700;color:#6d28d9;">View-Only Access</div>
+        <div style="font-size:.75rem;color:#7c3aed;margin-top:1px;">
+          Top Management accounts have full visibility across all pages but cannot create, edit, or delete any data.
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="bt">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Member</th>
+            <th>Username</th>
+            <th>Department</th>
+            <th>Designation</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tmTableBody">
+          {% for m in members %}
+          <tr>
+            <td style="color:#94a3b8;font-size:.8rem;width:40px;">{{ forloop.counter }}</td>
+            <td>
+              <div class="flex items-center gap-3">
+                <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:#fff;flex-shrink:0;">
+                  {{ m.full_name|first|upper }}
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-800">{{ m.full_name }}</div>
+                  <div style="font-size:.72rem;margin-top:2px;">
+                    <span style="background:#fdf4ff;color:#7c3aed;font-size:.68rem;font-weight:600;padding:1px 7px;border-radius:20px;">Top Management</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span style="background:#f1f5f9;color:#475569;font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:6px;font-family:monospace;">
+                <i class="fa fa-user mr-1 text-slate-400" style="font-size:.7rem;"></i>{{ m.user.username }}
+              </span>
+            </td>
+            <td>
+              <span style="background:#eff6ff;color:#2563eb;font-size:.76rem;font-weight:600;padding:3px 10px;border-radius:20px;">
+                {{ m.department }}
+              </span>
+            </td>
+            <td>
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:.82rem;color:#475569;">
+                <i class="fa fa-briefcase text-slate-400" style="font-size:.7rem;"></i>{{ m.designation }}
+              </span>
+            </td>
+            <td class="text-center">
+              <div class="flex gap-1 justify-center">
+                <a href="{% url 'top_management_update' m.id %}" class="btn-act edit" title="Edit">
+                  <i class="fa fa-pen"></i>
+                </a>
+                <a href="{% url 'top_management_delete' m.id %}" class="btn-act delete" title="Delete">
+                  <i class="fa fa-trash"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-8">
+              <div style="color:#94a3b8;">
+                <i class="fa fa-user-tie fa-2x mb-3 block" style="color:#d8b4fe;"></i>
+                <div style="font-size:.95rem;font-weight:500;">No Top Management accounts yet.</div>
+                <a href="{% url 'top_management_create' %}"
+                   class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline mt-3">
+                  <i class="fa fa-plus mr-1"></i>Add first account
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div id="noTmResult" class="text-center py-5" style="display:none!important;">
+      <i class="fa fa-magnifying-glass fa-2x text-slate-400 mb-3 block"></i>
+      <div class="text-slate-400" style="font-size:.9rem;">No members match your search.</div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const s = document.getElementById('tmSearch');
+  const b = document.getElementById('tmTableBody');
+  const n = document.getElementById('noTmResult');
+  if (s && b) {
+    s.addEventListener('input', function () {
+      const q = this.value.toLowerCase().trim();
+      let v = 0;
+      b.querySelectorAll('tr').forEach(function (row) {
+        const show = !q || row.textContent.toLowerCase().includes(q);
+        row.style.display = show ? '' : 'none';
+        if (show) v++;
+      });
+      if (n) n.style.setProperty('display', v === 0 && q ? 'block' : 'none', 'important');
+    });
+  }
+</script>
+{% endblock %}

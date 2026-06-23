@@ -276,6 +276,33 @@ class Sample(models.Model):
         return self.style_number or f"Sample #{self.pk}"
 
 
+class TopManagement(models.Model):
+    user        = models.OneToOneField(User, on_delete=models.CASCADE)
+    full_name   = models.CharField(max_length=100, verbose_name='Full Name')
+    department  = models.CharField(max_length=100, verbose_name='Department')
+    designation = models.CharField(max_length=100, verbose_name='Designation')
+    password_plain = models.CharField(max_length=128, blank=True, verbose_name='Password')
+
+    class Meta:
+        verbose_name        = 'Top Management'
+        verbose_name_plural = 'Top Management'
+
+    def __str__(self):
+        return self.full_name or self.user.username
+
+
+class GeneralCustomer(models.Model):
+    user           = models.OneToOneField(User, on_delete=models.CASCADE)
+    password_plain = models.CharField(max_length=128, blank=True, verbose_name='Password')
+
+    class Meta:
+        verbose_name        = 'General Customer'
+        verbose_name_plural = 'General Customers'
+
+    def __str__(self):
+        return self.user.username
+
+
 class ChallengeImage(models.Model):
     sample = models.ForeignKey(Sample, on_delete=models.CASCADE, related_name='challenge_images')
     image = models.ImageField(upload_to='samples/challenge/')

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline
-from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, Sample, StaffProfile
+from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, GeneralCustomer, Sample, StaffProfile, TopManagement
 
 
 class ChallengeImageInline(TabularInline):
@@ -83,3 +83,17 @@ class ChallengeImageAdmin(ModelAdmin):
     compressed_fields = True
     list_display  = ['sample', 'image']
     search_fields = ['sample__style_number']
+
+
+@admin.register(TopManagement)
+class TopManagementAdmin(ModelAdmin):
+    compressed_fields = True
+    list_display  = ['full_name', 'user', 'department', 'designation']
+    search_fields = ['full_name', 'user__username', 'department', 'designation']
+
+
+@admin.register(GeneralCustomer)
+class GeneralCustomerAdmin(ModelAdmin):
+    compressed_fields = True
+    list_display  = ['user']
+    search_fields = ['user__username']

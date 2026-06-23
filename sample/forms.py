@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import Brand, Buyer, Category, ChallengeIn, GG, Sample, StaffProfile
+from .models import Brand, Buyer, Category, ChallengeIn, GG, GeneralCustomer, Sample, StaffProfile, TopManagement
 
 
 class NoPathFileInput(forms.ClearableFileInput):
@@ -173,3 +173,81 @@ class ChallengeInForm(forms.ModelForm):
     class Meta:
         model = ChallengeIn
         fields = ['title']
+
+
+class TopManagementForm(forms.ModelForm):
+    username = forms.CharField(required=False)
+    password = forms.CharField(widget=forms.PasswordInput, required=False,
+                               help_text='Leave blank to keep existing password when editing.')
+
+    class Meta:
+        model  = TopManagement
+        fields = ['full_name', 'department', 'designation']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not self.instance.pk:
+            username = cleaned_data.get('username')
+            if not username:
+                self.add_error('username', 'Username is required.')
+            elif User.objects.filter(username=username).exists():
+                self.add_error('username', 'A user with that username already exists.')
+            if not cleaned_data.get('password'):
+                self.add_error('password', 'Password is required.')
+        return cleaned_data
+
+    def save(self, commit=True):
+        tm = super().save(commit=False)
+        if not self.instance.pk:
+            user = User.objects.create_user(
+                username=self.cleaned_data['username'],
+                password=self.cleaned_data['password'],
+            )
+            tm.user         = user
+            tm.password_plain = self.cleaned_data['password']
+        elif self.cleaned_data.get('password'):
+            tm.user.set_password(self.cleaned_data['password'])
+            tm.user.save()
+            tm.password_plain = self.cleaned_data['password']
+        if commit:
+            tm.save()
+        return tm
+
+
+class GeneralCustomerForm(forms.ModelForm):
+    username = forms.CharField(required=False)
+    password = forms.CharField(widget=forms.PasswordInput, required=False,
+                               help_text='Leave blank to keep existing password when editing.')
+
+    class Meta:
+        model  = GeneralCustomer
+        fields = []  # no extra profile fields
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not self.instance.pk:
+            username = cleaned_data.get('username')
+            if not username:
+                self.add_error('username', 'Username is required.')
+            elif User.objects.filter(username=username).exists():
+                self.add_error('username', 'A user with that username already exists.')
+            if not cleaned_data.get('password'):
+                self.add_error('password', 'Password is required.')
+        return cleaned_data
+
+    def save(self, commit=True):
+        gc = super().save(commit=False)
+        if not self.instance.pk:
+            user = User.objects.create_user(
+                username=self.cleaned_data['username'],
+                password=self.cleaned_data['password'],
+            )
+            gc.user           = user
+            gc.password_plain = self.cleaned_data['password']
+        elif self.cleaned_data.get('password'):
+            gc.user.set_password(self.cleaned_data['password'])
+            gc.user.save()
+            gc.password_plain = self.cleaned_data['password']
+        if commit:
+            gc.save()
+        return gc

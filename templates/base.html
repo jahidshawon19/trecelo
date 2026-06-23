@@ -600,7 +600,7 @@
   </ul>
   {% endif %}
 
-  {% if user.is_superuser %}
+  {% if user.is_superuser or is_top_management or is_general_customer %}
   <span class="sidebar-section-label">Management</span>
   <ul class="sidebar-nav">
     <li>
@@ -617,6 +617,22 @@
         Maker
       </a>
     </li>
+    {% if user.is_superuser %}
+    <li>
+      <a href="{% url 'top_management_list' %}"
+         class="{% if 'top_management' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon"><i class="fa fa-user-tie"></i></span>
+        Top Management
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'general_customer_list' %}"
+         class="{% if 'general_customer' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon"><i class="fa fa-user-check"></i></span>
+        General Customers
+      </a>
+    </li>
+    {% endif %}
   </ul>
 
   <span class="sidebar-section-label">Lookups</span>
@@ -650,7 +666,7 @@
       </a>
     </li>
   </ul>
-  {% endif %}
+  {% endif %}{# end management + lookups #}
 
   <!-- User card + copyright -->
   <div class="sidebar-footer">
@@ -659,7 +675,7 @@
       <div class="sidebar-user-info">
         <div class="sidebar-user-name">{{ user.username }}</div>
         <div class="sidebar-user-role">
-          {% if user.is_superuser %}Super Admin{% elif is_maker %}Maker{% else %}Buyer{% endif %}
+          {% if user.is_superuser %}Super Admin{% elif is_maker %}Maker{% elif is_top_management %}Top Management{% elif is_general_customer %}General Customer{% else %}Buyer{% endif %}
         </div>
       </div>
     </div>
@@ -694,7 +710,7 @@
         <div class="hidden sm:block">
           <div class="user-name">{{ user.username }}</div>
           <div class="user-role-text">
-            {% if user.is_superuser %}Super Admin{% elif is_maker %}Maker{% else %}Buyer{% endif %}
+            {% if user.is_superuser %}Super Admin{% elif is_maker %}Maker{% elif is_top_management %}Top Management{% elif is_general_customer %}General Customer{% else %}Buyer{% endif %}
           </div>
         </div>
       </div>
@@ -703,6 +719,10 @@
         <span class="role-badge" style="background:#fef2f2;color:#dc2626;">Admin</span>
       {% elif user.is_staff %}
         <span class="role-badge" style="background:#eff6ff;color:#2563eb;">Maker</span>
+      {% elif is_top_management %}
+        <span class="role-badge" style="background:#fdf4ff;color:#7c3aed;">Top Mgmt</span>
+      {% elif is_general_customer %}
+        <span class="role-badge" style="background:#f0fdfa;color:#0d9488;">General Customer</span>
       {% else %}
         <span class="role-badge" style="background:#f0fdf4;color:#15803d;">Buyer</span>
       {% endif %}

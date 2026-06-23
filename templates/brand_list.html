@@ -16,9 +16,11 @@
           <i class="fa fa-magnifying-glass si"></i>
           <input type="text" id="brandSearch" placeholder="Search brands…" style="min-width:200px;">
         </div>
+        {% if not is_top_management and not is_general_customer %}
         <a href="{% url 'brand_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
           <i class="fa fa-plus"></i> Add Brand
         </a>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -32,7 +34,7 @@
             <th style="text-align:left;">Brand Name</th>
             <th>Origin Country</th>
             <th class="text-center">Styles</th>
-            <th class="text-center">Actions</th>
+            {% if not is_top_management and not is_general_customer %}<th class="text-center">Actions</th>{% endif %}
           </tr>
         </thead>
         <tbody id="brandTableBody">
@@ -62,12 +64,14 @@
             <td class="text-center">
               <span style="background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;">{{ brand.style_count }}</span>
             </td>
+            {% if not is_top_management and not is_general_customer %}
             <td class="text-center">
               <div class="flex gap-1 justify-center">
                 <a href="{% url 'brand_update' brand.pk %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
                 <a href="{% url 'brand_delete' brand.pk %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
               </div>
             </td>
+            {% endif %}
           </tr>
           {% empty %}
           <tr>
@@ -75,9 +79,11 @@
               <div style="color:#94a3b8;">
                 <i class="fa fa-copyright fa-2x mb-3 block"></i>
                 <div style="font-size:.95rem;font-weight:500;">No brands found.</div>
+                {% if not is_top_management and not is_general_customer %}
                 <a href="{% url 'brand_create' %}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline mt-3">
                   <i class="fa fa-plus mr-1"></i>Add first brand
                 </a>
+                {% endif %}
               </div>
             </td>
           </tr>

@@ -48,4 +48,14 @@ urlpatterns = [
     path('samples/create/', views.sample_create, name='sample_create'),
     path('samples/update/<int:pk>/', views.sample_update, name='sample_update'),
     path('samples/delete/<int:pk>/', views.sample_delete, name='sample_delete'),
+
+    path('top-management/', views.top_management_list, name='top_management_list'),
+    path('top-management/create/', views.top_management_create, name='top_management_create'),
+    path('top-management/update/<int:pk>/', views.top_management_update, name='top_management_update'),
+    path('top-management/delete/<int:pk>/', views.top_management_delete, name='top_management_delete'),
+
+    path('general-customers/', views.general_customer_list, name='general_customer_list'),
+    path('general-customers/create/', views.general_customer_create, name='general_customer_create'),
+    path('general-customers/update/<int:pk>/', views.general_customer_update, name='general_customer_update'),
+    path('general-customers/delete/<int:pk>/', views.general_customer_delete, name='general_customer_delete'),
 ]

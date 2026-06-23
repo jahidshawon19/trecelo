@@ -16,9 +16,11 @@
           <i class="fa fa-magnifying-glass si"></i>
           <input type="text" id="lookupSearch" placeholder="Search {{ title|lower }}…" style="min-width:200px;">
         </div>
+        {% if not is_top_management and not is_general_customer %}
         <a href="{% url create_url %}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 no-underline">
           <i class="fa fa-plus"></i> Add {{ title }}
         </a>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -30,7 +32,7 @@
           <tr>
             <th>#</th>
             <th style="text-align:left;">{{ title }}</th>
-            <th class="text-center">Actions</th>
+            {% if not is_top_management and not is_general_customer %}<th class="text-center">Actions</th>{% endif %}
           </tr>
         </thead>
         <tbody id="lookupTableBody">
@@ -45,12 +47,14 @@
                 <span class="font-semibold text-slate-800">{{ item }}</span>
               </div>
             </td>
+            {% if not is_top_management and not is_general_customer %}
             <td class="text-center">
               <div class="flex gap-1 justify-center">
                 <a href="{% url update_url item.pk %}" class="btn-act edit" title="Edit"><i class="fa fa-pen"></i></a>
                 <a href="{% url delete_url item.pk %}" class="btn-act delete" title="Delete"><i class="fa fa-trash"></i></a>
               </div>
             </td>
+            {% endif %}
           </tr>
           {% empty %}
           <tr id="emptyRow">
@@ -58,9 +62,11 @@
               <div style="color:#94a3b8;">
                 <i class="fa fa-tags fa-2x mb-3 block"></i>
                 <div style="font-size:.95rem;font-weight:500;">No {{ title|lower }} found.</div>
+                {% if not is_top_management and not is_general_customer %}
                 <a href="{% url create_url %}" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 no-underline mt-3">
                   <i class="fa fa-plus mr-1"></i>Add your first one
                 </a>
+                {% endif %}
               </div>
             </td>
           </tr>
