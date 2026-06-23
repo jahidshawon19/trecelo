@@ -33,9 +33,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 
 # ── Apps ──────────────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
-    'unfold',                           # must be before django.contrib.admin
-    'unfold.contrib.filters',
-    'unfold.contrib.forms',
+    'jazzmin',                          # must be before django.contrib.admin
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,114 +133,119 @@ LOGIN_URL = '/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ── Unfold Admin Theme ────────────────────────────────────────────────────────
-UNFOLD = {
-    "SITE_TITLE": "Trecelo",
-    "SITE_HEADER": "Trecelo Admin",
-    "SITE_SUBHEADER": "Sample Tracking System",
-    "SITE_URL": "/",
-    "SITE_ICON": {
-        "light": None,
-        "dark": None,
+# ── Jazzmin Admin Theme ───────────────────────────────────────────────────────
+JAZZMIN_SETTINGS = {
+    # ── Branding ──────────────────────────────────────────────────────────────
+    "site_title":        "Trecelo Admin",
+    "site_header":       "Trecelo",
+    "site_brand":        "Trecelo",
+    "welcome_sign":      "Welcome to Trecelo Admin",
+    "copyright":         "Trecelo",
+
+    # Font Awesome icon for the browser tab
+    "site_icon":         None,
+    "site_logo":         None,
+    "site_logo_classes": "img-circle",
+
+    # ── Top nav search ────────────────────────────────────────────────────────
+    "search_model": ["auth.user", "sample.sample", "sample.buyer"],
+
+    # ── Top-right user menu links ─────────────────────────────────────────────
+    "topmenu_links": [
+        {"name": "Home",       "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Front-end",  "url": "/dashboard/",  "new_window": False},
+        {"model": "auth.user"},
+    ],
+
+    # ── User menu (top-right avatar dropdown) ─────────────────────────────────
+    "usermenu_links": [
+        {"name": "Front-end", "url": "/dashboard/", "new_window": False, "icon": "fas fa-home"},
+    ],
+
+    # ── Sidebar ───────────────────────────────────────────────────────────────
+    "show_sidebar":             True,
+    "navigation_expanded":      True,
+    "hide_apps":                [],
+    "hide_models":              [],
+
+    # Custom sidebar ordering
+    "order_with_respect_to": [
+        "auth",
+        "sample",
+        "sample.sample",
+        "sample.buyer",
+        "sample.staffprofile",
+        "sample.topmanagement",
+        "sample.generalcustomer",
+        "sample.brand",
+        "sample.category",
+        "sample.gg",
+        "sample.challengein",
+        "sample.challengeimage",
+    ],
+
+    # ── Icons (Font Awesome 5) ────────────────────────────────────────────────
+    "icons": {
+        "auth":                       "fas fa-users-cog",
+        "auth.user":                  "fas fa-user",
+        "auth.group":                 "fas fa-users",
+        "sample.sample":              "fas fa-box-open",
+        "sample.buyer":               "fas fa-building",
+        "sample.staffprofile":        "fas fa-id-badge",
+        "sample.topmanagement":       "fas fa-user-tie",
+        "sample.generalcustomer":     "fas fa-user-check",
+        "sample.brand":               "fas fa-copyright",
+        "sample.category":            "fas fa-tags",
+        "sample.gg":                  "fas fa-tachometer-alt",
+        "sample.challengein":         "fas fa-exclamation-triangle",
+        "sample.challengeimage":      "fas fa-images",
     },
-    "SITE_SYMBOL": "inventory_2",          # Google Material icon
-    "SHOW_HISTORY": True,
-    "SHOW_VIEW_ON_SITE": True,
-    "THEME": "light",                      # "light" | "dark" | None (auto)
-    "COLORS": {
-        "font": {
-            "subtle-light":  "107 114 128",
-            "subtle-dark":   "156 163 175",
-            "default-light": "55 65 81",
-            "default-dark":  "209 213 219",
-            "important-light": "17 24 39",
-            "important-dark":  "243 244 246",
-        },
-        "primary": {
-            "50":  "250 250 250",
-            "100": "244 244 245",
-            "200": "228 228 231",
-            "300": "212 212 216",
-            "400": "161 161 170",
-            "500": "113 113 122",
-            "600": "82 82 91",
-            "700": "63 63 70",
-            "800": "39 39 42",
-            "900": "24 24 27",
-            "950": "9 9 11",
-        },
+    "default_icon_parents":  "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+
+    # ── UI tweaks ─────────────────────────────────────────────────────────────
+    "related_modal_active":        True,
+    "custom_css":                  None,
+    "custom_js":                   None,
+    "use_google_fonts_cdn":        True,
+    "show_ui_builder":             False,
+    "changeform_format":           "horizontal_tabs",
+    "changeform_format_overrides": {
+        "auth.user":  "collapsible",
+        "auth.group": "vertical_tabs",
     },
-    "SIDEBAR": {
-        "show_search": True,
-        "show_all_applications": True,
-        "navigation": [
-            {
-                "title": "Navigation",
-                "separator": True,
-                "items": [
-                    {
-                        "title": "Dashboard",
-                        "icon": "dashboard",
-                        "link": "/admin/",
-                    },
-                    {
-                        "title": "Users",
-                        "icon": "people",
-                        "link": "/admin/auth/user/",
-                    },
-                ],
-            },
-            {
-                "title": "Sample Management",
-                "separator": True,
-                "items": [
-                    {
-                        "title": "Samples",
-                        "icon": "inventory_2",
-                        "link": "/admin/sample/sample/",
-                    },
-                    {
-                        "title": "Buyers",
-                        "icon": "shopping_bag",
-                        "link": "/admin/sample/buyer/",
-                    },
-                    {
-                        "title": "Staff",
-                        "icon": "badge",
-                        "link": "/admin/sample/staffprofile/",
-                    },
-                ],
-            },
-            {
-                "title": "Catalogue",
-                "separator": True,
-                "items": [
-                    {
-                        "title": "Brands",
-                        "icon": "copyright",
-                        "link": "/admin/sample/brand/",
-                    },
-                    {
-                        "title": "Categories",
-                        "icon": "category",
-                        "link": "/admin/sample/category/",
-                    },
-                    {
-                        "title": "GG",
-                        "icon": "settings_input_component",
-                        "link": "/admin/sample/gg/",
-                    },
-                    {
-                        "title": "Challenge In",
-                        "icon": "warning",
-                        "link": "/admin/sample/challengein/",
-                    },
-                ],
-            },
-        ],
-    },
-    "TABS": [],
 }
 
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text":      False,
+    "footer_small_text":      False,
+    "body_small_text":        False,
+    "brand_small_text":       False,
+    "brand_colour":           "navbar-dark",
+    "accent":                 "accent-primary",
+    "navbar":                 "navbar-dark",
+    "no_navbar_border":       False,
+    "navbar_fixed":           True,
+    "layout_boxed":           False,
+    "footer_fixed":           False,
+    "sidebar_fixed":          True,
+    "sidebar":                "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style":  False,
+    "sidebar_nav_flat_style":    False,
+    "theme":                  "default",
+    "dark_mode_theme":        None,
+    "button_classes": {
+        "primary":   "btn-outline-primary",
+        "secondary": "btn-outline-secondary",
+        "info":      "btn-info",
+        "warning":   "btn-warning",
+        "danger":    "btn-danger",
+        "success":   "btn-success",
+    },
+}
 
 

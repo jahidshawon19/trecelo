@@ -1,21 +1,18 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin, TabularInline
 from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, GeneralCustomer, Sample, StaffProfile, TopManagement
 
 
-class ChallengeImageInline(TabularInline):
+class ChallengeImageInline(admin.TabularInline):
     model = ChallengeImage
     extra = 1
     fields = ['image']
 
 
 @admin.register(Sample)
-class SampleAdmin(ModelAdmin):
-    compressed_fields = True
+class SampleAdmin(admin.ModelAdmin):
     list_display    = ['style_number', 'buyer', 'sample_type', 'status', 'submission_date']
     list_filter     = ['status', 'buyer', 'brand', 'category']
     search_fields   = ['style_number', 'color', 'sample_type']
-    list_filter_submit = True
     readonly_fields = ['style_number']
     inlines         = [ChallengeImageInline]
     fieldsets = (
@@ -35,65 +32,56 @@ class SampleAdmin(ModelAdmin):
 
 
 @admin.register(Buyer)
-class BuyerAdmin(ModelAdmin):
-    compressed_fields = True
+class BuyerAdmin(admin.ModelAdmin):
     list_display  = ['buyer_name', 'user']
     search_fields = ['buyer_name', 'user__username']
 
 
 @admin.register(StaffProfile)
-class StaffProfileAdmin(ModelAdmin):
-    compressed_fields = True
+class StaffProfileAdmin(admin.ModelAdmin):
     list_display  = ['user', 'emp_id', 'role', 'designation', 'phone_number']
     search_fields = ['user__username', 'emp_id', 'role', 'designation']
     list_filter   = ['role']
 
 
 @admin.register(Brand)
-class BrandAdmin(ModelAdmin):
-    compressed_fields = True
+class BrandAdmin(admin.ModelAdmin):
     list_display  = ['name', 'origin']
     search_fields = ['name', 'origin']
     list_filter   = ['origin']
 
 
 @admin.register(Category)
-class CategoryAdmin(ModelAdmin):
-    compressed_fields = True
+class CategoryAdmin(admin.ModelAdmin):
     list_display  = ['name']
     search_fields = ['name']
 
 
 @admin.register(GG)
-class GGAdmin(ModelAdmin):
-    compressed_fields = True
+class GGAdmin(admin.ModelAdmin):
     list_display  = ['title']
     search_fields = ['title']
 
 
 @admin.register(ChallengeIn)
-class ChallengeInAdmin(ModelAdmin):
-    compressed_fields = True
+class ChallengeInAdmin(admin.ModelAdmin):
     list_display  = ['title']
     search_fields = ['title']
 
 
 @admin.register(ChallengeImage)
-class ChallengeImageAdmin(ModelAdmin):
-    compressed_fields = True
+class ChallengeImageAdmin(admin.ModelAdmin):
     list_display  = ['sample', 'image']
     search_fields = ['sample__style_number']
 
 
 @admin.register(TopManagement)
-class TopManagementAdmin(ModelAdmin):
-    compressed_fields = True
+class TopManagementAdmin(admin.ModelAdmin):
     list_display  = ['full_name', 'user', 'department', 'designation']
     search_fields = ['full_name', 'user__username', 'department', 'designation']
 
 
 @admin.register(GeneralCustomer)
-class GeneralCustomerAdmin(ModelAdmin):
-    compressed_fields = True
+class GeneralCustomerAdmin(admin.ModelAdmin):
     list_display  = ['user']
     search_fields = ['user__username']
