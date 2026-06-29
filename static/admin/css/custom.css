@@ -1,0 +1,20 @@
+/* ── Widen Groups & User-permissions multi-select widgets ── */
+#id_groups,
+#id_user_permissions {
+    width: 100% !important;
+    min-width: 100% !important;
+    min-height: 200px;
+    height: 300px;
+}
+
+/* Make the surrounding form-row take full width too */
+.field-groups .related-widget-wrapper,
+.field-user_permissions .related-widget-wrapper {
+    width: 100% !important;
+    display: block !important;
+}
+
+.field-groups .related-widget-wrapper-link,
+.field-user_permissions .related-widget-wrapper-link {
+    vertical-align: top;
+}
