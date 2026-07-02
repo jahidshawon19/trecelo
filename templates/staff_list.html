@@ -34,8 +34,9 @@
             <th>Member</th>
             <th>Emp ID</th>
             <th>Role</th>
-            
             <th>Phone</th>
+            <th>Created</th>
+            <th>Updated</th>
             {% if user.is_superuser %}<th class="text-center">Actions</th>{% endif %}
           </tr>
         </thead>
@@ -73,6 +74,18 @@
               <span style="display:inline-flex;align-items:center;gap:5px;font-size:.82rem;color:#475569;">
                 <i class="fa fa-phone text-slate-400" style="font-size:.7rem;"></i>{{ s.phone_number }}
               </span>
+            </td>
+            <td>
+              {% if s.created_at %}
+              <div style="font-size:.78rem;color:#475569;white-space:nowrap;">{{ s.created_at|date:"d M Y" }}</div>
+              <div style="font-size:.72rem;color:#94a3b8;">{{ s.created_at|time:"h:i A" }}</div>
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
+            </td>
+            <td>
+              {% if s.updated_at %}
+              <div style="font-size:.78rem;color:#475569;white-space:nowrap;">{{ s.updated_at|date:"d M Y" }}</div>
+              <div style="font-size:.72rem;color:#94a3b8;">{{ s.updated_at|time:"h:i A" }}</div>
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
             </td>
             {% if user.is_superuser %}
             <td class="text-center">

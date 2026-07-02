@@ -53,7 +53,9 @@ def _compress_image_field(instance, field_name, max_px, quality=82):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name       = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Categories'
@@ -160,6 +162,9 @@ class Brand(models.Model):
     origin = models.CharField(max_length=100, blank=True, choices=COUNTRY_CHOICES, verbose_name='Origin Country')
     logo   = models.ImageField(upload_to='brands/logos/', blank=True, null=True, verbose_name='Brand Logo')
 
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         _compress_image_field(self, 'logo', max_px=400)
@@ -169,7 +174,9 @@ class Brand(models.Model):
 
 
 class GG(models.Model):
-    title = models.CharField(max_length=100)
+    title      = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name = 'GG'
@@ -180,7 +187,9 @@ class GG(models.Model):
 
 
 class ChallengeIn(models.Model):
-    title = models.CharField(max_length=100)
+    title      = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Challenge In'
@@ -191,26 +200,30 @@ class ChallengeIn(models.Model):
 
 
 class Buyer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    buyer_name = models.CharField(max_length=100)
-    brand = models.ManyToManyField('Brand', blank=True, verbose_name='Brands')
+    user           = models.OneToOneField(User, on_delete=models.CASCADE)
+    buyer_name     = models.CharField(max_length=100)
+    brand          = models.ManyToManyField('Brand', blank=True, verbose_name='Brands')
     password_plain = models.CharField(max_length=128, blank=True, verbose_name='Password')
+    created_at     = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at     = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return self.buyer_name
 
 
 class StaffProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    maker_name = models.CharField(max_length=100, blank=True, verbose_name='Maker Name')
-    emp_id = models.CharField(max_length=50, unique=True)
-    role = models.CharField(max_length=100)
-    designation = models.CharField(max_length=100)
-    address = models.TextField()
-    nid = models.CharField(max_length=30)
-    phone_number = models.CharField(max_length=11)
+    user            = models.OneToOneField(User, on_delete=models.CASCADE)
+    maker_name      = models.CharField(max_length=100, blank=True, verbose_name='Maker Name')
+    emp_id          = models.CharField(max_length=50, unique=True)
+    role            = models.CharField(max_length=100)
+    designation     = models.CharField(max_length=100)
+    address         = models.TextField()
+    nid             = models.CharField(max_length=30)
+    phone_number    = models.CharField(max_length=11)
     profile_picture = models.ImageField(upload_to='staff/profiles/', blank=True, null=True, verbose_name='Profile Picture')
-    password_plain = models.CharField(max_length=128, blank=True, verbose_name='Password')
+    password_plain  = models.CharField(max_length=128, blank=True, verbose_name='Password')
+    created_at      = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at      = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -252,6 +265,10 @@ class Sample(models.Model):
     back_part_image = models.ImageField(upload_to='samples/back/', blank=True, null=True, verbose_name="Back Part Image")
     tech_pack = models.ImageField(upload_to='samples/tech_pack/', blank=True, null=True, verbose_name="Tech Pack")
 
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     # Document
     documents = models.FileField(upload_to='samples/documents/', blank=True, null=True)
 
@@ -277,11 +294,13 @@ class Sample(models.Model):
 
 
 class TopManagement(models.Model):
-    user        = models.OneToOneField(User, on_delete=models.CASCADE)
-    full_name   = models.CharField(max_length=100, verbose_name='Full Name')
-    department  = models.CharField(max_length=100, verbose_name='Department')
-    designation = models.CharField(max_length=100, verbose_name='Designation')
+    user           = models.OneToOneField(User, on_delete=models.CASCADE)
+    full_name      = models.CharField(max_length=100, verbose_name='Full Name')
+    department     = models.CharField(max_length=100, verbose_name='Department')
+    designation    = models.CharField(max_length=100, verbose_name='Designation')
     password_plain = models.CharField(max_length=128, blank=True, verbose_name='Password')
+    created_at     = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at     = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name        = 'Top Management'
@@ -294,6 +313,8 @@ class TopManagement(models.Model):
 class GeneralCustomer(models.Model):
     user           = models.OneToOneField(User, on_delete=models.CASCADE)
     password_plain = models.CharField(max_length=128, blank=True, verbose_name='Password')
+    created_at     = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at     = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name        = 'General Customer'

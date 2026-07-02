@@ -74,6 +74,8 @@
             <th>Season</th>
             <th>Submission Date</th>
             <th>Status</th>
+            <th>Created</th>
+            <th>Updated</th>
             <th class="text-center">Actions</th>
           </tr>
         </thead>
@@ -133,6 +135,18 @@
               {% else %}
                 <span style="background:#f1f5f9;color:#64748b;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid #e2e8f0;white-space:nowrap;">Draft</span>
               {% endif %}
+            </td>
+            <td>
+              {% if s.created_at %}
+              <div style="font-size:.78rem;color:#475569;white-space:nowrap;">{{ s.created_at|date:"d M Y" }}</div>
+              <div style="font-size:.72rem;color:#94a3b8;">{{ s.created_at|time:"h:i A" }}</div>
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
+            </td>
+            <td>
+              {% if s.updated_at %}
+              <div style="font-size:.78rem;color:#475569;white-space:nowrap;">{{ s.updated_at|date:"d M Y" }}</div>
+              <div style="font-size:.72rem;color:#94a3b8;">{{ s.updated_at|time:"h:i A" }}</div>
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
             </td>
             <td class="text-center">
               <div class="flex gap-1 justify-center">

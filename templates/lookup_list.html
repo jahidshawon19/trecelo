@@ -32,6 +32,8 @@
           <tr>
             <th>#</th>
             <th style="text-align:left;">{{ title }}</th>
+            <th>Created</th>
+            <th>Updated</th>
             {% if not is_top_management and not is_general_customer %}<th class="text-center">Actions</th>{% endif %}
           </tr>
         </thead>
@@ -46,6 +48,18 @@
                 {% endif %}
                 <span class="font-semibold text-slate-800">{{ item }}</span>
               </div>
+            </td>
+            <td>
+              {% if item.created_at %}
+              <div style="font-size:.78rem;color:#475569;white-space:nowrap;">{{ item.created_at|date:"d M Y" }}</div>
+              <div style="font-size:.72rem;color:#94a3b8;">{{ item.created_at|time:"h:i A" }}</div>
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
+            </td>
+            <td>
+              {% if item.updated_at %}
+              <div style="font-size:.78rem;color:#475569;white-space:nowrap;">{{ item.updated_at|date:"d M Y" }}</div>
+              <div style="font-size:.72rem;color:#94a3b8;">{{ item.updated_at|time:"h:i A" }}</div>
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
             </td>
             {% if not is_top_management and not is_general_customer %}
             <td class="text-center">

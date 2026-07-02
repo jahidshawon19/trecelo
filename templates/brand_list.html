@@ -34,6 +34,8 @@
             <th style="text-align:left;">Brand Name</th>
             <th>Origin Country</th>
             <th class="text-center">Styles</th>
+            <th>Created</th>
+            <th>Updated</th>
             {% if not is_top_management and not is_general_customer %}<th class="text-center">Actions</th>{% endif %}
           </tr>
         </thead>
@@ -63,6 +65,18 @@
             </td>
             <td class="text-center">
               <span style="background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;">{{ brand.style_count }}</span>
+            </td>
+            <td>
+              {% if brand.created_at %}
+              <div style="font-size:.78rem;color:#475569;white-space:nowrap;">{{ brand.created_at|date:"d M Y" }}</div>
+              <div style="font-size:.72rem;color:#94a3b8;">{{ brand.created_at|time:"h:i A" }}</div>
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
+            </td>
+            <td>
+              {% if brand.updated_at %}
+              <div style="font-size:.78rem;color:#475569;white-space:nowrap;">{{ brand.updated_at|date:"d M Y" }}</div>
+              <div style="font-size:.72rem;color:#94a3b8;">{{ brand.updated_at|time:"h:i A" }}</div>
+              {% else %}<span class="text-slate-400">—</span>{% endif %}
             </td>
             {% if not is_top_management and not is_general_customer %}
             <td class="text-center">
