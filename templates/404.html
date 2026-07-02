@@ -1,0 +1,248 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 — Page Not Found | Trecelo</title>
+  <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+      padding: 3rem 3.5rem;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Animated 404 number */
+    .error-number {
+      font-size: 7rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -4px;
+      background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 60%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: pulse 3s ease-in-out infinite;
+      margin-bottom: 0.5rem;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.85; transform: scale(0.97); }
+    }
+
+    /* Icon circle */
+    .icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      border: 2px solid #bfdbfe;
+    }
+
+    .icon-wrap i {
+      font-size: 1.8rem;
+      color: #3b82f6;
+    }
+
+    .title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.6rem;
+    }
+
+    .subtitle {
+      font-size: 0.92rem;
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .url-badge {
+      display: inline-block;
+      background: #f1f5f9;
+      color: #475569;
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      padding: 5px 14px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 2rem;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 10px 22px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.18s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1.5px solid #e2e8f0;
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      transform: translateY(-1px);
+    }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid #f1f5f9;
+      margin: 2rem 0 1.25rem;
+    }
+
+    .footer-text {
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+
+    .footer-text a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .footer-text a:hover { text-decoration: underline; }
+
+    /* Brand bar */
+    .brand-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.75rem;
+    }
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #1e3a5f);
+    }
+    .brand-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e3a5f;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.5rem; }
+      .error-number { font-size: 5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <!-- Brand -->
+    <div class="brand-bar">
+      <div class="brand-dot"></div>
+      <span class="brand-name">Trecelo</span>
+    </div>
+
+    <!-- Icon -->
+    <div class="icon-wrap">
+      <i class="fa fa-compass"></i>
+    </div>
+
+    <!-- 404 Number -->
+    <div class="error-number">404</div>
+
+    <!-- Message -->
+    <div class="title">Page Not Found</div>
+    <p class="subtitle">
+      The page you're looking for doesn't exist or has been moved.<br>
+      Double-check the URL or head back to safety.
+    </p>
+
+    <!-- Requested URL -->
+    <div class="url-badge">{{ request.path }}</div>
+
+    <!-- Action buttons -->
+    <div class="btn-group">
+      {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="btn btn-primary">
+        <i class="fa fa-house"></i> Go to Dashboard
+      </a>
+      {% else %}
+      <a href="{% url 'login' %}" class="btn btn-primary">
+        <i class="fa fa-right-to-bracket"></i> Go to Login
+      </a>
+      {% endif %}
+      <button onclick="history.back()" class="btn btn-secondary">
+        <i class="fa fa-arrow-left"></i> Go Back
+      </button>
+    </div>
+
+    <hr class="divider">
+    <p class="footer-text">
+      Need help? Contact your
+      <a href="{% url 'login' %}">system administrator</a>.
+    </p>
+
+  </div>
+
+</body>
+</html>

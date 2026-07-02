@@ -12,6 +12,10 @@ from .models import Brand, Buyer, Category, ChallengeImage, ChallengeIn, GG, Gen
 from .forms import BrandForm, BuyerForm, CategoryForm, ChallengeInForm, GGForm, GeneralCustomerForm, SampleForm, StaffForm, TopManagementForm
 
 
+def custom_404(request, exception=None):
+    return render(request, '404.html', status=404)
+
+
 def is_staff_or_admin(user):
     return user.is_staff or user.is_superuser
 
